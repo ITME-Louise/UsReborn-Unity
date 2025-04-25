@@ -18,11 +18,6 @@ public class Auto_TutorialTrigger : MonoBehaviour
         //dialogueManager.ShowDialogue(dialogueText);
 
         string prevScene = PlayerPrefs.GetString("LastScene", "None");
-
-        if (prevScene == "Start_Scene")
-            dialogueManager.ShowDialogue("합격을 축하해요 후배님. 오늘부터 무주환경 미화원으로서 일하게 되겠네요");
-        else
-            dialogueManager.ShowDialogue("환영합니다!");
     }
 
     // Update is called once per frame
