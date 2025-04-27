@@ -8,16 +8,11 @@ public class DialogueManager : MonoBehaviour
     public GameObject dialoguePanel;
     public TextMeshProUGUI dialogueText;
     public TMP_InputField nicknameInput;
-    public GameObject nicknamePanel;  // 닉네임 입력 패널 연결
-    public Camera_Moving cameraController; // 카메라 제어 연결
-    // Start is called before the first frame update
-    void Start()
-    {
-        dialoguePanel.SetActive(true);
-        dialogueText.text = dialogues[currentIndex];
-        nicknamePanel.SetActive(false); // 닉네임 패널은 처음엔 숨김
-        cameraController.canMove = true; // 처음엔 카메라 움직일 수 있음
-    }
+    public GameObject nicknamePanel;
+    public Camera_Moving cameraController;
+    public Animator characterAnimator;
+
+    public Transform playerTransform;
 
     private string[] dialogues = new string[5]
     {
@@ -29,22 +24,33 @@ public class DialogueManager : MonoBehaviour
     };
 
     private string[] secondDialogues = new string[5]
-    {   
-    "좋아, 이제부터 넌 정식 US-Reborn의 인턴이야!",
-    "하지만 아직 멀었어.",
-    "일단 기초부터 배우자고!",
-    "여긴 네 개인 우주선 방이야. 개인 기지라고 생각하면 돼.",
-    "우선, 창 밖으로 보이는 EARTH에 가보도록 할까?"
-
+    {
+        "좋아, 이제부터 넌 정식 US-Reborn의 인턴이야!",
+        "하지만 아직 멀었어.",
+        "일단 기초부터 배우자고!",
+        "여긴 네 개인 우주선 방이야. 개인 기지라고 생각하면 돼.",
+        "우선, 창 밖으로 보이는 EARTH에 가보도록 할까?"
     };
 
     private int currentIndex = 0;
-    private bool isSecondPhase = false;  // 두 번째 대사 출력인지 여부
+    private bool isSecondPhase = false;
 
+    void Start()
+    {
+        dialoguePanel.SetActive(true);
+        dialogueText.text = dialogues[currentIndex];
+        nicknamePanel.SetActive(false);
+
+        cameraController.canMove = true;
+        cameraController.canWalk = false;
+
+        // Entry → Talking 자동 연결되어 있다고 가정
+    }
 
     public void OnDialogueClick()
     {
         currentIndex++;
+
         if (!isSecondPhase)
         {
             if (currentIndex < dialogues.Length)
@@ -55,6 +61,7 @@ public class DialogueManager : MonoBehaviour
             {
                 dialoguePanel.SetActive(false);
                 nicknamePanel.SetActive(true);
+
                 cameraController.canMove = false;
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
@@ -70,7 +77,16 @@ public class DialogueManager : MonoBehaviour
             {
                 dialoguePanel.SetActive(false);
                 Debug.Log("두 번째 대사까지 모두 완료!");
-                // SceneManager.LoadScene("NextScene");
+
+                cameraController.canMove = true;
+                cameraController.canWalk = true;
+
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+
+                //  대사 끝났으니까 바로 걷기 시작
+                characterAnimator.SetTrigger("Walk"); // Walk 트리거 발동
+                StartCoroutine(WalkForward()); // 앞으로 이동
             }
         }
     }
@@ -81,7 +97,7 @@ public class DialogueManager : MonoBehaviour
 
         if (string.IsNullOrWhiteSpace(nickname))
         {
-            Debug.LogWarning("닉네임을 입력");
+            Debug.LogWarning("닉네임을 입력해주세요.");
             return;
         }
 
@@ -96,8 +112,18 @@ public class DialogueManager : MonoBehaviour
         dialogueText.text = secondDialogues[currentIndex];
 
         cameraController.canMove = true;
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
+        cameraController.canWalk = false;
     }
-    // SceneManager.LoadScene("NextScene");
+
+    IEnumerator WalkForward()
+    {
+        float walkTime = 0f;
+
+        while (walkTime < 3f)
+        {
+            playerTransform.position += playerTransform.forward * 2f * Time.deltaTime;
+            walkTime += Time.deltaTime;
+            yield return null;
+        }
+    }
 }
