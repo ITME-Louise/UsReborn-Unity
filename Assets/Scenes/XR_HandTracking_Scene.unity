@@ -314,6 +314,7 @@ GameObject:
   - component: {fileID: 310766183}
   - component: {fileID: 310766182}
   - component: {fileID: 310766181}
+  - component: {fileID: 310766184}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -424,6 +425,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 310766179}
   m_CullTransparentMesh: 1
+--- !u!114 &310766184
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 310766179}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7323ebf6e65ce9544beb6f48be91618b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &379264635
 GameObject:
   m_ObjectHideFlags: 0
@@ -1386,9 +1399,10 @@ GameObject:
   - component: {fileID: 2104682642}
   - component: {fileID: 2104682647}
   - component: {fileID: 2104682646}
-  m_Layer: 0
+  - component: {fileID: 2104682648}
+  m_Layer: 7
   m_Name: Cube
-  m_TagString: Untagged
+  m_TagString: Grabbable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1505,6 +1519,18 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &2104682648
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2104682641}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92ae27c93a1dc0d43a51785ead33c218, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &7828477420870977236
 MonoBehaviour:
   m_ObjectHideFlags: 0
