@@ -5,8 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class SceneManager_Start : MonoBehaviour
 {
-    public string sceneToLoad = "Main_Scene";
-    public string subSceneToLoad = "Example_01";
+    public string sceneToLoad = "Slam_Scene";
+    public string subSceneToLoad = "XR_HandTracking_Scene";
     // Start is called before the first frame update
     void Start()
     {
@@ -14,7 +14,7 @@ public class SceneManager_Start : MonoBehaviour
     }
 
     // Update is called once per frame
-    public void GoToMainScene()
+    public void GoToSlamScene()
     {
         //SceneManager.LoadScene("Main_Scene");
 
