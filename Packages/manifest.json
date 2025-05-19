@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.unity.barracuda": "https://github.com/Unity-Technologies/barracuda-release.git",
     "com.unity.collab-proxy": "2.7.1",
     "com.unity.feature.development": "1.0.1",
     "com.unity.render-pipelines.universal": "12.1.15",
