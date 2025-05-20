@@ -5,14 +5,9 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-
   - enabled: 1
-    path: Assets/Scenes/XR_HandTracking_Scene.unity
-    guid: 63bb43d0f62da814ab909e8abf78e067
-
-  - enabled: 0
     path: Assets/Scenes/Slam_Scene.unity
     guid: 82789e9aa3866d44d92584943fae7a56
-
   m_configObjects:
+    Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 80f27da0033b14b4fa690f83b11bcc00, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 80423b0746c6e1d4d899f9f1294ba087, type: 2}
