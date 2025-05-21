@@ -139,6 +139,7 @@ PlayerSettings:
     Others: 1
   bundleVersion: 0.1
   preloadedAssets:
+  - {fileID: 0}
   - {fileID: 11400000, guid: da89b37c55c6df34f8d2312f1cf40192, type: 2}
   - {fileID: 11400000, guid: 80f27da0033b14b4fa690f83b11bcc00, type: 2}
   - {fileID: -1944268780840188928, guid: 80423b0746c6e1d4d899f9f1294ba087, type: 2}
@@ -160,7 +161,8 @@ PlayerSettings:
   resetResolutionOnWindowResize: 0
   androidSupportedAspectRatio: 1
   androidMaxAspectRatio: 2.1
-  applicationIdentifier: {}
+  applicationIdentifier:
+    Android: com.DefaultCompany.scan_demo
   buildNumber:
     Standalone: 0
     iPhone: 0
@@ -728,7 +730,7 @@ PlayerSettings:
     m_VersionCode: 1
     m_VersionName: 
   apiCompatibilityLevel: 6
-  activeInputHandler: -1
+  activeInputHandler: 1
   windowsGamepadBackendHint: 0
   cloudProjectId: 
   framebufferDepthMemorylessMode: 0

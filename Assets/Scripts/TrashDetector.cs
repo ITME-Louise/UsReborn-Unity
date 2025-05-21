@@ -73,24 +73,67 @@ public class TrashDetector : MonoBehaviour
 
     private void InitializeHighlightMaterials()
     {
-        if (highlightMaterials == null || highlightMaterials.Length < classNames.Length)
+        Debug.Log("TrashDetector: InitializeHighlightMaterials 함수 호출됨");
+        try
         {
-            highlightMaterials = new Material[classNames.Length];
-            Color[] colors = new Color[] {
-                Color.red,     // Metal
-                Color.blue,    // Plastic
-                Color.yellow,  // Special Waste
-                Color.cyan,    // Glass
-                Color.green,   // Paper
-                Color.magenta  // General Waste
-            };
-            
-            for (int i = 0; i < classNames.Length; i++)
+            if (highlightMaterials == null || highlightMaterials.Length < classNames.Length)
             {
-                highlightMaterials[i] = new Material(Shader.Find("Standard"));
-                highlightMaterials[i].color = new Color(colors[i].r, colors[i].g, colors[i].b, 0.6f);
+                Debug.Log("TrashDetector: 하이라이트 머티리얼 초기화 시작");
+                highlightMaterials = new Material[classNames.Length];
+                Color[] colors = new Color[] {
+                    Color.red,     // Metal
+                    Color.blue,    // Plastic
+                    Color.yellow,  // Special Waste
+                    Color.cyan,    // Glass
+                    Color.green,   // Paper
+                    Color.magenta  // General Waste
+                };
+                
+                Debug.Log("TrashDetector: 쉐이더 찾기 시도");
+                
+                // "Standard" 쉐이더로 시도
+                Shader standardShader = Shader.Find("Standard");
+                Debug.Log("TrashDetector: Standard 쉐이더 찾기 결과: " + (standardShader != null ? "성공" : "실패"));
+                
+                // 다른 대체 쉐이더 시도
+                Shader mobileShader = Shader.Find("Mobile/Diffuse");
+                Debug.Log("TrashDetector: Mobile/Diffuse 쉐이더 찾기 결과: " + (mobileShader != null ? "성공" : "실패"));
+                
+                Shader legacyShader = Shader.Find("Legacy Shaders/Diffuse");
+                Debug.Log("TrashDetector: Legacy Shaders/Diffuse 쉐이더 찾기 결과: " + (legacyShader != null ? "성공" : "실패"));
+                
+                // 사용할 쉐이더 선택
+                Shader shaderToUse = mobileShader;
+                if (shaderToUse == null) shaderToUse = legacyShader;
+                if (shaderToUse == null) shaderToUse = standardShader;
+                
+                if (shaderToUse == null)
+                {
+                    Debug.LogError("TrashDetector: 사용 가능한 쉐이더를 찾을 수 없습니다!");
+                    return;
+                }
+                
+                Debug.Log("TrashDetector: 사용할 쉐이더: " + shaderToUse.name);
+                
+                for (int i = 0; i < classNames.Length; i++)
+                {
+                    Debug.Log("TrashDetector: 머티리얼 " + i + " 생성 중");
+                    highlightMaterials[i] = new Material(shaderToUse);
+                    highlightMaterials[i].color = new Color(colors[i].r, colors[i].g, colors[i].b, 0.6f);
+                    Debug.Log("TrashDetector: 머티리얼 " + i + " 생성 완료");
+                }
+                
+                Debug.Log("TrashDetector: 하이라이트 머티리얼 초기화 완료");
             }
-            Debug.Log("TrashDetector: 하이라이트 머티리얼 초기화 완료");
+            else
+            {
+                Debug.Log("TrashDetector: 하이라이트 머티리얼이 이미 초기화되어 있음");
+            }
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError("TrashDetector: 하이라이트 머티리얼 초기화 중 오류 발생: " + e.Message);
+            Debug.LogError("TrashDetector: 스택 트레이스: " + e.StackTrace);
         }
     }
 
@@ -350,39 +393,58 @@ public class TrashDetector : MonoBehaviour
     
     private void VisualizeDetections(List<Detection> detections, Camera camera)
     {
+        Debug.Log($"TrashDetector: 카메라 위치: {camera.transform.position}, 방향: {camera.transform.forward}, " +
+        $"nearClipPlane: {camera.nearClipPlane}, farClipPlane: {camera.farClipPlane}, " +
+        $"cullingMask: {camera.cullingMask}, 감지 개수: {detections.Count}");
+        
         foreach (var detection in detections)
         {
-            // 3D 공간에 감지 결과 시각화
-            // 정규화된 좌표(0-1)를 카메라 앞 공간에 매핑
+            float normalizedX = (detection.BoundingBox.center.x * 2f) - 1f; 
+            float normalizedY = 1f - (detection.BoundingBox.center.y * 2f);
             
-            // 정규화된 좌표를 카메라 공간으로 변환
-            float depth = 2.0f; // 카메라로부터의 거리
+            // 고정된 깊이 값 설정 (적절한 거리로 조정)
+            float depth = 2.0f;
             
-            // 박스 중심점을 카메라 앞 공간에 위치시킴
-            Vector3 centerPos = camera.transform.position + 
-                              camera.transform.forward * depth + 
-                              camera.transform.right * ((detection.BoundingBox.center.x - 0.5f) * 2) + 
-                              camera.transform.up * ((0.5f - detection.BoundingBox.center.y) * 2);
+            // 카메라 전방에 고정된 거리로 위치시킴
+            Vector3 forward = camera.transform.forward * depth;
+            Vector3 right = camera.transform.right * normalizedX * depth * 0.5f;
+            Vector3 up = camera.transform.up * normalizedY * depth * 0.5f;
             
-            // 시각적 표시 생성
+            // 최종 월드 좌표 계산 (카메라 기준)
+            Vector3 worldPoint = camera.transform.position + forward + right + up;
+            
+            // 구체 생성
             GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             sphere.name = $"Trash_{detection.ClassName}";
-            sphere.transform.position = centerPos;
+            sphere.transform.position = worldPoint;
             
             // 크기 설정
-            float size = 0.2f;
+            // float size = 0.1f + (detection.BoundingBox.width * 0.2f);
+            float size = 0.3f;
             sphere.transform.localScale = new Vector3(size, size, size);
             
             // 머티리얼 적용
             if (detection.ClassIndex < highlightMaterials.Length)
             {
-                sphere.GetComponent<Renderer>().material = highlightMaterials[detection.ClassIndex];
+                //sphere.GetComponent<Renderer>().material = highlightMaterials[detection.ClassIndex];
+                sphere.GetComponent<Renderer>().material.color = Color.blue;
             }
+            sphere.GetComponent<Renderer>().material.color = Color.blue;
             
-            // 레이블 추가
+            // 레이어 설정
+            // sphere.layer = LayerMask.NameToLayer("UI") != -1 ? LayerMask.NameToLayer("UI") : 5;
+            sphere.layer = LayerMask.NameToLayer("Default");
+            
+            Debug.Log($"TrashDetector: 구체 생성 - 이름: {sphere.name}, 위치: {worldPoint}, 크기: {sphere.transform.localScale}, " +
+            $"머티리얼 있음: {sphere.GetComponent<Renderer>().material != null}");
+            
+            // 라벨 추가
             GameObject textObj = new GameObject($"Label_{detection.ClassName}");
-            textObj.transform.position = centerPos + Vector3.up * 0.2f;
-            textObj.transform.rotation = camera.transform.rotation;
+            textObj.transform.position = worldPoint + camera.transform.up * 0.15f;
+            
+            // 텍스트가 카메라를 향하도록 설정
+            textObj.transform.LookAt(camera.transform);
+            textObj.transform.Rotate(0, 180, 0);
             
             TextMesh textMesh = textObj.AddComponent<TextMesh>();
             textMesh.text = $"{detection.ClassName}: {detection.Confidence:F2}";
@@ -390,11 +452,14 @@ public class TrashDetector : MonoBehaviour
             textMesh.alignment = TextAlignment.Center;
             textMesh.anchor = TextAnchor.LowerCenter;
             textMesh.color = Color.white;
-            textMesh.characterSize = 0.05f;
+            textMesh.characterSize = 0.3f;
             
-            // 3초 후 제거
-            Destroy(sphere, 3.0f);
-            Destroy(textObj, 3.0f);
+            // 텍스트도 항상 보이도록 레이어 설정
+            textObj.layer = sphere.layer;
+            
+            // 10초 후 제거
+            Destroy(sphere, 10.0f);
+            Destroy(textObj, 10.0f);
         }
     }
 }
