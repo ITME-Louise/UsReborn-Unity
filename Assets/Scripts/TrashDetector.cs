@@ -419,17 +419,21 @@ public class TrashDetector : MonoBehaviour
             sphere.transform.position = worldPoint;
             
             // 크기 설정
-            float size = 0.1f + (detection.BoundingBox.width * 0.2f);
+            // float size = 0.1f + (detection.BoundingBox.width * 0.2f);
+            float size = 0.3f;
             sphere.transform.localScale = new Vector3(size, size, size);
             
             // 머티리얼 적용
             if (detection.ClassIndex < highlightMaterials.Length)
             {
-                sphere.GetComponent<Renderer>().material = highlightMaterials[detection.ClassIndex];
+                //sphere.GetComponent<Renderer>().material = highlightMaterials[detection.ClassIndex];
+                sphere.GetComponent<Renderer>().material.color = Color.blue;
             }
+            sphere.GetComponent<Renderer>().material.color = Color.blue;
             
             // 레이어 설정
-            sphere.layer = LayerMask.NameToLayer("UI") != -1 ? LayerMask.NameToLayer("UI") : 5;
+            // sphere.layer = LayerMask.NameToLayer("UI") != -1 ? LayerMask.NameToLayer("UI") : 5;
+            sphere.layer = LayerMask.NameToLayer("Default");
             
             Debug.Log($"TrashDetector: 구체 생성 - 이름: {sphere.name}, 위치: {worldPoint}, 크기: {sphere.transform.localScale}, " +
             $"머티리얼 있음: {sphere.GetComponent<Renderer>().material != null}");
