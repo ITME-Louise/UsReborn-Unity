@@ -8,13 +8,13 @@ public class TrashDetector : MonoBehaviour
 {
     [SerializeField] private NNModel modelAsset;
     [SerializeField] private OVRCameraRig ovrCameraRig;
-    [SerializeField] private float confidenceThreshold = 0.25f;
+    [SerializeField] private float confidenceThreshold = 0.4f;
     [SerializeField] private Material[] highlightMaterials;
     [SerializeField] private bool debugMode = true;
+    [SerializeField] private GameObject slamModel;
     
-    private string[] classNames = new string[] { 
-        "Metal", "Plastic", "Special Waste", 
-        "Glass", "Paper", "General Waste" 
+    private string[] classNames = new string[] {
+        "paper", "pack", "can", "glass", "pet", "plastic", "vinyl"
     };
     
     private Model runtimeModel;
@@ -23,9 +23,8 @@ public class TrashDetector : MonoBehaviour
     private RenderTexture renderTexture;
     private bool isProcessing = false;
     
-    private int inputWidth = 960;
-    private int inputHeight = 960;
-
+    private int inputWidth = 640;
+    private int inputHeight = 640;
     private int captureWidth = 640;
     private int captureHeight = 640;
 
@@ -43,6 +42,10 @@ public class TrashDetector : MonoBehaviour
             Debug.LogError($"TrashDetector: 모델 로드 실패 - {e.Message}");
             return;
         }
+        
+        // 캡처 크기를 모델 입력 크기와 동일하게 설정
+        captureWidth = inputWidth;   // 640
+        captureHeight = inputHeight; // 640
         
         // 카메라 텍스처 초기화
         renderTexture = new RenderTexture(captureWidth, captureHeight, 24);
@@ -81,31 +84,20 @@ public class TrashDetector : MonoBehaviour
                 Debug.Log("TrashDetector: 하이라이트 머티리얼 초기화 시작");
                 highlightMaterials = new Material[classNames.Length];
                 Color[] colors = new Color[] {
-                    Color.red,     // Metal
-                    Color.blue,    // Plastic
-                    Color.yellow,  // Special Waste
-                    Color.cyan,    // Glass
-                    Color.green,   // Paper
-                    Color.magenta  // General Waste
+                    Color.red,     // paper
+                    Color.blue,    // pack
+                    Color.yellow,  // can
+                    Color.cyan,    // glass
+                    Color.green,   // pet
+                    Color.magenta, // plastic
+                    Color.white    // vinyl
                 };
                 
                 Debug.Log("TrashDetector: 쉐이더 찾기 시도");
                 
-                // "Standard" 쉐이더로 시도
-                Shader standardShader = Shader.Find("Standard");
-                Debug.Log("TrashDetector: Standard 쉐이더 찾기 결과: " + (standardShader != null ? "성공" : "실패"));
-                
-                // 다른 대체 쉐이더 시도
-                Shader mobileShader = Shader.Find("Mobile/Diffuse");
-                Debug.Log("TrashDetector: Mobile/Diffuse 쉐이더 찾기 결과: " + (mobileShader != null ? "성공" : "실패"));
-                
-                Shader legacyShader = Shader.Find("Legacy Shaders/Diffuse");
-                Debug.Log("TrashDetector: Legacy Shaders/Diffuse 쉐이더 찾기 결과: " + (legacyShader != null ? "성공" : "실패"));
-                
-                // 사용할 쉐이더 선택
-                Shader shaderToUse = mobileShader;
-                if (shaderToUse == null) shaderToUse = legacyShader;
-                if (shaderToUse == null) shaderToUse = standardShader;
+                Shader shaderToUse = Shader.Find("Standard");
+                if (shaderToUse == null) shaderToUse = Shader.Find("Mobile/Diffuse");
+                if (shaderToUse == null) shaderToUse = Shader.Find("Legacy Shaders/Diffuse");
                 
                 if (shaderToUse == null)
                 {
@@ -117,23 +109,16 @@ public class TrashDetector : MonoBehaviour
                 
                 for (int i = 0; i < classNames.Length; i++)
                 {
-                    Debug.Log("TrashDetector: 머티리얼 " + i + " 생성 중");
                     highlightMaterials[i] = new Material(shaderToUse);
-                    highlightMaterials[i].color = new Color(colors[i].r, colors[i].g, colors[i].b, 0.6f);
-                    Debug.Log("TrashDetector: 머티리얼 " + i + " 생성 완료");
+                    highlightMaterials[i].color = new Color(colors[i].r, colors[i].g, colors[i].b, 0.8f);
                 }
                 
                 Debug.Log("TrashDetector: 하이라이트 머티리얼 초기화 완료");
-            }
-            else
-            {
-                Debug.Log("TrashDetector: 하이라이트 머티리얼이 이미 초기화되어 있음");
             }
         }
         catch (System.Exception e)
         {
             Debug.LogError("TrashDetector: 하이라이트 머티리얼 초기화 중 오류 발생: " + e.Message);
-            Debug.LogError("TrashDetector: 스택 트레이스: " + e.StackTrace);
         }
     }
 
@@ -231,9 +216,15 @@ public class TrashDetector : MonoBehaviour
     {
         if (debugMode) Debug.Log("TrashDetector: 이미지 처리 시작");
         
-        // 입력 텐서 생성
-        using (var inputTensor = PreprocessImageToTensor(cameraTexture))
+        // 텍스처를 직접 텐서로 변환 (더 안전한 방법)
+        using (var inputTensor = new Tensor(cameraTexture, channels: 3))
         {
+            if (debugMode) 
+            {
+                Debug.Log($"TrashDetector: 입력 텐서 크기: {inputTensor.shape}");
+                Debug.Log($"TrashDetector: 입력 텐서 차원: batch={inputTensor.batch}, height={inputTensor.height}, width={inputTensor.width}, channels={inputTensor.channels}");
+            }
+            
             // 모델 실행
             worker.Execute(inputTensor);
             
@@ -243,7 +234,7 @@ public class TrashDetector : MonoBehaviour
             if (debugMode) 
             {
                 Debug.Log($"TrashDetector: 모델 실행 완료, 출력 텐서 크기: {outputTensor.shape}");
-                Debug.Log($"TrashDetector: 텐서 차원: {outputTensor.dimensions} [{outputTensor.shape[0]}, {outputTensor.shape[1]}, {outputTensor.shape[2]}]");
+                Debug.Log($"TrashDetector: 출력 텐서 차원: batch={outputTensor.batch}, height={outputTensor.height}, width={outputTensor.width}, channels={outputTensor.channels}");
             }
             
             // 결과 처리
@@ -254,87 +245,70 @@ public class TrashDetector : MonoBehaviour
         }
     }
     
-    private Tensor PreprocessImageToTensor(Texture2D texture)
-    {
-        // YOLOv5 모델용 텐서 생성
-        float[] inputData = new float[inputWidth * inputHeight * 3];
-        
-        // 이미지 리사이징 및 정규화
-        for (int y = 0; y < inputHeight; y++)
-        {
-            for (int x = 0; x < inputWidth; x++)
-            {
-                // 텍스처에서 위치 계산 (캡처 크기에 맞춤)
-                int texX = (int)((float)x / inputWidth * captureWidth);
-                int texY = (int)((float)y / inputHeight * captureHeight);
-                
-                Color pixel = cameraTexture.GetPixel(texX, texY);
-                
-                int idx = y * inputWidth + x;
-                // R 채널
-                inputData[idx] = pixel.r;
-                // G 채널
-                inputData[idx + inputWidth * inputHeight] = pixel.g;
-                // B 채널
-                inputData[idx + 2 * inputWidth * inputHeight] = pixel.b;
-            }
-        }
-        
-        // [1, 3, 960, 960] 형식의 텐서 생성
-        return new Tensor(1, inputHeight, inputWidth, 3, inputData);
-    }
-    
     private void ProcessDetectionResults(Tensor outputTensor, Camera camera)
     {
+        int valuesPerBox = outputTensor.width;    // 12 (x, y, w, h, obj + 클래스 개수)
+        int numBBoxes = outputTensor.channels;   // 25200
         
-        // 출력 텐서에서 데이터 읽기
-        var output = outputTensor.ToReadOnlyArray();
-        
-        if (debugMode) Debug.Log($"TrashDetector: 출력 배열 크기: {output.Length}");
-        
-        int numBBoxes = outputTensor.shape[1];      // 56700
-        int valuesPerBox = outputTensor.shape[2];   // 11
+        if (debugMode)
+        {
+            Debug.Log($"TrashDetector: numBBoxes={numBBoxes}, valuesPerBox={valuesPerBox}");
+        }
         
         List<Detection> detections = new List<Detection>();
         
-        // 바운딩 박스 처리
+        int expectedValuesPerBox = 5 + classNames.Length; // 5 + 클래스 개수
+        
+        if (valuesPerBox != expectedValuesPerBox)
+        {
+            Debug.LogWarning($"TrashDetector: valuesPerBox ({valuesPerBox}) 가 기대값({expectedValuesPerBox})과 다릅니다.");
+        }
+        
+        // outputTensor shape: (batch=1, height=1, width=12, channels=25200)
+        // valuesPerBox = width = 12
+        // numBBoxes = channels = 25200
+        
         for (int i = 0; i < numBBoxes; i++)
         {
-            int offset = i * valuesPerBox;
+            float x = outputTensor[0, 0, 0, i];
+            float y = outputTensor[0, 0, 1, i];
+            float w = outputTensor[0, 0, 2, i];
+            float h = outputTensor[0, 0, 3, i];
+            float objectness = outputTensor[0, 0, 4, i];
             
-            // YOLOv5 출력 형식
-            float objectness = output[offset + 4];
+            float sigmoid_objectness = 1f / (1f + Mathf.Exp(-objectness));
             
-            // 신뢰도가 임계값을 넘는 경우만 처리
-            if (objectness > confidenceThreshold)
+            if (sigmoid_objectness > 0.5f)
             {
-                float x = output[offset + 0];
-                float y = output[offset + 1];
-                float w = output[offset + 2];
-                float h = output[offset + 3];
-                
-                // 클래스 점수 확인
+                float[] classScores = new float[classNames.Length];
                 int bestClassIdx = 0;
-                float bestScore = 0;
+                float bestScore = 0f;
                 
                 for (int c = 0; c < classNames.Length; c++)
                 {
-                    float classScore = output[offset + 5 + c];
-                    if (classScore > bestScore)
+                    float rawClassScore = outputTensor[0, 0, 5 + c, i];
+                    float sigmoidClassScore = 1f / (1f + Mathf.Exp(-rawClassScore));
+                    classScores[c] = sigmoidClassScore;
+                    
+                    if (sigmoidClassScore > bestScore)
                     {
-                        bestScore = classScore;
+                        bestScore = sigmoidClassScore;
                         bestClassIdx = c;
                     }
                 }
                 
-                // 최종 신뢰도
-                float confidence = objectness * bestScore;
+                float confidence = sigmoid_objectness * bestScore;
                 
-                if (confidence > confidenceThreshold)
+                if (confidence > confidenceThreshold && w > 5 && h > 5 && x > 0 && y > 0 && x < inputWidth && y < inputHeight)
                 {
                     Detection detection = new Detection
                     {
-                        BoundingBox = new Rect(x - w/2, y - h/2, w, h),
+                        BoundingBox = new Rect(
+                            Mathf.Clamp01((x - w / 2) / inputWidth),
+                            Mathf.Clamp01((y - h / 2) / inputHeight),
+                            Mathf.Clamp01(w / inputWidth),
+                            Mathf.Clamp01(h / inputHeight)
+                        ),
                         Confidence = confidence,
                         ClassIndex = bestClassIdx,
                         ClassName = classNames[bestClassIdx]
@@ -344,18 +318,22 @@ public class TrashDetector : MonoBehaviour
                     
                     if (debugMode)
                     {
-                        Debug.Log($"TrashDetector: 감지됨 - {detection.ClassName}, 신뢰도: {detection.Confidence:F2}, " +
-                                  $"위치: ({detection.BoundingBox.x:F2}, {detection.BoundingBox.y:F2}, " +
-                                  $"{detection.BoundingBox.width:F2}, {detection.BoundingBox.height:F2})");
+                        string allScores = string.Join(", ", classNames.Select((name, idx) => $"{name}:{classScores[idx]:F3}"));
+                        
+                         Debug.Log($"감지됨 - {detection.ClassName}, 신뢰도: {confidence:F3}, " +
+                         $"위치: ({detection.BoundingBox.x:F2}, {detection.BoundingBox.y:F2}, " +
+                         $"{detection.BoundingBox.width:F2}, {detection.BoundingBox.height:F2}), " +
+                         $"모든 클래스 점수: [{allScores}]");
                     }
                 }
             }
         }
         
-        List<Detection> filteredDetections = ApplyNMS(detections, 0.45f);
+        if (debugMode) Debug.Log($"TrashDetector: 총 {detections.Count}개 감지 결과");
         
-        // 결과 시각화
+        var filteredDetections = ApplyNMS(detections, 0.45f);
         VisualizeDetections(filteredDetections, camera);
+    
     }
     
     private List<Detection> ApplyNMS(List<Detection> detections, float iouThreshold)
@@ -388,78 +366,104 @@ public class TrashDetector : MonoBehaviour
         float intersection = xOverlap * yOverlap;
         float union = box1.width * box1.height + box2.width * box2.height - intersection;
         
-        return intersection / union;
+        return union > 0 ? intersection / union : 0;
     }
     
-    private void VisualizeDetections(List<Detection> detections, Camera camera)
+    private Vector3? GetWorldPosFromUV(Vector2 uv, GameObject model)
     {
-        Debug.Log($"TrashDetector: 카메라 위치: {camera.transform.position}, 방향: {camera.transform.forward}, " +
-        $"nearClipPlane: {camera.nearClipPlane}, farClipPlane: {camera.farClipPlane}, " +
-        $"cullingMask: {camera.cullingMask}, 감지 개수: {detections.Count}");
-        
-        foreach (var detection in detections)
+        MeshFilter mf = model.GetComponentInChildren<MeshFilter>();
+        if (mf == null || mf.sharedMesh == null)
         {
-            float normalizedX = (detection.BoundingBox.center.x * 2f) - 1f; 
-            float normalizedY = 1f - (detection.BoundingBox.center.y * 2f);
+            Debug.LogWarning($"MeshFilter 없음 또는 sharedMesh가 할당 안됨: 모델 이름 = {model.name}");
+            return null;
+        }
+        
+        Mesh mesh = mf.sharedMesh;
+        Vector2[] uvArray = mesh.uv;
+        Vector3[] vertices = mesh.vertices;
+        
+        if (uvArray == null || uvArray.Length == 0) return null;
+        
+        float minDist = float.MaxValue;
+        int bestIdx = -1;
+        
+        for (int i = 0; i < uvArray.Length; ++i)
+        {
+            float d = Vector2.SqrMagnitude(uv - uvArray[i]);
+            if (d < minDist) { minDist = d; bestIdx = i; }
+        }
+        
+        if (bestIdx < 0) return null;
+        
+        if (debugMode)
+        {
+            Debug.Log($"UV → 3D: uv={uv}, vertexIdx={bestIdx}, localPos={vertices[bestIdx]}, worldPos={mf.transform.TransformPoint(vertices[bestIdx])}");
+        }
+        
+        return mf.transform.TransformPoint(vertices[bestIdx]);
+    }
+
+    private void VisualizeDetections(List<Detection> detections, Camera camera)
+    
+    {
+        Debug.Log($"TrashDetector: 감지 개수: {detections.Count}");
+        
+        // obj의 실제 rotation, position, scale (임시 테스트용)
+        Quaternion objRotation = slamModel.transform.rotation;
+        Vector3 objPosition = slamModel.transform.position;
+        Vector3 objScale    = slamModel.transform.lossyScale;
+        
+        foreach (var det in detections)
+        {
+            Vector2 uv;
+            uv.x = det.BoundingBox.center.x;
+            uv.y = 1f - det.BoundingBox.center.y;
             
-            // 고정된 깊이 값 설정 (적절한 거리로 조정)
-            float depth = 2.0f;
-            
-            // 카메라 전방에 고정된 거리로 위치시킴
-            Vector3 forward = camera.transform.forward * depth;
-            Vector3 right = camera.transform.right * normalizedX * depth * 0.5f;
-            Vector3 up = camera.transform.up * normalizedY * depth * 0.5f;
-            
-            // 최종 월드 좌표 계산 (카메라 기준)
-            Vector3 worldPoint = camera.transform.position + forward + right + up;
-            
-            // 구체 생성
-            GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            sphere.name = $"Trash_{detection.ClassName}";
-            sphere.transform.position = worldPoint;
-            
-            // 크기 설정
-            // float size = 0.1f + (detection.BoundingBox.width * 0.2f);
-            float size = 0.3f;
-            sphere.transform.localScale = new Vector3(size, size, size);
-            
-            // 머티리얼 적용
-            if (detection.ClassIndex < highlightMaterials.Length)
+            if (debugMode)
             {
-                //sphere.GetComponent<Renderer>().material = highlightMaterials[detection.ClassIndex];
-                sphere.GetComponent<Renderer>().material.color = Color.blue;
+                Debug.Log($"바운딩 박스 중심: ({det.BoundingBox.center.x:F2}, {det.BoundingBox.center.y:F2}) → UV: ({uv.x:F2}, {uv.y:F2})");
             }
-            sphere.GetComponent<Renderer>().material.color = Color.blue;
             
-            // 레이어 설정
-            // sphere.layer = LayerMask.NameToLayer("UI") != -1 ? LayerMask.NameToLayer("UI") : 5;
-            sphere.layer = LayerMask.NameToLayer("Default");
+            Vector3? worldPos = GetWorldPosFromUV(uv, slamModel);
             
-            Debug.Log($"TrashDetector: 구체 생성 - 이름: {sphere.name}, 위치: {worldPoint}, 크기: {sphere.transform.localScale}, " +
-            $"머티리얼 있음: {sphere.GetComponent<Renderer>().material != null}");
+            if (worldPos == null)
+            {
+                Debug.LogWarning($"UV → 3D 매핑 실패 : {uv}");
+                continue;
+            }
             
-            // 라벨 추가
-            GameObject textObj = new GameObject($"Label_{detection.ClassName}");
-            textObj.transform.position = worldPoint + camera.transform.up * 0.15f;
+            Debug.Log($"worldPos(raw): {worldPos.Value}");
             
-            // 텍스트가 카메라를 향하도록 설정
-            textObj.transform.LookAt(camera.transform);
-            textObj.transform.Rotate(0, 180, 0);
+            if (debugMode)
+            {
+                Debug.Log($"감지됨: {det.ClassName} / Confidence: {det.Confidence:F2} / UV: {uv} / WorldPos: {worldPos.Value}");
+            }
             
-            TextMesh textMesh = textObj.AddComponent<TextMesh>();
-            textMesh.text = $"{detection.ClassName}: {detection.Confidence:F2}";
-            textMesh.fontSize = 24;
-            textMesh.alignment = TextAlignment.Center;
-            textMesh.anchor = TextAnchor.LowerCenter;
-            textMesh.color = Color.white;
-            textMesh.characterSize = 0.3f;
+            // obj 위치,회전,크기 반영
+            Vector3 correctedPos = objPosition + objRotation * Vector3.Scale(worldPos.Value, objScale);
             
-            // 텍스트도 항상 보이도록 레이어 설정
-            textObj.layer = sphere.layer;
+            GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            sphere.name = $"Trash_{det.ClassName}_{Time.time:F2}";
+            sphere.transform.position = correctedPos;
             
-            // 10초 후 제거
-            Destroy(sphere, 10.0f);
-            Destroy(textObj, 10.0f);
+            float size = 0.2f + det.BoundingBox.width * 0.3f;
+            sphere.transform.localScale = Vector3.one * size;
+            
+            if (det.ClassIndex < highlightMaterials.Length && highlightMaterials[det.ClassIndex])
+            sphere.GetComponent<Renderer>().material = highlightMaterials[det.ClassIndex];
+            else
+            sphere.GetComponent<Renderer>().material.color = Color.red;
+
+            var label = new GameObject($"Label_{det.ClassName}_{Time.time:F2}");
+            label.transform.position = correctedPos + Vector3.up * (size + 0.1f);
+            var tm = label.AddComponent<TextMesh>();
+            tm.text = $"{det.ClassName}\n{det.Confidence:F2}";
+            tm.characterSize = 0.08f;
+            tm.anchor = TextAnchor.MiddleCenter;
+            tm.color = Color.white;
+
+            Destroy(sphere, 10f);
+            Destroy(label, 10f);
         }
     }
 }

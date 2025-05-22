@@ -751,11 +751,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   modelAsset: {fileID: 5022602860645237092, guid: 360781be86348d0439f8fa30864adb32, type: 3}
-  ovrCameraRig: {fileID: 0}
-  confidenceThreshold: 0.25
+  ovrCameraRig: {fileID: 1105374041}
+  confidenceThreshold: 0.4
   highlightMaterials:
   - {fileID: 2100000, guid: e801d932da8bb09419372b1666cb1106, type: 2}
   debugMode: 1
+  slamModel: {fileID: 919132149155446097, guid: d7ec9564f6eccf04d85c6fb0186c5e75, type: 3}
 --- !u!4 &709663850
 Transform:
   m_ObjectHideFlags: 0
@@ -1184,6 +1185,17 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1088633812}
   m_CullTransparentMesh: 1
+--- !u!114 &1105374041 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3351887280093960702, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
+  m_PrefabInstance: {fileID: 1299335715}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df9f338034892c44ebb62d97894772f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1119661630
 GameObject:
   m_ObjectHideFlags: 0
