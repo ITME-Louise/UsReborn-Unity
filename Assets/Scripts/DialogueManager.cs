@@ -14,6 +14,15 @@ public class DialogueManager : MonoBehaviour
 
     public Transform playerTransform;
 
+    public GameObject usRebornPanel;
+    public GameObject topNoticePanel;
+    public GameObject topNicknameNoticePanel;
+
+    public TextMeshProUGUI nicknameDisplayText; 
+    public GameObject okButton; 
+
+    private string nickname = "";
+
     private string[] dialogues = new string[5]
     {
         "오, 드디어 일어났네? 첫 출근에 늦잠 잘까 봐 걱정했어.",
@@ -25,7 +34,7 @@ public class DialogueManager : MonoBehaviour
 
     private string[] secondDialogues = new string[5]
     {
-        "좋아, 이제부터 넌 정식 US-Reborn의 인턴이야!",
+        "좋아, 이제부터 넌 정식 US-Reborn의 인턴이야, {0}!",
         "하지만 아직 멀었어.",
         "일단 기초부터 배우자고!",
         "여긴 네 개인 우주선 방이야. 개인 기지라고 생각하면 돼.",
@@ -41,10 +50,14 @@ public class DialogueManager : MonoBehaviour
         dialogueText.text = dialogues[currentIndex];
         nicknamePanel.SetActive(false);
 
+        usRebornPanel.SetActive(false);
+        topNoticePanel.SetActive(true);
+        topNicknameNoticePanel.SetActive(false);
+
+        nicknameDisplayText.gameObject.SetActive(false); 
+
         cameraController.canMove = true;
         cameraController.canWalk = false;
-
-        // Entry → Talking 자동 연결되어 있다고 가정
     }
 
     public void OnDialogueClick()
@@ -56,11 +69,27 @@ public class DialogueManager : MonoBehaviour
             if (currentIndex < dialogues.Length)
             {
                 dialogueText.text = dialogues[currentIndex];
+
+                if (currentIndex == 2 || currentIndex == 3)
+                {
+                    usRebornPanel.SetActive(true);
+                }
+                else
+                {
+                    usRebornPanel.SetActive(false);
+                }
+
+                if (currentIndex == 1)
+                {
+                    topNoticePanel.SetActive(false);
+                }
             }
             else
             {
                 dialoguePanel.SetActive(false);
                 nicknamePanel.SetActive(true);
+
+                topNicknameNoticePanel.SetActive(true);
 
                 cameraController.canMove = false;
                 Cursor.lockState = CursorLockMode.None;
@@ -71,7 +100,7 @@ public class DialogueManager : MonoBehaviour
         {
             if (currentIndex < secondDialogues.Length)
             {
-                dialogueText.text = secondDialogues[currentIndex];
+                dialogueText.text = string.Format(secondDialogues[currentIndex], nickname);
             }
             else
             {
@@ -84,35 +113,53 @@ public class DialogueManager : MonoBehaviour
                 Cursor.lockState = CursorLockMode.Locked;
                 Cursor.visible = false;
 
-                //  대사 끝났으니까 바로 걷기 시작
-                characterAnimator.SetTrigger("Walk"); // Walk 트리거 발동
-                StartCoroutine(WalkForward()); // 앞으로 이동
+                characterAnimator.SetTrigger("Walk");
+                StartCoroutine(WalkForward());
             }
         }
     }
 
     public void OnNicknameSubmit()
     {
-        string nickname = nicknameInput.text;
+        string input = nicknameInput.text;
 
-        if (string.IsNullOrWhiteSpace(nickname))
+        if (string.IsNullOrWhiteSpace(input))
         {
             Debug.LogWarning("닉네임을 입력해주세요.");
             return;
         }
 
+        nickname = input;
         PlayerPrefs.SetString("PlayerNickname", nickname);
         Debug.Log("닉네임 저장됨: " + nickname);
+
+       
+        nicknameInput.gameObject.SetActive(false);
+        okButton.SetActive(false);
+
+       
+        nicknameDisplayText.text = nickname;
+        nicknameDisplayText.gameObject.SetActive(true);
+
+       
+        StartCoroutine(DelayNicknameComplete());
+    }
+
+    IEnumerator DelayNicknameComplete()
+    {
+        yield return new WaitForSeconds(2f);
 
         nicknamePanel.SetActive(false);
         dialoguePanel.SetActive(true);
 
         currentIndex = 0;
         isSecondPhase = true;
-        dialogueText.text = secondDialogues[currentIndex];
+        dialogueText.text = string.Format(secondDialogues[currentIndex], nickname);
 
         cameraController.canMove = true;
         cameraController.canWalk = false;
+
+        topNicknameNoticePanel.SetActive(false);
     }
 
     IEnumerator WalkForward()

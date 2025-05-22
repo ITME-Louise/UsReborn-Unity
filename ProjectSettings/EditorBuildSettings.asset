@@ -4,6 +4,12 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/Slam_Scene.unity
+    guid: 82789e9aa3866d44d92584943fae7a56
+  - enabled: 1
+    path: Assets/Scenes/XR_HandTracking_Scene_mini.unity
+    guid: a890c5ac751371e48ab1c65937f310d9
   m_configObjects:
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 80423b0746c6e1d4d899f9f1294ba087, type: 2}
