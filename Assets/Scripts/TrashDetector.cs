@@ -11,6 +11,7 @@ public class TrashDetector : MonoBehaviour
     [SerializeField] private float confidenceThreshold = 0.4f;
     [SerializeField] private Material[] highlightMaterials;
     [SerializeField] private bool debugMode = true;
+    [SerializeField] private GameObject slamModel;
     
     private string[] classNames = new string[] {
         "paper", "pack", "can", "glass", "pet", "plastic", "vinyl"
@@ -273,7 +274,6 @@ public class TrashDetector : MonoBehaviour
             float y = outputTensor[0, 0, 1, i];
             float w = outputTensor[0, 0, 2, i];
             float h = outputTensor[0, 0, 3, i];
-            Debug.Log($"BBox 값: x={x}, y={y}, w={w}, h={h}");
             float objectness = outputTensor[0, 0, 4, i];
             
             float sigmoid_objectness = 1f / (1f + Mathf.Exp(-objectness));
@@ -369,61 +369,101 @@ public class TrashDetector : MonoBehaviour
         return union > 0 ? intersection / union : 0;
     }
     
+    private Vector3? GetWorldPosFromUV(Vector2 uv, GameObject model)
+    {
+        MeshFilter mf = model.GetComponentInChildren<MeshFilter>();
+        if (mf == null || mf.sharedMesh == null)
+        {
+            Debug.LogWarning($"MeshFilter 없음 또는 sharedMesh가 할당 안됨: 모델 이름 = {model.name}");
+            return null;
+        }
+        
+        Mesh mesh = mf.sharedMesh;
+        Vector2[] uvArray = mesh.uv;
+        Vector3[] vertices = mesh.vertices;
+        
+        if (uvArray == null || uvArray.Length == 0) return null;
+        
+        float minDist = float.MaxValue;
+        int bestIdx = -1;
+        
+        for (int i = 0; i < uvArray.Length; ++i)
+        {
+            float d = Vector2.SqrMagnitude(uv - uvArray[i]);
+            if (d < minDist) { minDist = d; bestIdx = i; }
+        }
+        
+        if (bestIdx < 0) return null;
+        
+        if (debugMode)
+        {
+            Debug.Log($"UV → 3D: uv={uv}, vertexIdx={bestIdx}, localPos={vertices[bestIdx]}, worldPos={mf.transform.TransformPoint(vertices[bestIdx])}");
+        }
+        
+        return mf.transform.TransformPoint(vertices[bestIdx]);
+    }
+
     private void VisualizeDetections(List<Detection> detections, Camera camera)
+    
     {
         Debug.Log($"TrashDetector: 감지 개수: {detections.Count}");
         
-        foreach (var detection in detections)
+        // obj의 실제 rotation, position, scale (임시 테스트용)
+        Quaternion objRotation = slamModel.transform.rotation;
+        Vector3 objPosition = slamModel.transform.position;
+        Vector3 objScale    = slamModel.transform.lossyScale;
+        
+        foreach (var det in detections)
         {
-            // 정규화된 좌표를 화면 좌표로 변환
-            float screenX = detection.BoundingBox.center.x * camera.pixelWidth;
-            float screenY = (1.0f - detection.BoundingBox.center.y) * camera.pixelHeight; // Y축 뒤집기
+            Vector2 uv;
+            uv.x = det.BoundingBox.center.x;
+            uv.y = 1f - det.BoundingBox.center.y;
             
-            // 화면 좌표를 월드 좌표로 변환
-            Vector3 screenPoint = new Vector3(screenX, screenY, 2.0f);
-            Vector3 worldPoint = camera.ScreenToWorldPoint(screenPoint);
+            if (debugMode)
+            {
+                Debug.Log($"바운딩 박스 중심: ({det.BoundingBox.center.x:F2}, {det.BoundingBox.center.y:F2}) → UV: ({uv.x:F2}, {uv.y:F2})");
+            }
             
-            // 구체 생성
+            Vector3? worldPos = GetWorldPosFromUV(uv, slamModel);
+            
+            if (worldPos == null)
+            {
+                Debug.LogWarning($"UV → 3D 매핑 실패 : {uv}");
+                continue;
+            }
+            
+            Debug.Log($"worldPos(raw): {worldPos.Value}");
+            
+            if (debugMode)
+            {
+                Debug.Log($"감지됨: {det.ClassName} / Confidence: {det.Confidence:F2} / UV: {uv} / WorldPos: {worldPos.Value}");
+            }
+            
+            // obj 위치,회전,크기 반영
+            Vector3 correctedPos = objPosition + objRotation * Vector3.Scale(worldPos.Value, objScale);
+            
             GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            sphere.name = $"Trash_{detection.ClassName}_{Time.time}";
-            sphere.transform.position = worldPoint;
+            sphere.name = $"Trash_{det.ClassName}_{Time.time:F2}";
+            sphere.transform.position = correctedPos;
             
-            // 크기 설정
-            float size = 0.2f + (detection.BoundingBox.width * 0.3f);
-            sphere.transform.localScale = new Vector3(size, size, size);
+            float size = 0.2f + det.BoundingBox.width * 0.3f;
+            sphere.transform.localScale = Vector3.one * size;
             
-            // 머티리얼 적용
-            if (detection.ClassIndex < highlightMaterials.Length && highlightMaterials[detection.ClassIndex] != null)
-            {
-                sphere.GetComponent<Renderer>().material = highlightMaterials[detection.ClassIndex];
-            }
+            if (det.ClassIndex < highlightMaterials.Length && highlightMaterials[det.ClassIndex])
+            sphere.GetComponent<Renderer>().material = highlightMaterials[det.ClassIndex];
             else
-            {
-                // 기본 색상 설정
-                sphere.GetComponent<Renderer>().material.color = Color.red;
-            }
-            
-            Debug.Log($"TrashDetector: 구체 생성 - 이름: {sphere.name}, 위치: {worldPoint}, 크기: {size:F2}");
-            
-            // 라벨 추가
-            GameObject textObj = new GameObject($"Label_{detection.ClassName}_{Time.time}");
-            textObj.transform.position = worldPoint + Vector3.up * (size + 0.1f);
-            
-            // 텍스트가 카메라를 향하도록 설정
-            textObj.transform.LookAt(camera.transform);
-            textObj.transform.Rotate(0, 180, 0);
-            
-            TextMesh textMesh = textObj.AddComponent<TextMesh>();
-            textMesh.text = $"{detection.ClassName}\n{detection.Confidence:F2}";
-            textMesh.fontSize = 20;
-            textMesh.alignment = TextAlignment.Center;
-            textMesh.anchor = TextAnchor.MiddleCenter;
-            textMesh.color = Color.white;
-            textMesh.characterSize = 0.05f;
-            
-            // 10초 후 제거
-            Destroy(sphere, 10.0f);
-            Destroy(textObj, 10.0f);
+            sphere.GetComponent<Renderer>().material.color = Color.red;
+
+            var label = new GameObject($"Label_{det.ClassName}_{Time.time:F2}");
+            label.transform.position = correctedPos + Vector3.up * (size + 0.1f);
+            var tm = label.AddComponent<TextMesh>();
+            tm.text = $"{det.ClassName}\n{det.Confidence:F2}";
+            tm.characterSize = 0.08f;
+            tm.anchor = TextAnchor.MiddleCenter;
+            tm.color = Color.white;
+
+            Destroy(sphere, 10f);
+            Destroy(label, 10f);
         }
     }
 }
