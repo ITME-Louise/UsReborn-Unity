@@ -1240,7 +1240,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e8d850449612594bb43dc6a44d263dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefabToSpawn: {fileID: 867114091368880605, guid: 65ce602fd629d2f4fbcd1b7d0789d26a, type: 3}
+  flowerVaseStage1: {fileID: 867114091368880605, guid: 65ce602fd629d2f4fbcd1b7d0789d26a, type: 3}
+  flowerVaseStage2: {fileID: 4428965303969364525, guid: eff316274eb6de947878bc6a90bc3abb, type: 3}
+  flowerVaseStage3: {fileID: 6030066634294711387, guid: b639d67ff584caa4882cdd216cf37ee8, type: 3}
+  flowerVaseStage4: {fileID: 6030066634294711387, guid: b639d67ff584caa4882cdd216cf37ee8, type: 3}
   spawnPoint: {fileID: 1119661631}
 --- !u!1001 &1299335715
 PrefabInstance:
@@ -1864,7 +1867,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1583566014}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1119661632}
+        m_TargetAssemblyTypeName: PotSpawner, Assembly-CSharp
+        m_MethodName: SpawnPot
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1583566014
 MonoBehaviour:
   m_ObjectHideFlags: 0
