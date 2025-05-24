@@ -10,7 +10,6 @@ public class DialogueManager : MonoBehaviour
     public TextMeshProUGUI dialogueText;
     public TMP_InputField nicknameInput;
     public GameObject nicknamePanel;
-    public Camera_Moving cameraController;
     public Animator characterAnimator;
 
     public Transform playerTransform;
@@ -56,9 +55,6 @@ public class DialogueManager : MonoBehaviour
         topNicknameNoticePanel.SetActive(false);
 
         nicknameDisplayText.gameObject.SetActive(false); 
-
-        cameraController.canMove = true;
-        cameraController.canWalk = false;
     }
 
     public void OnDialogueClick()
@@ -92,9 +88,6 @@ public class DialogueManager : MonoBehaviour
 
                 topNicknameNoticePanel.SetActive(true);
 
-                cameraController.canMove = false;
-                Cursor.lockState = CursorLockMode.None;
-                Cursor.visible = true;
             }
         }
         else
@@ -108,11 +101,6 @@ public class DialogueManager : MonoBehaviour
                 dialoguePanel.SetActive(false);
                 Debug.Log("두 번째 대사까지 모두 완료!");
 
-                cameraController.canMove = true;
-                cameraController.canWalk = true;
-
-                Cursor.lockState = CursorLockMode.Locked;
-                Cursor.visible = false;
 
                 characterAnimator.SetTrigger("Walk");
                 StartCoroutine(WalkForward());
@@ -156,9 +144,6 @@ public class DialogueManager : MonoBehaviour
         currentIndex = 0;
         isSecondPhase = true;
         dialogueText.text = string.Format(secondDialogues[currentIndex], nickname);
-
-        cameraController.canMove = true;
-        cameraController.canWalk = false;
 
         topNicknameNoticePanel.SetActive(false);
     }
