@@ -1252,6 +1252,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3351887278464902353, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
+      propertyPath: _supportedGrabTypes
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3351887280100535312, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
       propertyPath: m_Name
       value: OVRCameraRig
