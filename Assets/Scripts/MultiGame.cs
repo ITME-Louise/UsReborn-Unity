@@ -33,7 +33,7 @@ public class MultiGame : MonoBehaviourPunCallbacks //pun과 관련된 통신내용을 상�
     {
         print("룸 접속 완료");
         Vector3 position = new Vector3(0, 0, 0);
-        PhotonNetwork.Instantiate("Sphere", position, Quaternion.identity);
+        PhotonNetwork.Instantiate("NetworkedPlayer", position, Quaternion.identity);
     }
 
     // Start is called before the first frame update
