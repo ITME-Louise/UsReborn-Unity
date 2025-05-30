@@ -1049,11 +1049,11 @@ GameObject:
   - component: {fileID: 2039383573}
   - component: {fileID: 2039383572}
   - component: {fileID: 2039383571}
+  - component: {fileID: 2039383566}
   - component: {fileID: 2039383570}
   - component: {fileID: 2039383569}
   - component: {fileID: 2039383568}
   - component: {fileID: 2039383567}
-  - component: {fileID: 2039383566}
   m_Layer: 0
   m_Name: TeleportPlane
   m_TagString: Untagged
