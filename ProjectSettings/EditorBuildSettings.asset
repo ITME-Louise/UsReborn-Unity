@@ -11,11 +11,7 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/XR_HandTracking_Scene_mini.unity
     guid: a890c5ac751371e48ab1c65937f310d9
-<<<<<<< HEAD
   - enabled: 1
-=======
-  - enabled: 0
->>>>>>> 54c3558ffb91447b2a8d166e6d4d13f21d776f3a
     path: Assets/Scenes/Multiplay_Scene.unity
     guid: 637f65a71cdfb204da9effaaf47c9f85
   m_configObjects:

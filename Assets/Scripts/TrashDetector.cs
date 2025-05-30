@@ -8,16 +8,10 @@ public class TrashDetector : MonoBehaviour
 {
     [SerializeField] private NNModel modelAsset;
     [SerializeField] private OVRCameraRig ovrCameraRig;
-    [SerializeField] private float confidenceThreshold = 0.6f;
+    [SerializeField] private float confidenceThreshold = 0.4f;
     [SerializeField] private Material[] highlightMaterials;
     [SerializeField] private bool debugMode = true;
     [SerializeField] private GameObject slamModel;
-    
-    [Header("SLAM Calibration")]
-    [SerializeField] private Vector3 slamPositionOffset = new Vector3(0.749f, -1.01f, 2.641f);
-    [SerializeField] private Vector3 slamRotationOffset = new Vector3(-110f, 60f, 0f);
-    [SerializeField] private float slamScale = 1.0f;
-    [SerializeField] private bool applySlamCalibration = true;
     
     private string[] classNames = new string[] {
         "paper", "pack", "can", "glass", "pet", "plastic", "vinyl"
@@ -72,33 +66,12 @@ public class TrashDetector : MonoBehaviour
             }
         }
         
-        // SLAM 모델 좌표계 설정
-        ApplySlamCalibration();
-        
         // 하이라이트 머티리얼 초기화
         InitializeHighlightMaterials();
         
         // 3초 후에 쓰레기 감지 시작, 3초 간격으로 반복
         InvokeRepeating("DetectTrash", 3.0f, 3.0f);
         Debug.Log("TrashDetector: 초기화 완료, 3초 후 쓰레기 감지 시작");
-    }
-
-    private void ApplySlamCalibration()
-    {
-        if (slamModel != null && applySlamCalibration)
-        {
-            slamModel.transform.position = slamPositionOffset;
-            slamModel.transform.rotation = Quaternion.Euler(slamRotationOffset);
-            slamModel.transform.localScale = Vector3.one * slamScale;
-            
-            Debug.Log($"SLAM Calibration 적용: Pos={slamPositionOffset}, Rot={slamRotationOffset}, Scale={slamScale}");
-        }
-    }
-
-    [ContextMenu("Apply SLAM Calibration")]
-    public void ApplySlamCalibrationFromInspector()
-    {
-        ApplySlamCalibration();
     }
 
     private void InitializeHighlightMaterials()
@@ -305,7 +278,7 @@ public class TrashDetector : MonoBehaviour
             
             float sigmoid_objectness = 1f / (1f + Mathf.Exp(-objectness));
             
-            if (sigmoid_objectness > 0.6f)
+            if (sigmoid_objectness > 0.5f)
             {
                 float[] classScores = new float[classNames.Length];
                 int bestClassIdx = 0;
@@ -326,10 +299,7 @@ public class TrashDetector : MonoBehaviour
                 
                 float confidence = sigmoid_objectness * bestScore;
                 
-                if (confidence > confidenceThreshold && 
-                    w > 10 && h > 10 &&
-                    w < inputWidth * 0.8f && h < inputHeight * 0.8f &&
-                    x > 0 && y > 0 && x < inputWidth && y < inputHeight)
+                if (confidence > confidenceThreshold && w > 5 && h > 5 && x > 0 && y > 0 && x < inputWidth && y < inputHeight)
                 {
                     Detection detection = new Detection
                     {
@@ -362,7 +332,7 @@ public class TrashDetector : MonoBehaviour
         if (debugMode) Debug.Log($"TrashDetector: 총 {detections.Count}개 감지 결과");
         
         var filteredDetections = ApplyNMS(detections, 0.45f);
-        VisualizeDetections(filteredDetections);
+        VisualizeDetections(filteredDetections, camera);
     
     }
     
@@ -399,28 +369,7 @@ public class TrashDetector : MonoBehaviour
         return union > 0 ? intersection / union : 0;
     }
     
-    // SLAM 좌표계 변환 함수 추가
-    private Vector3 TransformSlamCoordinate(Vector3 originalPos)
-    {
-        if (!applySlamCalibration) return originalPos;
-        
-        // SLAM 좌표계 → Unity 좌표계로 변환 (Z축 반전)
-        Vector3 convertedPos = new Vector3(originalPos.x, originalPos.y, -originalPos.z);
-        Debug.Log($"ConvertedPos: {convertedPos}");
-
-        // 회전 적용 (슬램에서 X축 -90도 → Unity에서 Y축 회전으로 맞춤)
-        Vector3 rotatedPos = Quaternion.Euler(slamRotationOffset) * convertedPos;
-        Debug.Log($"RotatedPos: {rotatedPos}");
-
-        // 위치 오프셋 적용
-        Vector3 finalPos = rotatedPos * slamScale + slamPositionOffset;
-        Debug.Log($"FinalPos: {finalPos}");
-
-        return finalPos;
-    }
-
-    
-    private Vector3? GetWorldPosFromUV(Vector2 uv, GameObject model, Camera camera)
+    private Vector3? GetWorldPosFromUV(Vector2 uv, GameObject model)
     {
         MeshFilter mf = model.GetComponentInChildren<MeshFilter>();
         if (mf == null || mf.sharedMesh == null)
@@ -428,100 +377,93 @@ public class TrashDetector : MonoBehaviour
             Debug.LogWarning($"MeshFilter 없음 또는 sharedMesh가 할당 안됨: 모델 이름 = {model.name}");
             return null;
         }
-
+        
         Mesh mesh = mf.sharedMesh;
         Vector2[] uvArray = mesh.uv;
         Vector3[] vertices = mesh.vertices;
-
+        
         if (uvArray == null || uvArray.Length == 0) return null;
-
+        
         float minDist = float.MaxValue;
         int bestIdx = -1;
-
-        // 가장 가까운 UV 좌표 찾기
+        
         for (int i = 0; i < uvArray.Length; ++i)
         {
-            float d = Vector2.Distance(uv, uvArray[i]);
+            float d = Vector2.SqrMagnitude(uv - uvArray[i]);
             if (d < minDist) { minDist = d; bestIdx = i; }
         }
-
-        if (bestIdx < 0) return null;
-
-        // 로컬 좌표에서 월드 좌표로 변환
-        Vector3 localPos = vertices[bestIdx];
-        Vector3 worldPos = mf.transform.TransformPoint(localPos);
         
-        // SLAM 좌표계 변환 적용
-        Vector3 transformedPos = TransformSlamCoordinate(worldPos);
-
+        if (bestIdx < 0) return null;
+        
         if (debugMode)
         {
-            Debug.Log($"UV: {uv}, VertexIdx: {bestIdx}, LocalPos: {localPos}, OriginalWorldPos: {worldPos}, TransformedPos: {transformedPos}");
+            Debug.Log($"UV → 3D: uv={uv}, vertexIdx={bestIdx}, localPos={vertices[bestIdx]}, worldPos={mf.transform.TransformPoint(vertices[bestIdx])}");
         }
-
-        return transformedPos;
+        
+        return mf.transform.TransformPoint(vertices[bestIdx]);
     }
 
-    private void VisualizeDetections(List<Detection> detections)
+    private void VisualizeDetections(List<Detection> detections, Camera camera)
+    
     {
-        Camera camera = GetCamera();
-        if (camera == null) return;
-
-        Debug.Log($"TrashDetector: 최종 감지 개수: {detections.Count}");
-
+        Debug.Log($"TrashDetector: 감지 개수: {detections.Count}");
+        
+        // obj의 실제 rotation, position, scale (임시 테스트용)
+        Quaternion objRotation = slamModel.transform.rotation;
+        Vector3 objPosition = slamModel.transform.position;
+        Vector3 objScale    = slamModel.transform.lossyScale;
+        
         foreach (var det in detections)
         {
-            Vector2 uv = new Vector2(det.BoundingBox.center.x, 1f - det.BoundingBox.center.y);
-
+            Vector2 uv;
+            uv.x = det.BoundingBox.center.x;
+            uv.y = 1f - det.BoundingBox.center.y;
+            
             if (debugMode)
             {
                 Debug.Log($"바운딩 박스 중심: ({det.BoundingBox.center.x:F2}, {det.BoundingBox.center.y:F2}) → UV: ({uv.x:F2}, {uv.y:F2})");
             }
-
-            // UV → 월드 좌표로 변환 (SLAM 좌표계 변환 포함)
-            Vector3? worldPos = GetWorldPosFromUV(uv, slamModel, camera);
-
+            
+            Vector3? worldPos = GetWorldPosFromUV(uv, slamModel);
+            
             if (worldPos == null)
             {
                 Debug.LogWarning($"UV → 3D 매핑 실패 : {uv}");
                 continue;
             }
-
-            Vector3 finalWorldPos = worldPos.Value;
-
+            
+            Debug.Log($"worldPos(raw): {worldPos.Value}");
+            
             if (debugMode)
             {
-                Debug.Log($"감지됨: {det.ClassName} / Confidence: {det.Confidence:F2} / UV: {uv} / FinalWorldPos: {finalWorldPos}");
+                Debug.Log($"감지됨: {det.ClassName} / Confidence: {det.Confidence:F2} / UV: {uv} / WorldPos: {worldPos.Value}");
             }
-
+            
+            // obj 위치,회전,크기 반영
+            Vector3 correctedPos = objPosition + objRotation * Vector3.Scale(worldPos.Value, objScale);
+            
             GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             sphere.name = $"Trash_{det.ClassName}_{Time.time:F2}";
-            sphere.transform.position = finalWorldPos;
-
-            float size = 0.1f + det.BoundingBox.width * 0.2f;
+            sphere.transform.position = correctedPos;
+            
+            float size = 0.2f + det.BoundingBox.width * 0.3f;
             sphere.transform.localScale = Vector3.one * size;
-
-            if (det.ClassIndex < highlightMaterials.Length && highlightMaterials[det.ClassIndex] != null)
-                sphere.GetComponent<Renderer>().material = highlightMaterials[det.ClassIndex];
+            
+            if (det.ClassIndex < highlightMaterials.Length && highlightMaterials[det.ClassIndex])
+            sphere.GetComponent<Renderer>().material = highlightMaterials[det.ClassIndex];
             else
-                sphere.GetComponent<Renderer>().material.color = Color.red;
+            sphere.GetComponent<Renderer>().material.color = Color.red;
 
             var label = new GameObject($"Label_{det.ClassName}_{Time.time:F2}");
-            label.transform.position = finalWorldPos + Vector3.up * (size + 0.1f);
+            label.transform.position = correctedPos + Vector3.up * (size + 0.1f);
             var tm = label.AddComponent<TextMesh>();
             tm.text = $"{det.ClassName}\n{det.Confidence:F2}";
             tm.characterSize = 0.08f;
             tm.anchor = TextAnchor.MiddleCenter;
             tm.color = Color.white;
 
-            Vector3 direction = camera.transform.position - label.transform.position;
-            if (direction != Vector3.zero)
-            {
-                label.transform.LookAt(camera.transform.position, Vector3.up);
-            }
-
-            Destroy(sphere, 15f);
-            Destroy(label, 15f);
+            Destroy(sphere, 10f);
+            Destroy(label, 10f);
         }
     }
 }
