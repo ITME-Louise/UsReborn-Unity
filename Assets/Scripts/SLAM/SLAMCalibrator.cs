@@ -21,9 +21,9 @@ public class SLAMCalibrator : MonoBehaviour
     {
         if (slamModel != null && applySlamCalibration)
         {
-            slamModel.transform.position = slamPositionOffset;
-            slamModel.transform.rotation = Quaternion.Euler(slamRotationOffset);
-            slamModel.transform.localScale = Vector3.one * slamScale;
+            //slamModel.transform.position = slamPositionOffset;
+            //slamModel.transform.rotation = Quaternion.Euler(slamRotationOffset);
+            //slamModel.transform.localScale = Vector3.one * slamScale;
             
             Debug.Log($"SLAM Calibration 적용: Pos={slamPositionOffset}, Rot={slamRotationOffset}, Scale={slamScale}");
         }
