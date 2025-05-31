@@ -77,6 +77,11 @@ public class CameraCapture : MonoBehaviour
         
         if (debugMode) Debug.Log("CameraCapture: 카메라 이미지 캡처 완료");
     }
+
+    public Texture2D GetCapturedTexture()
+    {
+        return cameraTexture;
+    }
     
     void OnDestroy()
     {

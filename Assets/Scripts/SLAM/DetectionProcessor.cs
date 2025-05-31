@@ -6,7 +6,7 @@ using Unity.Barracuda;
 
 public class DetectionProcessor : MonoBehaviour
 {
-    [SerializeField] private float confidenceThreshold = 0.6f;
+    [SerializeField] private float confidenceThreshold = 0.7f;
     [SerializeField] private bool debugMode = true;
     
     private string[] classNames = new string[] {
@@ -42,10 +42,9 @@ public class DetectionProcessor : MonoBehaviour
             float w = outputTensor[0, 0, 2, i];
             float h = outputTensor[0, 0, 3, i];
             float objectness = outputTensor[0, 0, 4, i];
+            float processed_objectness = objectness;
             
-            float sigmoid_objectness = 1f / (1f + Mathf.Exp(-objectness));
-            
-            if (sigmoid_objectness > 0.6f)
+            if (processed_objectness > 0.6f)
             {
                 float[] classScores = new float[classNames.Length];
                 int bestClassIdx = 0;
@@ -54,17 +53,21 @@ public class DetectionProcessor : MonoBehaviour
                 for (int c = 0; c < classNames.Length; c++)
                 {
                     float rawClassScore = outputTensor[0, 0, 5 + c, i];
-                    float sigmoidClassScore = 1f / (1f + Mathf.Exp(-rawClassScore));
-                    classScores[c] = sigmoidClassScore;
+                    classScores[c] = rawClassScore;
                     
-                    if (sigmoidClassScore > bestScore)
+                    if (rawClassScore > bestScore)
                     {
-                        bestScore = sigmoidClassScore;
+                        bestScore = rawClassScore;
                         bestClassIdx = c;
                     }
                 }
                 
-                float confidence = sigmoid_objectness * bestScore;
+                float confidence = processed_objectness * bestScore;
+                
+                if (debugMode)
+                {
+                    Debug.Log($"Box[{i}]: objectness={processed_objectness:F3}, bestScore={bestScore:F3}, confidence={confidence:F3}");
+                }
                 
                 if (confidence > confidenceThreshold && 
                     w > 10 && h > 10 &&
@@ -90,7 +93,7 @@ public class DetectionProcessor : MonoBehaviour
                     {
                         string allScores = string.Join(", ", classNames.Select((name, idx) => $"{name}:{classScores[idx]:F3}"));
                         
-                         Debug.Log($"감지됨 - {detection.ClassName}, 신뢰도: {confidence:F3}, " +
+                        Debug.Log($"감지됨 - {detection.ClassName}, 신뢰도: {confidence:F3} (obj:{processed_objectness:F3} * class:{bestScore:F3}), " +
                          $"위치: ({detection.BoundingBox.x:F2}, {detection.BoundingBox.y:F2}, " +
                          $"{detection.BoundingBox.width:F2}, {detection.BoundingBox.height:F2}), " +
                          $"모든 클래스 점수: [{allScores}]");
