@@ -5,9 +5,11 @@ using UnityEngine;
 public class SLAMCalibrator : MonoBehaviour
 {
     [Header("SLAM Calibration")]
-    [SerializeField] private Vector3 slamPositionOffset = new Vector3(0.749f, -1.01f, 2.641f);
-    [SerializeField] private Vector3 slamRotationOffset = new Vector3(-110f, 60f, 0f);
-    [SerializeField] private float slamScale = 1.0f;
+    [SerializeField] private Vector3 slamPositionOffset = new Vector3(2.53f, -1.29f, 0.07f);
+    [SerializeField] private Vector3 slamRotationOffset = new Vector3(0f, -90f, 0f);
+    [SerializeField] private float slamScale = 0.659f;
+    [SerializeField] private bool invertZAxis = false;
+
     [SerializeField] private bool applySlamCalibration = true;
     [SerializeField] private GameObject slamModel;
     [SerializeField] private bool debugMode = true;
@@ -35,24 +37,24 @@ public class SLAMCalibrator : MonoBehaviour
         ApplySlamCalibration();
     }
     
-    public Vector3 TransformSlamCoordinate(Vector3 originalPos)
-    {
-        if (!applySlamCalibration) return originalPos;
-        
-        // SLAM 좌표계 → Unity 좌표계로 변환 (Z축 반전)
-        Vector3 convertedPos = new Vector3(originalPos.x, originalPos.y, -originalPos.z);
-        Debug.Log($"ConvertedPos: {convertedPos}");
+    private Vector3 TransformSlamCoordinate(Vector3 originalPos)
+{
+    if (!applySlamCalibration) return originalPos;
 
-        // 회전 적용 (슬램에서 X축 -90도 → Unity에서 Y축 회전으로 맞춤)
-        Vector3 rotatedPos = Quaternion.Euler(slamRotationOffset) * convertedPos;
-        Debug.Log($"RotatedPos: {rotatedPos}");
+    // SLAM 좌표계 → Unity 좌표계로 변환 (Z축 반전)
+    Vector3 convertedPos = new Vector3(originalPos.x, originalPos.y, invertZAxis ? -originalPos.z : originalPos.z);
+    Debug.Log($"ConvertedPos: {convertedPos}");
 
-        // 위치 오프셋 적용
-        Vector3 finalPos = rotatedPos * slamScale + slamPositionOffset;
-        Debug.Log($"FinalPos: {finalPos}");
+    // 회전 적용
+    Vector3 rotatedPos = Quaternion.Euler(slamRotationOffset) * convertedPos;
+    Debug.Log($"RotatedPos: {rotatedPos}");
 
-        return finalPos;
-    }
+    // 위치 오프셋 적용
+    Vector3 finalPos = rotatedPos * slamScale + slamPositionOffset;
+    Debug.Log($"FinalPos: {finalPos}");
+
+    return finalPos;
+}
     
     public Vector3? GetWorldPosFromUV(Vector2 uv, Camera camera)
     {

@@ -1070,7 +1070,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba6cf61efdf1fe041b75b2624eab2205, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  confidenceThreshold: 0.7
+  confidenceThreshold: 0.5
   debugMode: 1
 --- !u!114 &709663853
 MonoBehaviour:
@@ -1111,9 +1111,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88ca023641d91c54e9da4790871df998, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slamPositionOffset: {x: 0.749, y: -1.01, z: 2.641}
-  slamRotationOffset: {x: -110, y: 60, z: 0}
-  slamScale: 1
+  slamPositionOffset: {x: 2.53, y: -1.29, z: 0.07}
+  slamRotationOffset: {x: 0, y: -90, z: 0}
+  slamScale: 0.659
+  invertZAxis: 0
   applySlamCalibration: 1
   slamModel: {fileID: 2026718002}
   debugMode: 1
@@ -1687,6 +1688,10 @@ PrefabInstance:
       propertyPath: _hand
       value: 
       objectReference: {fileID: 1609360935}
+    - target: {fileID: 327229982929359308, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1201898582524179148, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
       propertyPath: _hand
       value: 
@@ -1705,15 +1710,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3351887280100700208, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1.64
+      value: 1.67
       objectReference: {fileID: 0}
     - target: {fileID: 3351887280100700208, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1.82
+      value: -1.06
       objectReference: {fileID: 0}
     - target: {fileID: 3351887280100700208, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.67
+      value: 0.53
       objectReference: {fileID: 0}
     - target: {fileID: 3351887280100700208, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
       propertyPath: m_LocalRotation.w
