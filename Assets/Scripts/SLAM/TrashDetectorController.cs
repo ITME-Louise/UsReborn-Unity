@@ -15,26 +15,22 @@ public class TrashDetectorController : MonoBehaviour
     
     private bool isProcessing = false;
     
-    // Awake에서 컴포넌트 참조와 이벤트 구독
     void Awake()
     {
         Debug.Log("TrashDetector: 초기화 시작");
         
-        // 필요한 컴포넌트들 가져오기
         modelManager = GetComponent<MLModelManager>();
         cameraCapture = GetComponent<CameraCapture>();
         detectionProcessor = GetComponent<DetectionProcessor>();
         slamCalibrator = GetComponent<SLAMCalibrator>();
         visualizer = GetComponent<DetectionVisualizer>();
         
-        // 컴포넌트 확인
         if (modelManager == null) Debug.LogError("TrashDetector: MLModelManager 컴포넌트가 필요합니다!");
         if (cameraCapture == null) Debug.LogError("TrashDetector: CameraCapture 컴포넌트가 필요합니다!");
         if (detectionProcessor == null) Debug.LogError("TrashDetector: DetectionProcessor 컴포넌트가 필요합니다!");
         if (slamCalibrator == null) Debug.LogError("TrashDetector: SLAMCalibrator 컴포넌트가 필요합니다!");
         if (visualizer == null) Debug.LogError("TrashDetector: DetectionVisualizer 컴포넌트가 필요합니다!");
         
-        // 모델 로드 완료 이벤트 구독
         if (modelManager != null)
         {
             modelManager.OnModelLoaded += OnModelLoaded;
@@ -43,10 +39,8 @@ public class TrashDetectorController : MonoBehaviour
         }
     }
     
-    // Start에서 이미 로드된 모델 확인
     void Start()
     {
-        // 이미 모델이 로드되어 있다면 즉시 시작
         if (modelManager != null && modelManager.IsModelLoaded)
         {
             Debug.Log("TrashDetector: 모델이 이미 로드되어 있음, 즉시 시작");
@@ -62,10 +56,8 @@ public class TrashDetectorController : MonoBehaviour
     {
         Debug.Log("OnModelLoaded 이벤트 호출됨");
 
-        // 이미 InvokeRepeating이 실행 중인지 확인
         if (!IsInvoking("DetectTrash"))
         {
-            // 3초 후에 쓰레기 감지 시작, 3초 간격으로 반복
             InvokeRepeating("DetectTrash", 3.0f, 3.0f);
             Debug.Log("TrashDetector: 초기화 완료, 3초 후 쓰레기 감지 시작");
         }
@@ -88,7 +80,6 @@ public class TrashDetectorController : MonoBehaviour
     {
         yield return new WaitForEndOfFrame();
         
-        // 카메라에서 이미지 캡처
         Camera camera = cameraCapture.GetCamera();
         if (camera == null)
         {
@@ -96,10 +87,8 @@ public class TrashDetectorController : MonoBehaviour
             yield break;
         }
         
-        // 카메라 이미지 캡처
         cameraCapture.CaptureImage(camera);
         
-        // 이미지 전처리 및 모델 실행
         try
         {
             ProcessImage(camera);
@@ -115,9 +104,16 @@ public class TrashDetectorController : MonoBehaviour
     private void ProcessImage(Camera camera)
     {
         if (debugMode) Debug.Log("TrashDetector: 이미지 처리 시작");
+
+        Texture2D capturedTexture = cameraCapture.GetCapturedTexture();
         
-        // 텍스처를 직접 텐서로 변환
-        using (var inputTensor = new Tensor(cameraCapture.CurrentTexture, channels: 3))
+        if (capturedTexture == null)
+        {
+            Debug.LogError("TrashDetector: 캡처된 텍스처가 null입니다!");
+            return;
+        }
+        
+        using (var inputTensor = new Tensor(capturedTexture, channels: 3))
         {
             if (debugMode) 
             {
@@ -153,10 +149,8 @@ public class TrashDetectorController : MonoBehaviour
     
     void OnDestroy()
     {
-        // InvokeRepeating 중단
         CancelInvoke();
         
-        // 이벤트 구독 해제
         if (modelManager != null)
         {
             modelManager.OnModelLoaded -= OnModelLoaded;
