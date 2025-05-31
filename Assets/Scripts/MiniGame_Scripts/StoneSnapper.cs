@@ -7,7 +7,8 @@ public class StoneSnapper : MonoBehaviour
     // Start is called before the first frame update
     public Transform snapTarget;
     public float snapThreshold = 0.3f;
-    private bool isSnapped = false;
+    public bool isSnapped = false;
+    public StoneSpawner spawner;
 
     void Update()
     {
@@ -16,7 +17,14 @@ public class StoneSnapper : MonoBehaviour
             transform.position = snapTarget.position;
             transform.rotation = snapTarget.rotation;
             isSnapped = true;
-            MiniGameManager_Penguin.Instance.OnStoneSnapped();
+
+            // 다음 스톤 스폰 요청
+            if (spawner != null)
+            {
+                spawner.SpawnNextStone();
+            }
+
+            // 모든 스톤이 다 스냅됐는지 확인
         }
     }
 }
