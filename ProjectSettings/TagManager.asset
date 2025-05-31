@@ -7,6 +7,8 @@ TagManager:
   - PlayerHand
   - Enemy
   - Projectile
+  - Grabbable
+  - Bucket
   layers:
   - Default
   - TransparentFX
