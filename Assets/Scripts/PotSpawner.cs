@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PotSpawner : MonoBehaviour
@@ -9,25 +8,20 @@ public class PotSpawner : MonoBehaviour
     public GameObject flowerVaseStage3; // 꽃 2송이
     public GameObject flowerVaseStage4; // 꽃 3송이
 
-    public Transform spawnPoint;     // 스폰 위치
-
     private GameObject currentPot;
     private bool isSpawning = false;
 
-    public void SpawnPot()
+    public void SpawnPot(Vector3 position)
     {
         if (!isSpawning)
         {
-            StartCoroutine(SpawnVaseSequence());
+            StartCoroutine(SpawnVaseSequence(position));
             isSpawning = true;
         }
-
-
     }
-    private IEnumerator SpawnVaseSequence()
-    {
-        Vector3 spawnPosition = spawnPoint != null ? spawnPoint.position : transform.position;
 
+    private IEnumerator SpawnVaseSequence(Vector3 spawnPosition)
+    {
         // 1단계
         currentPot = Instantiate(flowerVaseStage1, spawnPosition, Quaternion.identity);
         Debug.Log("1단계 화분 생성");
@@ -45,10 +39,9 @@ public class PotSpawner : MonoBehaviour
         Debug.Log("3단계 화분 생성");
         yield return new WaitForSeconds(10f);
 
-        // 4단계 (마지막, 파괴 없음)
+        // 4단계
         Destroy(currentPot);
         Instantiate(flowerVaseStage4, spawnPosition, Quaternion.identity);
         Debug.Log("최종단계 화분 생성 (3송이)");
     }
-
 }
