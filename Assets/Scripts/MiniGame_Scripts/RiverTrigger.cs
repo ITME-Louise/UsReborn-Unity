@@ -7,7 +7,7 @@ public class RiverTrigger : MonoBehaviour
     // Start is called before the first frame update
     void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Rabbit"))
+        if (other.CompareTag("Penguin"))
         {
             if (MiniGameManager.Instance != null)
             {
