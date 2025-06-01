@@ -79,7 +79,7 @@ public class DetectionVisualizer : MonoBehaviour
             }
 
             // UV → 월드 좌표로 변환 (SLAM 좌표계 변환 포함)
-            Vector3? worldPos = calibrator.GetWorldPosFromUV(uv, camera);
+            Vector3? worldPos = calibrator.GetWorldPosition(uv);
 
             if (worldPos == null)
             {
