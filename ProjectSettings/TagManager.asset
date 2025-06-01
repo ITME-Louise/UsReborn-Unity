@@ -9,6 +9,8 @@ TagManager:
   - Projectile
   - Grabbable
   - Bucket
+  - Penguin
+  - Rabbit
   layers:
   - Default
   - TransparentFX
