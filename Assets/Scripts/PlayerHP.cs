@@ -15,7 +15,7 @@ public class PlayerHP : MonoBehaviourPun
         currentHp = maxHp;
         UpdateUI();
 
-        // ✅ 자동 연결 (Editor에서 드래그할 필요 없이)
+        //  자동 연결 (Editor에서 드래그할 필요 없이)
         if (hpCanvas == null)
             hpCanvas = GetComponentInChildren<Canvas>();
 
@@ -24,7 +24,7 @@ public class PlayerHP : MonoBehaviourPun
             hpCanvas.gameObject.SetActive(false); // 내 HP바는 안 보이게
         }
 
-        // ✅ World Space Canvas의 Event Camera 설정
+        //  World Space Canvas의 Event Camera 설정
         if (hpCanvas.renderMode == RenderMode.WorldSpace && hpCanvas.worldCamera == null)
         {
             Camera centerEyeCam = GameObject.Find("CenterEyeAnchor")?.GetComponent<Camera>();
