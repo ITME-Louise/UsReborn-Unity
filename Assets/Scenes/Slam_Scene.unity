@@ -1084,8 +1084,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1a0e50dc7b5b2a4a82a9768c474ca29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  highlightMaterials: []
   debugMode: 1
+  potSpawner: {fileID: 1119661632}
 --- !u!114 &709663854
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1111,41 +1111,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88ca023641d91c54e9da4790871df998, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slamRotationOffset: {x: -90, y: 180, z: 0}
-  slamPositionOffset: {x: 0.3, y: -1.8, z: 1}
-  slamScale: 1
-  invertZAxis: 1
-  useAutoCalibration: 1
-  calibrationPoints:
-  - objectName: vinyl
-    uv: {x: 0.36, y: 0.51}
-    actualWorldPos: {x: 1.746, y: -2.111, z: 0.635}
-  - objectName: glass
-    uv: {x: 0.12, y: 0.5}
-    actualWorldPos: {x: -0.008, y: -1.846877, z: 2.24}
-  - objectName: paper
-    uv: {x: 0.29, y: 0.52}
-    actualWorldPos: {x: 2.411, y: -1.846877, z: 2.42}
-  - objectName: plastic
-    uv: {x: 0.43, y: 0.42}
-    actualWorldPos: {x: 2.63, y: -1.846877, z: 1.261}
-  - objectName: paper2
-    uv: {x: 0.57, y: 0.57}
-    actualWorldPos: {x: 2.5, y: -2.13, z: -0.62}
-  - objectName: can
-    uv: {x: 0.59, y: 0.46}
-    actualWorldPos: {x: 2.5, y: -2.13, z: -0.62}
-  positionMethod: 2
-  useScreenToWorldProjection: 1
-  mainCamera: {fileID: 0}
-  slamLayerMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  buildUVToWorldLookupTable: 1
-  lookupTableResolution: 256
-  debugUVMapping: 1
-  applySlamCalibration: 1
   slamModel: {fileID: 2026718002}
+  calibrationPoints:
+  - name: vinyl
+    uv: {x: 0.36, y: 0.51}
+    worldPos: {x: 1.746, y: -2.13, z: 0.635}
+  - name: glass
+    uv: {x: 0.12, y: 0.5}
+    worldPos: {x: -0.008, y: -2.13, z: 2.24}
+  - name: paper
+    uv: {x: 0.29, y: 0.52}
+    worldPos: {x: 2.411, y: -2.13, z: 2.42}
+  - name: plastic
+    uv: {x: 0.43, y: 0.42}
+    worldPos: {x: 2.63, y: -2.13, z: 1.261}
+  - name: paper2
+    uv: {x: 0.57, y: 0.57}
+    worldPos: {x: 2.5, y: -2.13, z: -0.62}
+  - name: can
+    uv: {x: 0.59, y: 0.46}
+    worldPos: {x: 0.62, y: -2.13, z: 0.45}
+  translation: {x: 0, y: 0, z: 0}
+  rotation: {x: 0, y: 0, z: 0}
+  scale: {x: 1, y: 1, z: 1}
   debugMode: 1
 --- !u!114 &709663856
 MonoBehaviour:
@@ -2103,6 +2091,58 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1119661630}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e8d850449612594bb43dc6a44d263dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  classVaseMappings:
+  - className: paper
+    vaseStages:
+      stage1: {fileID: 4735194703025569332, guid: 07cab2717e2f6de4ea57950741d1829e, type: 3}
+      stage2: {fileID: 4564511147252979892, guid: 2e59080bc6eadbd419e5854ef922d5c7, type: 3}
+      stage3: {fileID: 3345593231086430326, guid: 342a603b8d9418744b8d94626169f3d3, type: 3}
+      stage4: {fileID: 3803120659243060098, guid: 2a18ef08868d1914abf61fb52f7a71ec, type: 3}
+  - className: pack
+    vaseStages:
+      stage1: {fileID: 4735194703025569332, guid: 07cab2717e2f6de4ea57950741d1829e, type: 3}
+      stage2: {fileID: 1973334637719452472, guid: 4786434711362a243bb51e5e8acf1c0a, type: 3}
+      stage3: {fileID: 511546980664056840, guid: 116065fbb21f9f444ab13ee84bae4ded, type: 3}
+      stage4: {fileID: 2668222021715394599, guid: 86ecd59c30c9c2c4faecb53751051864, type: 3}
+  - className: can
+    vaseStages:
+      stage1: {fileID: 4735194703025569332, guid: 07cab2717e2f6de4ea57950741d1829e, type: 3}
+      stage2: {fileID: 3713795739996508779, guid: 896310bf81a5d0a44b904534f4c1b3c0, type: 3}
+      stage3: {fileID: 4866922269158137377, guid: 231d2ea479dc1604a8d2b1d519acf72f, type: 3}
+      stage4: {fileID: 3614292634674473580, guid: f72e4a84ad9a1fb41b011f79d5ad714f, type: 3}
+  - className: glass
+    vaseStages:
+      stage1: {fileID: 4735194703025569332, guid: 07cab2717e2f6de4ea57950741d1829e, type: 3}
+      stage2: {fileID: 973656507286378847, guid: 2875021211f951c43a3f36e8c9b96558, type: 3}
+      stage3: {fileID: 5641538116936326332, guid: 353eb5b6c9cf1684caf8078559194c67, type: 3}
+      stage4: {fileID: 3206378551949526627, guid: 172d6d751695cca47a19baa0a293200d, type: 3}
+  - className: pet
+    vaseStages:
+      stage1: {fileID: 4735194703025569332, guid: 07cab2717e2f6de4ea57950741d1829e, type: 3}
+      stage2: {fileID: 3539889705812396206, guid: ecae08d915cb20f4e8ee3a539aa47e84, type: 3}
+      stage3: {fileID: 4631244762784276812, guid: 4e0bf7076a211c146a5befc2fdd0861c, type: 3}
+      stage4: {fileID: 1397869632240962663, guid: 23b2232a5d1876644a820463a70849ac, type: 3}
+  - className: plastic
+    vaseStages:
+      stage1: {fileID: 4735194703025569332, guid: 07cab2717e2f6de4ea57950741d1829e, type: 3}
+      stage2: {fileID: 4223493098569728024, guid: 22f56b129bafe504cac3056fbfaf469b, type: 3}
+      stage3: {fileID: 873459548278792212, guid: 3aa8368be16a4804f8b22aa3db3ff984, type: 3}
+      stage4: {fileID: 5947566174847946136, guid: a8de79cd031a6674584453d11916d9d8, type: 3}
+  - className: vinyl
+    vaseStages:
+      stage1: {fileID: 4735194703025569332, guid: 07cab2717e2f6de4ea57950741d1829e, type: 3}
+      stage2: {fileID: 2472686670853777146, guid: aab0470106c171e42923a954fd4f0a9c, type: 3}
+      stage3: {fileID: 7917040117800994040, guid: 10fda6eb7c557a24baaff7dbd5de9112, type: 3}
+      stage4: {fileID: 2440203965675310926, guid: a47eecd76e7be0345a216f5b8afd4703, type: 3}
+  spawnDistanceThreshold: 0.5
+--- !u!1001 &1299335715
+PrefabInstance:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1054536302}
@@ -2321,39 +2361,39 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3351887280100700208, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1.62
+      value: 1.648
       objectReference: {fileID: 0}
     - target: {fileID: 3351887280100700208, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1.92
+      value: -0.886
       objectReference: {fileID: 0}
     - target: {fileID: 3351887280100700208, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.63
+      value: 0.219
       objectReference: {fileID: 0}
     - target: {fileID: 3351887280100700208, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.5
+      value: 0.9138861
       objectReference: {fileID: 0}
     - target: {fileID: 3351887280100700208, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.5
+      value: 0.40597084
       objectReference: {fileID: 0}
     - target: {fileID: 3351887280100700208, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.5
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 3351887280100700208, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.5
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 3351887280100700208, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: 90
+      value: 47.904
       objectReference: {fileID: 0}
     - target: {fileID: 3351887280100700208, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 90
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3351887280100700208, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -3967,7 +4007,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3351887280100700214, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
   m_PrefabInstance: {fileID: 1299335715}
   m_PrefabAsset: {fileID: 0}
-
 --- !u!1 &2133746062
 GameObject:
   m_ObjectHideFlags: 0
@@ -5357,6 +5396,86 @@ MeshRenderer:
 --- !u!4 &8594288211891771192
 Transform:
   m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4275256851491089222, guid: 6c2b57f8827541b439f7410f24d3a21a, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 8b071c5201d2aa64a95fb62e97ab8e66, type: 2}
+    - target: {fileID: 4275256851491089222, guid: 6c2b57f8827541b439f7410f24d3a21a, type: 3}
+      propertyPath: m_Materials.Array.data[1]
+      value: 
+      objectReference: {fileID: 2100000, guid: 8b071c5201d2aa64a95fb62e97ab8e66, type: 2}
+    - target: {fileID: 4275256851492109073, guid: 6c2b57f8827541b439f7410f24d3a21a, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 2c5acef19ca882247b8b8cddb05211c1, type: 2}
+    - target: {fileID: 4275256851492109073, guid: 6c2b57f8827541b439f7410f24d3a21a, type: 3}
+      propertyPath: m_Materials.Array.data[1]
+      value: 
+      objectReference: {fileID: 2100000, guid: 2c5acef19ca882247b8b8cddb05211c1, type: 2}
+    - target: {fileID: 4275256852082797981, guid: 6c2b57f8827541b439f7410f24d3a21a, type: 3}
+      propertyPath: m_Name
+      value: FlowerVase4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4275256852082797982, guid: 6c2b57f8827541b439f7410f24d3a21a, type: 3}
+      propertyPath: m_RootOrder
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 4275256852082797982, guid: 6c2b57f8827541b439f7410f24d3a21a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.706
+      objectReference: {fileID: 0}
+    - target: {fileID: 4275256852082797982, guid: 6c2b57f8827541b439f7410f24d3a21a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.32
+      objectReference: {fileID: 0}
+    - target: {fileID: 4275256852082797982, guid: 6c2b57f8827541b439f7410f24d3a21a, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 11.983
+      objectReference: {fileID: 0}
+    - target: {fileID: 4275256852082797982, guid: 6c2b57f8827541b439f7410f24d3a21a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4275256852082797982, guid: 6c2b57f8827541b439f7410f24d3a21a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4275256852082797982, guid: 6c2b57f8827541b439f7410f24d3a21a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4275256852082797982, guid: 6c2b57f8827541b439f7410f24d3a21a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4275256852082797982, guid: 6c2b57f8827541b439f7410f24d3a21a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4275256852082797982, guid: 6c2b57f8827541b439f7410f24d3a21a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4275256852082797982, guid: 6c2b57f8827541b439f7410f24d3a21a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4275256853293966413, guid: 6c2b57f8827541b439f7410f24d3a21a, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 450d42a3c8800654486f25b02632ffc2, type: 2}
+    - target: {fileID: 4275256853293966413, guid: 6c2b57f8827541b439f7410f24d3a21a, type: 3}
+      propertyPath: m_Materials.Array.data[1]
+      value: 
+      objectReference: {fileID: 2100000, guid: 450d42a3c8800654486f25b02632ffc2, type: 2}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 6c2b57f8827541b439f7410f24d3a21a, type: 3}
+--- !u!1001 &6349003437987395565
+PrefabInstance:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
