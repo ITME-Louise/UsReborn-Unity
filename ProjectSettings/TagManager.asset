@@ -7,6 +7,15 @@ TagManager:
   - PlayerHand
   - Enemy
   - Projectile
+  - Grabbable
+  - ToSlam
+  - ToOasis
+  - ToMulti
+  - ToRabbit
+  - ToBear
+  - ToFox
+  - ToPenguin
+  - ToMain
   layers:
   - Default
   - TransparentFX

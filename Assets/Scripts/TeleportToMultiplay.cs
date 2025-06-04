@@ -1,21 +1,36 @@
 ﻿using UnityEngine;
 using Photon.Pun;
 
-
-public class TeleportToMultiplay : MonoBehaviour
+public class TeleportToMultiplay : MonoBehaviourPun
 {
-    [SerializeField] private string multiplayerSceneName = "Multiplay_Scene";
-
-    // 손가락이 트리거에 닿았을 때 호출
     private void OnTriggerEnter(Collider other)
     {
         Debug.Log($"[Teleport Trigger] 충돌 감지됨: {other.name}");
 
-        // 손 트래킹 오브젝트인지 확인 (필요에 따라 태그 or 이름 확인)
         if (other.name.Contains("Index") || other.name.Contains("Hand") || other.CompareTag("PlayerHand"))
         {
-            Debug.Log("손가락 충돌 감지 → 멀티플레이 씬으로 전환 시도");
-            PhotonNetwork.LoadLevel(multiplayerSceneName);
+            string tag = gameObject.tag;
+            string targetScene = "";
+
+            switch (tag)
+            {
+                case "ToMulti":
+                    targetScene = "Multiplay_Scene";
+                    break;
+                case "ToOasis":
+                    targetScene = "Mini_Oasis";
+                    break;
+                case "ToMain":
+                    targetScene = "Main_Scene";
+                    break;
+                // 필요 시 case 추가 가능
+                default:
+                    Debug.LogWarning($"[Teleport] 태그 '{tag}'에 해당하는 씬 없음");
+                    return;
+            }
+
+            Debug.Log($"[Teleport] PhotonNetwork.LoadLevel → {targetScene}");
+            PhotonNetwork.LoadLevel(targetScene);
         }
     }
 }

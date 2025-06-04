@@ -22,16 +22,16 @@ public class TeleportToScene : MonoBehaviour
                     targetScene = "Mini_Oasis";
                     break;
                 case "ToRabbit":
-                    targetScene = "MiniGame_Rabbit";
+                    targetScene = "MiniGame_Rabbit_Scene";
                     break;
                 case "ToBear":
-                    targetScene = "MiniGame_Bear";
+                    targetScene = "MiniGame_Bear_Scene";
                     break;
                 case "ToFox":
-                    targetScene = "MiniGame_Fox";
+                    targetScene = "MiniGame_Fox_Scene";
                     break;
                 case "ToPenguin":
-                    targetScene = "MiniGame_Penguin";
+                    targetScene = "MiniGame_Penguin_Scene";
                     break;
                 case "ToMain":
                     targetScene = "Main_Scene";
