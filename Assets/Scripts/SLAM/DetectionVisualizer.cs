@@ -3,65 +3,8 @@ using UnityEngine;
 
 public class DetectionVisualizer : MonoBehaviour
 {
-    [SerializeField] private Material[] highlightMaterials;
     [SerializeField] private bool debugMode = true;
-    
-    private string[] classNames = new string[] {
-        "paper", "pack", "can", "glass", "pet", "plastic", "vinyl"
-    };
-    
-    void Start()
-    {
-        InitializeHighlightMaterials();
-    }
-    
-    private void InitializeHighlightMaterials()
-    {
-        Debug.Log("DetectionVisualizer: InitializeHighlightMaterials 함수 호출됨");
-        try
-        {
-            if (highlightMaterials == null || highlightMaterials.Length < classNames.Length)
-            {
-                Debug.Log("DetectionVisualizer: 하이라이트 머티리얼 초기화 시작");
-                highlightMaterials = new Material[classNames.Length];
-                Color[] colors = new Color[] {
-                    Color.red,     // paper
-                    Color.blue,    // pack
-                    Color.yellow,  // can
-                    Color.cyan,    // glass
-                    Color.green,   // pet
-                    Color.magenta, // plastic
-                    Color.white    // vinyl
-                };
-                
-                Debug.Log("DetectionVisualizer: 쉐이더 찾기 시도");
-                
-                Shader shaderToUse = Shader.Find("Standard");
-                if (shaderToUse == null) shaderToUse = Shader.Find("Mobile/Diffuse");
-                if (shaderToUse == null) shaderToUse = Shader.Find("Legacy Shaders/Diffuse");
-                
-                if (shaderToUse == null)
-                {
-                    Debug.LogError("DetectionVisualizer: 사용 가능한 쉐이더를 찾을 수 없습니다!");
-                    return;
-                }
-                
-                Debug.Log("DetectionVisualizer: 사용할 쉐이더: " + shaderToUse.name);
-                
-                for (int i = 0; i < classNames.Length; i++)
-                {
-                    highlightMaterials[i] = new Material(shaderToUse);
-                    highlightMaterials[i].color = new Color(colors[i].r, colors[i].g, colors[i].b, 0.8f);
-                }
-                
-                Debug.Log("DetectionVisualizer: 하이라이트 머티리얼 초기화 완료");
-            }
-        }
-        catch (System.Exception e)
-        {
-            Debug.LogError("DetectionVisualizer: 하이라이트 머티리얼 초기화 중 오류 발생: " + e.Message);
-        }
-    }
+    [SerializeField] private PotSpawner potSpawner;
     
     public void VisualizeDetections(List<Detection> detections, Camera camera, SLAMCalibrator calibrator)
     {
@@ -79,7 +22,7 @@ public class DetectionVisualizer : MonoBehaviour
             }
 
             // UV → 월드 좌표로 변환 (SLAM 좌표계 변환 포함)
-            Vector3? worldPos = calibrator.GetWorldPosFromUV(uv, camera);
+            Vector3? worldPos = calibrator.GetWorldPosition(uv);
 
             if (worldPos == null)
             {
@@ -100,33 +43,9 @@ public class DetectionVisualizer : MonoBehaviour
     
     private void CreateVisualization(Detection detection, Vector3 worldPos, Camera camera)
     {
-        GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        sphere.name = $"Trash_{detection.ClassName}_{Time.time:F2}";
-        sphere.transform.position = worldPos;
-
-        float size = 0.1f + detection.BoundingBox.width * 0.2f;
-        sphere.transform.localScale = Vector3.one * size;
-
-        if (detection.ClassIndex < highlightMaterials.Length && highlightMaterials[detection.ClassIndex] != null)
-            sphere.GetComponent<Renderer>().material = highlightMaterials[detection.ClassIndex];
-        else
-            sphere.GetComponent<Renderer>().material.color = Color.red;
-
-        var label = new GameObject($"Label_{detection.ClassName}_{Time.time:F2}");
-        label.transform.position = worldPos + Vector3.up * (size + 0.1f);
-        var tm = label.AddComponent<TextMesh>();
-        tm.text = $"{detection.ClassName}\n{detection.Confidence:F2}";
-        tm.characterSize = 0.08f;
-        tm.anchor = TextAnchor.MiddleCenter;
-        tm.color = Color.white;
-
-        Vector3 direction = camera.transform.position - label.transform.position;
-        if (direction != Vector3.zero)
+        if (potSpawner != null)
         {
-            label.transform.LookAt(camera.transform.position, Vector3.up);
+            potSpawner.SpawnPot(worldPos);
         }
-
-        Destroy(sphere, 15f);
-        Destroy(label, 15f);
     }
 }
