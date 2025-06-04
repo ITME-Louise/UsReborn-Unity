@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
 
+
 public class EnemyHP : MonoBehaviourPun
 {
     public float maxHp = 100f;
@@ -21,11 +22,14 @@ public class EnemyHP : MonoBehaviourPun
 
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log($"[EnemyHP] 충돌 감지: {other.name}, 태그: {other.tag}");
+
         if (other.CompareTag("PlayerHand"))
         {
             TakeDamage(10f);
         }
     }
+
 
     public void TakeDamage(float amount)
     {
