@@ -67,14 +67,14 @@ public class DetectionVisualizer : MonoBehaviour
     private void CreateVisualization(Detection detection, Vector3 worldPos, Camera camera)
     {
         Debug.Log($"DetectionVisualizer: CreateVisualization 호출 - 클래스: {detection.ClassName}, 위치: {worldPos}");
-        
+    
         if (potSpawner == null)
         {
-            Debug.LogError("DetectionVisualizer: PotSpawner가 null입니다! Inspector에서 할당해주세요.");
+            Debug.LogError("DetectionVisualizer: PotSpawner가 null입니다. Inspector에서 할당해주세요.");
             return;
         }
 
-        Debug.Log($"DetectionVisualizer: PotSpawner.SpawnPot 호출 - 위치: {worldPos}");
-        potSpawner.SpawnPot(worldPos);
+        Debug.Log($"DetectionVisualizer: PotSpawner.SpawnPot 호출 - 위치: {worldPos}, 클래스: {detection.ClassName}");
+        potSpawner.SpawnPot(worldPos, detection.ClassName);
     }
 }

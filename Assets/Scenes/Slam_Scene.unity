@@ -1689,10 +1689,49 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e8d850449612594bb43dc6a44d263dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  flowerVaseStage1: {fileID: 4735194703025569332, guid: 07cab2717e2f6de4ea57950741d1829e, type: 3}
-  flowerVaseStage2: {fileID: 4428965303969364525, guid: eff316274eb6de947878bc6a90bc3abb, type: 3}
-  flowerVaseStage3: {fileID: 1639300624}
-  flowerVaseStage4: {fileID: 2138155382}
+  classVaseMappings:
+  - className: paper
+    vaseStages:
+      stage1: {fileID: 4735194703025569332, guid: 07cab2717e2f6de4ea57950741d1829e, type: 3}
+      stage2: {fileID: 4564511147252979892, guid: 2e59080bc6eadbd419e5854ef922d5c7, type: 3}
+      stage3: {fileID: 3345593231086430326, guid: 342a603b8d9418744b8d94626169f3d3, type: 3}
+      stage4: {fileID: 3803120659243060098, guid: 2a18ef08868d1914abf61fb52f7a71ec, type: 3}
+  - className: pack
+    vaseStages:
+      stage1: {fileID: 4735194703025569332, guid: 07cab2717e2f6de4ea57950741d1829e, type: 3}
+      stage2: {fileID: 1973334637719452472, guid: 4786434711362a243bb51e5e8acf1c0a, type: 3}
+      stage3: {fileID: 511546980664056840, guid: 116065fbb21f9f444ab13ee84bae4ded, type: 3}
+      stage4: {fileID: 2668222021715394599, guid: 86ecd59c30c9c2c4faecb53751051864, type: 3}
+  - className: can
+    vaseStages:
+      stage1: {fileID: 4735194703025569332, guid: 07cab2717e2f6de4ea57950741d1829e, type: 3}
+      stage2: {fileID: 3713795739996508779, guid: 896310bf81a5d0a44b904534f4c1b3c0, type: 3}
+      stage3: {fileID: 4866922269158137377, guid: 231d2ea479dc1604a8d2b1d519acf72f, type: 3}
+      stage4: {fileID: 3614292634674473580, guid: f72e4a84ad9a1fb41b011f79d5ad714f, type: 3}
+  - className: glass
+    vaseStages:
+      stage1: {fileID: 4735194703025569332, guid: 07cab2717e2f6de4ea57950741d1829e, type: 3}
+      stage2: {fileID: 973656507286378847, guid: 2875021211f951c43a3f36e8c9b96558, type: 3}
+      stage3: {fileID: 5641538116936326332, guid: 353eb5b6c9cf1684caf8078559194c67, type: 3}
+      stage4: {fileID: 3206378551949526627, guid: 172d6d751695cca47a19baa0a293200d, type: 3}
+  - className: pet
+    vaseStages:
+      stage1: {fileID: 4735194703025569332, guid: 07cab2717e2f6de4ea57950741d1829e, type: 3}
+      stage2: {fileID: 3539889705812396206, guid: ecae08d915cb20f4e8ee3a539aa47e84, type: 3}
+      stage3: {fileID: 4631244762784276812, guid: 4e0bf7076a211c146a5befc2fdd0861c, type: 3}
+      stage4: {fileID: 1397869632240962663, guid: 23b2232a5d1876644a820463a70849ac, type: 3}
+  - className: plastic
+    vaseStages:
+      stage1: {fileID: 4735194703025569332, guid: 07cab2717e2f6de4ea57950741d1829e, type: 3}
+      stage2: {fileID: 4223493098569728024, guid: 22f56b129bafe504cac3056fbfaf469b, type: 3}
+      stage3: {fileID: 873459548278792212, guid: 3aa8368be16a4804f8b22aa3db3ff984, type: 3}
+      stage4: {fileID: 5947566174847946136, guid: a8de79cd031a6674584453d11916d9d8, type: 3}
+  - className: vinyl
+    vaseStages:
+      stage1: {fileID: 4735194703025569332, guid: 07cab2717e2f6de4ea57950741d1829e, type: 3}
+      stage2: {fileID: 2472686670853777146, guid: aab0470106c171e42923a954fd4f0a9c, type: 3}
+      stage3: {fileID: 7917040117800994040, guid: 10fda6eb7c557a24baaff7dbd5de9112, type: 3}
+      stage4: {fileID: 2440203965675310926, guid: a47eecd76e7be0345a216f5b8afd4703, type: 3}
   spawnDistanceThreshold: 0.5
 --- !u!1001 &1299335715
 PrefabInstance:
@@ -1727,39 +1766,39 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3351887280100700208, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1.23
+      value: 1.648
       objectReference: {fileID: 0}
     - target: {fileID: 3351887280100700208, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1.48
+      value: -0.886
       objectReference: {fileID: 0}
     - target: {fileID: 3351887280100700208, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1.15
+      value: 0.219
       objectReference: {fileID: 0}
     - target: {fileID: 3351887280100700208, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.5
+      value: 0.9138861
       objectReference: {fileID: 0}
     - target: {fileID: 3351887280100700208, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.5
+      value: 0.40597084
       objectReference: {fileID: 0}
     - target: {fileID: 3351887280100700208, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.5
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 3351887280100700208, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0.5
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 3351887280100700208, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: 90
+      value: 47.904
       objectReference: {fileID: 0}
     - target: {fileID: 3351887280100700208, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 90
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3351887280100700208, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -2606,11 +2645,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a379f34d4f4f2e408d34f14bfb753ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!1 &1639300624 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4275256853293966411, guid: 6c2b57f8827541b439f7410f24d3a21a, type: 3}
-  m_PrefabInstance: {fileID: 5616267222867997276}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1640182926
 GameObject:
   m_ObjectHideFlags: 0
@@ -3296,11 +3330,6 @@ BoxCollider:
 Transform:
   m_CorrespondingSourceObject: {fileID: 3351887280100700214, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
   m_PrefabInstance: {fileID: 1299335715}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &2138155382 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4275256852082797981, guid: 6c2b57f8827541b439f7410f24d3a21a, type: 3}
-  m_PrefabInstance: {fileID: 5616267222867997276}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1479451534572691933
 PrefabInstance:
