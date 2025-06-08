@@ -8,18 +8,12 @@ public class DialogueManager : MonoBehaviour
 {
     public GameObject dialoguePanel;
     public TextMeshProUGUI dialogueText;
-    public TMP_InputField nicknameInput;
     public GameObject nicknamePanel;
     public Animator characterAnimator;
-
-    public Transform playerTransform;
 
     public GameObject usRebornPanel;
     public GameObject topNoticePanel;
     public GameObject topNicknameNoticePanel;
-
-    public TextMeshProUGUI nicknameDisplayText; 
-    public GameObject okButton; 
 
     private string nickname = "";
 
@@ -43,6 +37,7 @@ public class DialogueManager : MonoBehaviour
 
     private int currentIndex = 0;
     private bool isSecondPhase = false;
+    private bool isDialogueActive = true;
 
     void Start()
     {
@@ -54,10 +49,19 @@ public class DialogueManager : MonoBehaviour
         topNoticePanel.SetActive(true);
         topNicknameNoticePanel.SetActive(false);
 
-        nicknameDisplayText.gameObject.SetActive(false); 
+        StartCoroutine(AutoAdvanceDialogue());
     }
 
-    public void OnDialogueClick()
+    IEnumerator AutoAdvanceDialogue()
+    {
+        while (isDialogueActive)
+        {
+            yield return new WaitForSeconds(3f);
+            AdvanceDialogue();
+        }
+    }
+
+    private void AdvanceDialogue()
     {
         currentIndex++;
 
@@ -67,27 +71,18 @@ public class DialogueManager : MonoBehaviour
             {
                 dialogueText.text = dialogues[currentIndex];
 
-                if (currentIndex == 2 || currentIndex == 3)
-                {
-                    usRebornPanel.SetActive(true);
-                }
-                else
-                {
-                    usRebornPanel.SetActive(false);
-                }
-
+                usRebornPanel.SetActive(currentIndex == 2 || currentIndex == 3);
                 if (currentIndex == 1)
-                {
                     topNoticePanel.SetActive(false);
-                }
             }
             else
             {
+                isDialogueActive = false;
                 dialoguePanel.SetActive(false);
                 nicknamePanel.SetActive(true);
-
                 topNicknameNoticePanel.SetActive(true);
 
+                StartCoroutine(DelayNicknameComplete());
             }
         }
         else
@@ -98,45 +93,20 @@ public class DialogueManager : MonoBehaviour
             }
             else
             {
+                isDialogueActive = false;
                 dialoguePanel.SetActive(false);
                 Debug.Log("두 번째 대사까지 모두 완료!");
-
-
                 characterAnimator.SetTrigger("Walk");
-                StartCoroutine(WalkForward());
             }
         }
     }
 
-    public void OnNicknameSubmit()
-    {
-        string input = nicknameInput.text;
-
-        if (string.IsNullOrWhiteSpace(input))
-        {
-            Debug.LogWarning("닉네임을 입력해주세요.");
-            return;
-        }
-
-        nickname = input;
-        PlayerPrefs.SetString("PlayerNickname", nickname);
-        Debug.Log("닉네임 저장됨: " + nickname);
-
-       
-        nicknameInput.gameObject.SetActive(false);
-        okButton.SetActive(false);
-
-       
-        nicknameDisplayText.text = nickname;
-        nicknameDisplayText.gameObject.SetActive(true);
-
-       
-        StartCoroutine(DelayNicknameComplete());
-    }
-
     IEnumerator DelayNicknameComplete()
     {
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(3f);
+
+        nickname = "인턴";
+        PlayerPrefs.SetString("PlayerNickname", nickname);
 
         nicknamePanel.SetActive(false);
         dialoguePanel.SetActive(true);
@@ -146,17 +116,8 @@ public class DialogueManager : MonoBehaviour
         dialogueText.text = string.Format(secondDialogues[currentIndex], nickname);
 
         topNicknameNoticePanel.SetActive(false);
-    }
 
-    IEnumerator WalkForward()
-    {
-        float walkTime = 0f;
-
-        while (walkTime < 3f)
-        {
-            playerTransform.position += playerTransform.forward * 2f * Time.deltaTime;
-            walkTime += Time.deltaTime;
-            yield return null;
-        }
+        isDialogueActive = true;
+        StartCoroutine(AutoAdvanceDialogue());
     }
 }
