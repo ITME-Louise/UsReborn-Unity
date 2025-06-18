@@ -5,6 +5,7 @@ public class DetectionVisualizer : MonoBehaviour
 {
     [SerializeField] private bool debugMode = true;
     [SerializeField] private PotSpawner potSpawner;
+    [SerializeField] private QuizManager quizManager;
     
     public void VisualizeDetections(List<Detection> detections, Camera camera, SLAMCalibrator calibrator)
     {
@@ -67,14 +68,14 @@ public class DetectionVisualizer : MonoBehaviour
     private void CreateVisualization(Detection detection, Vector3 worldPos, Camera camera)
     {
         Debug.Log($"DetectionVisualizer: CreateVisualization 호출 - 클래스: {detection.ClassName}, 위치: {worldPos}");
-    
-        if (potSpawner == null)
+
+        if (quizManager == null)
         {
-            Debug.LogError("DetectionVisualizer: PotSpawner가 null입니다. Inspector에서 할당해주세요.");
+            Debug.LogError("DetectionVisualizer: QuizManager가 null입니다. Inspector에서 할당해주세요.");
             return;
         }
 
-        Debug.Log($"DetectionVisualizer: PotSpawner.SpawnPot 호출 - 위치: {worldPos}, 클래스: {detection.ClassName}");
-        potSpawner.SpawnPot(worldPos, detection.ClassName);
+        quizManager.StartQuiz(detection.ClassName, worldPos);
     }
+
 }
