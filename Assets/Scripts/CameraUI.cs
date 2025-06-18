@@ -6,7 +6,7 @@ public class CameraUI : MonoBehaviour
 {
     public Transform cameraTransform;  // OVR Camera
 
-    public float followDistance = 1.5f; // UI<->Camera 거리
+    public float followDistance = 0.7f; // UI<->Camera 거리
     public float smoothSpeed = 5f;
 
     void LateUpdate()

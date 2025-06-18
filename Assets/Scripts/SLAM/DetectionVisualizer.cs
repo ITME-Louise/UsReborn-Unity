@@ -5,10 +5,36 @@ public class DetectionVisualizer : MonoBehaviour
 {
     [SerializeField] private bool debugMode = true;
     [SerializeField] private PotSpawner potSpawner;
+    [SerializeField] private QuizManager quizManager;
+    
+    private bool isQuizActive = false;
+
+    private float quizTimeoutDuration = 10f;
+    private float quizTimer = 0f;
+    private bool isTimeoutActive = false;
+
+    void Update()
+    {
+        if (isTimeoutActive)
+        {
+            quizTimer += Time.deltaTime;
+            if (quizTimer >= quizTimeoutDuration)
+            {
+                if (debugMode) Debug.Log("DetectionVisualizer: 퀴즈 타임아웃 발생, 퀴즈 종료 처리");
+                OnQuizCompleted();
+            }
+        }
+    }
     
     public void VisualizeDetections(List<Detection> detections, Camera camera, SLAMCalibrator calibrator)
     {
-        Debug.Log("=== DetectionVisualizer.VisualizeDetections 시작 ===");
+        if (debugMode) Debug.Log("=== DetectionVisualizer.VisualizeDetections 시작 ===");
+        
+        if (isQuizActive)
+        {
+            if (debugMode) Debug.Log("DetectionVisualizer: 퀴즈가 진행 중이므로 새로운 감지를 건너뜁니다.");
+            return;
+        }
         
         if (camera == null)
         {
@@ -28,24 +54,23 @@ public class DetectionVisualizer : MonoBehaviour
             return;
         }
 
-        Debug.Log($"DetectionVisualizer: 받은 감지 결과 개수: {detections.Count}");
+        if (debugMode) Debug.Log($"DetectionVisualizer: 받은 감지 결과 개수: {detections.Count}");
 
         if (detections.Count == 0)
         {
-            Debug.Log("DetectionVisualizer: 감지된 객체가 없습니다.");
+            if (debugMode) Debug.Log("DetectionVisualizer: 감지된 객체가 없습니다.");
             return;
         }
 
         for (int i = 0; i < detections.Count; i++)
         {
             var det = detections[i];
-            Debug.Log($"DetectionVisualizer: 처리 중인 감지 결과 [{i}] - 클래스: {det.ClassName}, 신뢰도: {det.Confidence:F3}");
+            if (debugMode) Debug.Log($"DetectionVisualizer: 처리 중인 감지 결과 [{i}] - 클래스: {det.ClassName}, 신뢰도: {det.Confidence:F3}");
 
             Vector2 uv = new Vector2(det.BoundingBox.center.x, 1f - det.BoundingBox.center.y);
 
-            Debug.Log($"DetectionVisualizer: 바운딩 박스 중심: ({det.BoundingBox.center.x:F2}, {det.BoundingBox.center.y:F2}) → UV: ({uv.x:F2}, {uv.y:F2})");
+            if (debugMode) Debug.Log($"DetectionVisualizer: 바운딩 박스 중심: ({det.BoundingBox.center.x:F2}, {det.BoundingBox.center.y:F2}) → UV: ({uv.x:F2}, {uv.y:F2})");
 
-            // UV → 월드 좌표로 변환 (SLAM 좌표계 변환 포함)
             Vector3? worldPos = calibrator.GetWorldPosition(uv);
 
             if (worldPos == null)
@@ -56,25 +81,37 @@ public class DetectionVisualizer : MonoBehaviour
 
             Vector3 finalWorldPos = worldPos.Value;
 
-            Debug.Log($"DetectionVisualizer: 최종 처리 결과 - 클래스: {det.ClassName}, 신뢰도: {det.Confidence:F2}, UV: {uv}, 월드좌표: {finalWorldPos}");
+            if (debugMode) Debug.Log($"DetectionVisualizer: 최종 처리 결과 - 클래스: {det.ClassName}, 신뢰도: {det.Confidence:F2}, UV: {uv}, 월드좌표: {finalWorldPos}");
 
             CreateVisualization(det, finalWorldPos, camera);
+            break;
         }
         
-        Debug.Log("=== DetectionVisualizer.VisualizeDetections 완료 ===");
+        if (debugMode) Debug.Log("=== DetectionVisualizer.VisualizeDetections 완료 ===");
     }
     
     private void CreateVisualization(Detection detection, Vector3 worldPos, Camera camera)
     {
-        Debug.Log($"DetectionVisualizer: CreateVisualization 호출 - 클래스: {detection.ClassName}, 위치: {worldPos}");
-    
-        if (potSpawner == null)
+        if (debugMode) Debug.Log($"DetectionVisualizer: CreateVisualization 호출 - 클래스: {detection.ClassName}, 위치: {worldPos}");
+
+        if (quizManager == null)
         {
-            Debug.LogError("DetectionVisualizer: PotSpawner가 null입니다. Inspector에서 할당해주세요.");
+            Debug.LogError("DetectionVisualizer: QuizManager가 null입니다. Inspector에서 할당해주세요.");
             return;
         }
 
-        Debug.Log($"DetectionVisualizer: PotSpawner.SpawnPot 호출 - 위치: {worldPos}, 클래스: {detection.ClassName}");
-        potSpawner.SpawnPot(worldPos, detection.ClassName);
+        isQuizActive = true;
+        isTimeoutActive = true;
+        quizTimer = 0f;
+
+        quizManager.StartQuiz(detection.ClassName, worldPos);
+    }
+
+    public void OnQuizCompleted()
+    {
+        isQuizActive = false;
+        isTimeoutActive = false;
+        quizTimer = 0f;
+        if (debugMode) Debug.Log("DetectionVisualizer: 퀴즈 완료, 다음 감지 준비됨");
     }
 }
