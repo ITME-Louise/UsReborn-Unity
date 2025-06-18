@@ -7,9 +7,17 @@ public class DetectionVisualizer : MonoBehaviour
     [SerializeField] private PotSpawner potSpawner;
     [SerializeField] private QuizManager quizManager;
     
+    private bool isQuizActive = false;
+    
     public void VisualizeDetections(List<Detection> detections, Camera camera, SLAMCalibrator calibrator)
     {
         Debug.Log("=== DetectionVisualizer.VisualizeDetections 시작 ===");
+        
+        if (isQuizActive)
+        {
+            Debug.Log("DetectionVisualizer: 퀴즈가 진행 중이므로 새로운 감지를 건너뜁니다.");
+            return;
+        }
         
         if (camera == null)
         {
@@ -60,6 +68,7 @@ public class DetectionVisualizer : MonoBehaviour
             Debug.Log($"DetectionVisualizer: 최종 처리 결과 - 클래스: {det.ClassName}, 신뢰도: {det.Confidence:F2}, UV: {uv}, 월드좌표: {finalWorldPos}");
 
             CreateVisualization(det, finalWorldPos, camera);
+            break;
         }
         
         Debug.Log("=== DetectionVisualizer.VisualizeDetections 완료 ===");
@@ -75,7 +84,13 @@ public class DetectionVisualizer : MonoBehaviour
             return;
         }
 
+        isQuizActive = true;
         quizManager.StartQuiz(detection.ClassName, worldPos);
     }
 
+    public void OnQuizCompleted()
+    {
+        isQuizActive = false;
+        Debug.Log("DetectionVisualizer: 퀴즈 완료, 다음 감지 준비됨");
+    }
 }
