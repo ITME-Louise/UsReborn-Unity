@@ -32,7 +32,7 @@ public class DialogueManager : MonoBehaviour
         "하지만 아직 멀었어.",
         "일단 기초부터 배우자고!",
         "여긴 네 개인 우주선 방이야. 개인 기지라고 생각하면 돼.",
-        "우선, 창 밖으로 보이는 EARTH에 가보도록 할까?"
+        "우선, EARTH에 가서 쓰레기를 주워볼까?"
     };
 
     private int currentIndex = 0;
@@ -97,6 +97,8 @@ public class DialogueManager : MonoBehaviour
                 dialoguePanel.SetActive(false);
                 Debug.Log("두 번째 대사까지 모두 완료!");
                 characterAnimator.SetTrigger("Walk");
+
+                StartCoroutine(LoadSlamSceneAfterDelay());
             }
         }
     }
@@ -119,5 +121,20 @@ public class DialogueManager : MonoBehaviour
 
         isDialogueActive = true;
         StartCoroutine(AutoAdvanceDialogue());
+    }
+
+    IEnumerator LoadSlamSceneAfterDelay()
+    {
+        yield return new WaitForSeconds(1f);
+
+        GameObject loader = GameObject.Find("SceneManager");
+        if (loader != null)
+        {
+            loader.GetComponent<SceneManager_Slam>().loadSlamScene();
+        }
+        else
+        {
+            Debug.LogError("SceneLoader 오브젝트를 찾을 수 없습니다.");
+        }
     }
 }

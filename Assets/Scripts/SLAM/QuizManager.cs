@@ -1,11 +1,21 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class QuizManager : MonoBehaviour
 {
     [SerializeField] private QuizUIController quizUI;
     [SerializeField] private PotSpawner potSpawner;
     [SerializeField] private DetectionVisualizer detectionVisualizer;
+
+    [SerializeField] private string sceneToLoadAfterTimeout;
+    [SerializeField] private float timeLimitInSeconds;
+
+    [SerializeField] private Text timerText;
+
+    private float timer = 0f;
+    private bool isTimerRunning = false;
 
     private Dictionary<string, List<(string, string)>> quizData = new Dictionary<string, List<(string, string)>>()
     {
@@ -67,6 +77,7 @@ public class QuizManager : MonoBehaviour
     private void Start()
     {
         quizUI.Initialize(this);
+        StartTimer();
     }
 
     public void StartQuiz(string className, Vector3 worldPos)
@@ -98,4 +109,47 @@ public class QuizManager : MonoBehaviour
             Debug.Log("오답입니다!");
         }
     }
+
+    private void StartTimer()
+    {
+        timer = 0f;
+        isTimerRunning = true;
+    }
+
+    private void Update()
+    {
+        if (!isTimerRunning) return;
+
+        timer += Time.deltaTime;
+
+        float timeRemaining = Mathf.Max(0f, timeLimitInSeconds - timer);
+        UpdateTimerUI(timeRemaining);
+
+        if (timer >= timeLimitInSeconds)
+        {
+            isTimerRunning = false;
+            Debug.Log("시간 초과");
+
+            // 3초 후 씬 전환
+            Invoke(nameof(GoToTimeoutScene), 180f);
+        }
+    }
+    private void GoToTimeoutScene()
+    {
+        if (!string.IsNullOrEmpty(sceneToLoadAfterTimeout))
+        {
+            SceneManager.LoadScene(sceneToLoadAfterTimeout);
+        }
+        else
+        {
+            Debug.LogWarning("sceneToLoadAfterTimeout 값이 비어 있습니다. 인스펙터에서 설정하세요.");
+        }
+    }
+    private void UpdateTimerUI(float timeRemaining)
+    {
+        int minutes = Mathf.FloorToInt(timeRemaining / 60f);
+        int seconds = Mathf.FloorToInt(timeRemaining % 60f);
+        timerText.text = $"{minutes:00}:{seconds:00}";
+    }
+
 }
