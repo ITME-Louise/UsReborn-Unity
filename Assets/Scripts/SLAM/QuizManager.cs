@@ -5,6 +5,7 @@ public class QuizManager : MonoBehaviour
 {
     [SerializeField] private QuizUIController quizUI;
     [SerializeField] private PotSpawner potSpawner;
+    [SerializeField] private DetectionVisualizer detectionVisualizer;
 
     private Dictionary<string, List<(string, string)>> quizData = new Dictionary<string, List<(string, string)>>()
     {
@@ -55,6 +56,11 @@ public class QuizManager : MonoBehaviour
 
     public void OnAnswerSubmitted(string userAnswer, string correctAnswer, string className, Vector3 worldPos)
     {
+        if (detectionVisualizer != null)
+        {
+            detectionVisualizer.OnQuizCompleted();
+        }
+        
         if (userAnswer == correctAnswer)
         {
             Debug.Log("정답입니다!");
