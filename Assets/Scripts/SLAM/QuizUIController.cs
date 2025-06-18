@@ -38,7 +38,17 @@ public class QuizUIController : MonoBehaviour
 
     private void Submit(string userAnswer)
     {
+        Debug.Log($"Submit 호출됨 - 사용자 답변: {userAnswer}, 정답: {correctAnswer}");
         panel.SetActive(false);
-        quizManager.OnAnswerSubmitted(userAnswer, correctAnswer, currentClassName, spawnPosition);
+    
+        if (quizManager != null)
+        {
+            Debug.Log("QuizManager로 답변 전달 중...");
+            quizManager.OnAnswerSubmitted(userAnswer, correctAnswer, currentClassName, spawnPosition);
+        }
+        else
+        {
+            Debug.LogError("QuizManager가 null입니다!");
+        }
     }
 }
