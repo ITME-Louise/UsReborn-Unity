@@ -32,7 +32,7 @@ public class DialogueManager : MonoBehaviour
         "하지만 아직 멀었어.",
         "일단 기초부터 배우자고!",
         "여긴 네 개인 우주선 방이야. 개인 기지라고 생각하면 돼.",
-        "우선, 창 밖으로 보이는 EARTH에 가보도록 할까?"
+        "우선, EARTH에 가보도록 할까?"
     };
 
     private int currentIndex = 0;
