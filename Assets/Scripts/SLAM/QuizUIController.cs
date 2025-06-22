@@ -68,4 +68,5 @@ public class QuizUIController : MonoBehaviour
             Debug.LogError("QuizManager가 null입니다!");
         }
     }
+   
 }
