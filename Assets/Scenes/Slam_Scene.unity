@@ -294,7 +294,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -211, y: -194}
+  m_AnchoredPosition: {x: -158, y: -147}
   m_SizeDelta: {x: 300, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &73433412
@@ -410,7 +410,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &99844450
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1257,7 +1257,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 130, y: -194}
+  m_AnchoredPosition: {x: 183.00006, y: -146.99998}
   m_SizeDelta: {x: 300, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &599657667
@@ -2054,7 +2054,7 @@ MonoBehaviour:
   potSpawner: {fileID: 1119661632}
   detectionVisualizer: {fileID: 709663853}
   sceneToLoadAfterTimeout: Oasis_Scene
-  timeLimitInSeconds: 10
+  timeLimitInSeconds: 180
   timerText: {fileID: 254199694}
   dialogueManager: {fileID: 1635961990}
 --- !u!4 &754948217
@@ -2610,6 +2610,7 @@ GameObject:
   - component: {fileID: 910921967}
   - component: {fileID: 910921966}
   - component: {fileID: 910921969}
+  - component: {fileID: 910921970}
   m_Layer: 0
   m_Name: OculusInteractionSamplesRayCanvas (1)
   m_TagString: Untagged
@@ -2662,7 +2663,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 910921964}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.648, y: -1.38, z: 1.2}
+  m_LocalPosition: {x: 1.648, y: -1.283, z: 1.2}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2687,6 +2688,21 @@ MonoBehaviour:
   _canvasRenderTexture: {fileID: 1366985514}
   _meshFilter: {fileID: 906136342}
   _meshCollider: {fileID: 0}
+--- !u!114 &910921970
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 910921964}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3d06c8dbbb4be24cb29d995d3abf50d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  centerEyeAnchor: {fileID: 2099303609}
+  distanceFromCamera: 1
+  smoothSpeed: 5
 --- !u!1 &1088633812
 GameObject:
   m_ObjectHideFlags: 0
@@ -3084,7 +3100,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3351887280100700208, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1.38
+      value: -1.992
       objectReference: {fileID: 0}
     - target: {fileID: 3351887280100700208, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
       propertyPath: m_LocalPosition.z
@@ -4689,7 +4705,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1689668149}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0.545}
+  m_LocalPosition: {x: 0, y: 0, z: 0.76}
   m_LocalScale: {x: 0.001, y: 0.001, z: 0.001}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -4699,7 +4715,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 1.479, y: 8.327}
+  m_AnchoredPosition: {x: 1.509, y: 7.79}
   m_SizeDelta: {x: 663, y: 721}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1780052328
@@ -6812,7 +6828,7 @@ RectTransform:
   m_GameObject: {fileID: 2074316198782678341}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0.928}
-  m_LocalScale: {x: 0.0014030468, y: 0.0014030468, z: 0.0014030468}
+  m_LocalScale: {x: 0.0008, y: 0.0008, z: 0.0008}
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 2074316200037857477}
@@ -6822,7 +6838,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 1.648, y: 8.24}
+  m_AnchoredPosition: {x: 1.648, y: 7.7549996}
   m_SizeDelta: {x: 1098, y: 519}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &2074316199957965201
