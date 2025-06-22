@@ -122,11 +122,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &123432378 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3749261793686692912, guid: 6dee15d9fba6dab4392241f8b0b1a57b, type: 3}
-  m_PrefabInstance: {fileID: 3749261793608386954}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &209983252
 GameObject:
   m_ObjectHideFlags: 0
@@ -915,7 +910,7 @@ Transform:
   m_Children:
   - {fileID: 209983253}
   m_Father: {fileID: 0}
-  m_RootOrder: 16
+  m_RootOrder: 15
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1524888277
 GameObject:
@@ -1333,72 +1328,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   successUI: {fileID: 815344419}
-  failUI: {fileID: 123432378}
+  failUI: {fileID: 0}
   tutorialPanel: {fileID: 8217602869720119468}
   timerText: {fileID: 8217602868338944361}
   timeLimit: 5
   totalStonesToSnap: 5
---- !u!1001 &3749261793608386954
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 3749261793686692912, guid: 6dee15d9fba6dab4392241f8b0b1a57b, type: 3}
-      propertyPath: m_Name
-      value: FailButton
-      objectReference: {fileID: 0}
-    - target: {fileID: 3749261793686692913, guid: 6dee15d9fba6dab4392241f8b0b1a57b, type: 3}
-      propertyPath: m_RootOrder
-      value: 15
-      objectReference: {fileID: 0}
-    - target: {fileID: 3749261793686692913, guid: 6dee15d9fba6dab4392241f8b0b1a57b, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3749261793686692913, guid: 6dee15d9fba6dab4392241f8b0b1a57b, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1.193
-      objectReference: {fileID: 0}
-    - target: {fileID: 3749261793686692913, guid: 6dee15d9fba6dab4392241f8b0b1a57b, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -8.052
-      objectReference: {fileID: 0}
-    - target: {fileID: 3749261793686692913, guid: 6dee15d9fba6dab4392241f8b0b1a57b, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3749261793686692913, guid: 6dee15d9fba6dab4392241f8b0b1a57b, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3749261793686692913, guid: 6dee15d9fba6dab4392241f8b0b1a57b, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3749261793686692913, guid: 6dee15d9fba6dab4392241f8b0b1a57b, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3749261793686692913, guid: 6dee15d9fba6dab4392241f8b0b1a57b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3749261793686692913, guid: 6dee15d9fba6dab4392241f8b0b1a57b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3749261793686692913, guid: 6dee15d9fba6dab4392241f8b0b1a57b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8018513142901010155, guid: 6dee15d9fba6dab4392241f8b0b1a57b, type: 3}
-      propertyPath: cameraTransform
-      value: 
-      objectReference: {fileID: 1299861857}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 6dee15d9fba6dab4392241f8b0b1a57b, type: 3}
 --- !u!1001 &6446731469172651485
 PrefabInstance:
   m_ObjectHideFlags: 0
