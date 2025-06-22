@@ -1173,7 +1173,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3133852610174775441, guid: f6099a3904ce3c748840ed4eaf3ce0cd, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 19.4
+      value: 19.838999
       objectReference: {fileID: 0}
     - target: {fileID: 3133852610174775441, guid: f6099a3904ce3c748840ed4eaf3ce0cd, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -1843,6 +1843,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3351887280093960692, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
+      propertyPath: _trackingOriginType
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3351887280100535312, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
       propertyPath: m_Name
       value: OVRCameraRig
@@ -1857,7 +1861,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3351887280100700208, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 6.9610004
+      value: 7.4
       objectReference: {fileID: 0}
     - target: {fileID: 3351887280100700208, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
       propertyPath: m_LocalPosition.z
