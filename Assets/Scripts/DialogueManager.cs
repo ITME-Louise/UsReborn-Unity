@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class DialogueManager : MonoBehaviour
 {
+    [SerializeField] private SceneManager_Slam sceneManagerSlam;
+
     public GameObject dialoguePanel;
     public TextMeshProUGUI dialogueText;
     public GameObject nicknamePanel;
@@ -127,14 +129,13 @@ public class DialogueManager : MonoBehaviour
     {
         yield return new WaitForSeconds(1f);
 
-        GameObject loader = GameObject.Find("SceneManager");
-        if (loader != null)
+        if (sceneManagerSlam != null)
         {
-            loader.GetComponent<SceneManager_Slam>().loadSlamScene();
+            sceneManagerSlam.loadSlamScene();
         }
         else
         {
-            Debug.LogError("SceneLoader 오브젝트를 찾을 수 없습니다.");
+            Debug.LogError("SceneManager_Slam이 할당되지 않았습니다.");
         }
     }
 }
