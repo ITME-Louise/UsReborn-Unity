@@ -72,12 +72,17 @@ public class MiniGameManager_Bear : MonoBehaviour
     public void OnBucketFilled()
     {
         filledBucketCount++;
+        CheckForSuccess();
     }
 
     public void OnBearSatisfied()
     {
         satisfiedBearCount++;
-        if (satisfiedBearCount >= totalBears)
+        CheckForSuccess();
+    }
+    private void CheckForSuccess()
+    {
+        if (filledBucketCount >= totalBucketsToFill && satisfiedBearCount >= totalBears)
         {
             OnSuccess();
         }
