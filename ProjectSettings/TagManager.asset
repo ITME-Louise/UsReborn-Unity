@@ -11,6 +11,7 @@ TagManager:
   - Bucket
   - Penguin
   - Rabbit
+  - Oasis
   layers:
   - Default
   - TransparentFX

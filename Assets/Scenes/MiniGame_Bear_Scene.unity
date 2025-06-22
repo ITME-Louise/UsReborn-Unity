@@ -276,6 +276,7 @@ GameObject:
   - component: {fileID: 195176810}
   - component: {fileID: 195176809}
   - component: {fileID: 195176808}
+  - component: {fileID: 195176811}
   m_Layer: 0
   m_Name: Bucket3
   m_TagString: Bucket
@@ -413,9 +414,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 195176799}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.04, y: 8.17, z: -14.86}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: 1.1359999, y: 7.423, z: -16.28}
+  m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1138102452}
   m_Father: {fileID: 0}
@@ -507,6 +508,19 @@ MonoBehaviour:
   _twoGrabTransformer: {fileID: 0}
   _targetTransform: {fileID: 0}
   _maxGrabPoints: -1
+--- !u!114 &195176811
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 195176799}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37ab875cd0b8bcc4fbcde905d5c559f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  waterVisual: {fileID: 1315350313}
 --- !u!1 &220913012
 GameObject:
   m_ObjectHideFlags: 0
@@ -733,7 +747,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 255660369}
   m_LocalRotation: {x: -0, y: -0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: -1.78, y: 6.21, z: -14.74}
+  m_LocalPosition: {x: -1.48, y: 6.8700004, z: -17.89}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1114,6 +1128,18 @@ PrefabInstance:
       value: 720
       objectReference: {fileID: 0}
     - target: {fileID: 3133852610174775441, guid: f6099a3904ce3c748840ed4eaf3ce0cd, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.00167556
+      objectReference: {fileID: 0}
+    - target: {fileID: 3133852610174775441, guid: f6099a3904ce3c748840ed4eaf3ce0cd, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.00167556
+      objectReference: {fileID: 0}
+    - target: {fileID: 3133852610174775441, guid: f6099a3904ce3c748840ed4eaf3ce0cd, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.00167556
+      objectReference: {fileID: 0}
+    - target: {fileID: 3133852610174775441, guid: f6099a3904ce3c748840ed4eaf3ce0cd, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -1123,7 +1149,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3133852610174775441, guid: f6099a3904ce3c748840ed4eaf3ce0cd, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -42.020004
+      value: -41.5
       objectReference: {fileID: 0}
     - target: {fileID: 3133852610174775441, guid: f6099a3904ce3c748840ed4eaf3ce0cd, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1147,7 +1173,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3133852610174775441, guid: f6099a3904ce3c748840ed4eaf3ce0cd, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 21.309
+      value: 19.4
       objectReference: {fileID: 0}
     - target: {fileID: 3133852610174775441, guid: f6099a3904ce3c748840ed4eaf3ce0cd, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -1798,7 +1824,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 757759327}
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: 2.31, y: 6.64, z: -15.48}
+  m_LocalPosition: {x: 2.23, y: 6.95, z: -18.03}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1831,11 +1857,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3351887280100700208, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 8.77
+      value: 6.9610004
       objectReference: {fileID: 0}
     - target: {fileID: 3351887280100700208, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -17.5
+      value: -16.979996
       objectReference: {fileID: 0}
     - target: {fileID: 3351887280100700208, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
       propertyPath: m_LocalRotation.w
@@ -2038,6 +2064,7 @@ GameObject:
   - component: {fileID: 1201070162}
   - component: {fileID: 1201070161}
   - component: {fileID: 1201070160}
+  - component: {fileID: 1201070163}
   m_Layer: 0
   m_Name: Bucket1
   m_TagString: Bucket
@@ -2132,9 +2159,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1201070151}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.0300002, y: 8.17, z: -14.86}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: 0.056, y: 7.423, z: -16.28}
+  m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1208326139}
   m_Father: {fileID: 0}
@@ -2247,6 +2274,19 @@ MonoBehaviour:
   _twoGrabTransformer: {fileID: 0}
   _targetTransform: {fileID: 0}
   _maxGrabPoints: -1
+--- !u!114 &1201070163
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1201070151}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37ab875cd0b8bcc4fbcde905d5c559f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  waterVisual: {fileID: 1315350313}
 --- !u!1 &1208326138
 GameObject:
   m_ObjectHideFlags: 0
@@ -2320,7 +2360,7 @@ GameObject:
   - component: {fileID: 1315350314}
   m_Layer: 0
   m_Name: Oasis
-  m_TagString: Untagged
+  m_TagString: Oasis
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2333,7 +2373,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1315350313}
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
@@ -2395,9 +2435,9 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1315350313}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -7.5000005, y: 2.1, z: 5.14}
-  m_LocalScale: {x: 10, y: 1, z: 10}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.59999996, y: 6.34, z: -12.24}
+  m_LocalScale: {x: 9.999999, y: 0.99999994, z: 9.999999}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -2553,7 +2593,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1524888277}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.6, y: 4.3, z: 0}
+  m_LocalPosition: {x: 0.6, y: 5.61, z: 0}
   m_LocalScale: {x: 100, y: 1, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2655,7 +2695,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1528469306}
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: -4.96, y: 6.78, z: -14.02}
+  m_LocalPosition: {x: -3.27, y: 6.92, z: -16.62}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2861,7 +2901,7 @@ MonoBehaviour:
   tutorialPanel: {fileID: 472517535}
   retryButton: {fileID: 264528032}
   timerText: {fileID: 472517534}
-  timeLimit: 5
+  timeLimit: 180
   totalBucketsToFill: 3
   totalBears: 3
 --- !u!1 &1930359500
@@ -2941,6 +2981,7 @@ GameObject:
   - component: {fileID: 2107933896}
   - component: {fileID: 2107933895}
   - component: {fileID: 2107933894}
+  - component: {fileID: 2107933897}
   m_Layer: 0
   m_Name: Bucket2
   m_TagString: Bucket
@@ -3056,9 +3097,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2107933885}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.5, y: 8.17, z: -14.86}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalPosition: {x: 0.586, y: 7.423, z: -16.28}
+  m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 1930359503}
   m_Father: {fileID: 0}
@@ -3150,3 +3191,16 @@ MonoBehaviour:
   _twoGrabTransformer: {fileID: 0}
   _targetTransform: {fileID: 0}
   _maxGrabPoints: -1
+--- !u!114 &2107933897
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2107933885}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37ab875cd0b8bcc4fbcde905d5c559f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  waterVisual: {fileID: 1315350313}
