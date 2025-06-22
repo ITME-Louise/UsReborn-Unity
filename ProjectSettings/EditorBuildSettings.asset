@@ -18,6 +18,12 @@ EditorBuildSettings:
     path: Assets/Scenes/Slam_Scene.unity
     guid: 82789e9aa3866d44d92584943fae7a56
   - enabled: 1
+    path: Assets/Scenes/MiniGame_Bear_Scene.unity
+    guid: c2f4f14b9bb0d754187e07183abc113b
+  - enabled: 1
+    path: Assets/PolyRonin/Desert Oasis Pack/Demo.unity
+    guid: 3813142a6c4b13e4bbd65b62372e6ab9
+  - enabled: 1
     path: Assets/Scenes/Oasis_Scene.unity
     guid: 79c1fc1f629722d4d936fd4b5dc1bfc7
   - enabled: 1

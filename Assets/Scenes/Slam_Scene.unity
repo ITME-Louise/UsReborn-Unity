@@ -2053,8 +2053,8 @@ MonoBehaviour:
   quizUII: {fileID: 1833759407}
   potSpawner: {fileID: 1119661632}
   detectionVisualizer: {fileID: 709663853}
-  sceneToLoadAfterTimeout: Oasis_Scene
-  timeLimitInSeconds: 180
+  sceneToLoadAfterTimeout: MiniGame_Bear_Scene
+  timeLimitInSeconds: 3
   timerText: {fileID: 254199694}
   dialogueManager: {fileID: 1635961990}
 --- !u!4 &754948217
@@ -3100,7 +3100,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3351887280100700208, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1.992
+      value: -1.7619995
       objectReference: {fileID: 0}
     - target: {fileID: 3351887280100700208, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
       propertyPath: m_LocalPosition.z
@@ -4715,7 +4715,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 1.509, y: 7.79}
+  m_AnchoredPosition: {x: 1.509, y: 8.02}
   m_SizeDelta: {x: 663, y: 721}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1780052328
@@ -6838,7 +6838,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 1.648, y: 7.7549996}
+  m_AnchoredPosition: {x: 1.648, y: 7.985}
   m_SizeDelta: {x: 1098, y: 519}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &2074316199957965201
