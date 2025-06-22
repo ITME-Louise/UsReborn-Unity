@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class QuizManager : MonoBehaviour
 {
     [SerializeField] private QuizUIController quizUI;
+    [SerializeField] private SlamQuiizUIController quizUII;
     [SerializeField] private PotSpawner potSpawner;
     [SerializeField] private DetectionVisualizer detectionVisualizer;
 
@@ -13,9 +14,12 @@ public class QuizManager : MonoBehaviour
     [SerializeField] private float timeLimitInSeconds;
 
     [SerializeField] private Text timerText;
+    [SerializeField] private DialogueManager_Slam dialogueManager;
 
     private float timer = 0f;
     private bool isTimerRunning = false;
+
+    private bool isQuizEnded = false;
 
     private Dictionary<string, List<(string, string)>> quizData = new Dictionary<string, List<(string, string)>>()
     {
@@ -82,6 +86,8 @@ public class QuizManager : MonoBehaviour
 
     public void StartQuiz(string className, Vector3 worldPos)
     {
+        if (isQuizEnded) return;
+
         if (!quizData.ContainsKey(className)) return;
 
         var quizList = quizData[className];
@@ -120,6 +126,7 @@ public class QuizManager : MonoBehaviour
     {
         if (!isTimerRunning) return;
 
+
         timer += Time.deltaTime;
 
         float timeRemaining = Mathf.Max(0f, timeLimitInSeconds - timer);
@@ -128,23 +135,40 @@ public class QuizManager : MonoBehaviour
         if (timer >= timeLimitInSeconds)
         {
             isTimerRunning = false;
-            Debug.Log("시간 초과");
+            isQuizEnded = true;
 
-            // 3초 후 씬 전환
-            Invoke(nameof(GoToTimeoutScene), 180f);
+            if (quizUI != null)
+            {
+                quizUII.HideQuiz();
+            }
+
+            if (dialogueManager != null)
+            {
+                dialogueManager.ShowTimeoutNoticeAndChangeScene(
+                    "시간이 초과되었습니다.\n이제 다음 단계로 이동합니다.",
+                    5f, // 메시지를 5초 보여주고
+                    sceneToLoadAfterTimeout // 이후 씬 이동
+                );
+            }
         }
     }
-    private void GoToTimeoutScene()
+
+    private void TriggerDialogueTimeout()
     {
-        if (!string.IsNullOrEmpty(sceneToLoadAfterTimeout))
+        if (dialogueManager != null)
         {
-            SceneManager.LoadScene(sceneToLoadAfterTimeout);
+            dialogueManager.ShowTimeoutNoticeAndChangeScene(
+                "시간이 초과되었습니다.\n이제 다음 단계로 이동합니다.",
+                5f, // UI 표시 시간
+                sceneToLoadAfterTimeout // 이동할 씬 이름
+            );
         }
         else
         {
-            Debug.LogWarning("sceneToLoadAfterTimeout 값이 비어 있습니다. 인스펙터에서 설정하세요.");
+            Debug.LogWarning("dialogueManager가 설정되지 않았습니다.");
         }
     }
+
     private void UpdateTimerUI(float timeRemaining)
     {
         int minutes = Mathf.FloorToInt(timeRemaining / 60f);
