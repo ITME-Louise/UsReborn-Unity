@@ -72,7 +72,8 @@ public class DialogueManager_Slam : MonoBehaviour
 
         if (!string.IsNullOrEmpty(sceneToLoad))
         {
-            SceneManager.LoadScene(sceneToLoad);
+            SceneManager.LoadScene("MiniGame_Bear_Scene", LoadSceneMode.Single); // ±âº» ¾À ±³Ã¼
+            SceneManager.LoadScene("Demo", LoadSceneMode.Additive);
         }
         else
         {
