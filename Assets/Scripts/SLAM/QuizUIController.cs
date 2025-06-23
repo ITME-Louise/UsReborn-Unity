@@ -27,6 +27,7 @@ public class QuizUIController : MonoBehaviour
     public void Initialize(QuizManager manager)
     {
         quizManager = manager;
+        panel.SetActive(false);
     }
 
     public void ShowQuiz(string className, string question, string answer, Vector3 worldPos)

@@ -1356,7 +1356,7 @@ MonoBehaviour:
   potSpawner: {fileID: 1119661632}
   detectionVisualizer: {fileID: 709663853}
   sceneToLoadAfterTimeout: MiniGame_Bear_Scene
-  timeLimitInSeconds: 2
+  timeLimitInSeconds: 180
   timerText: {fileID: 254199694}
   dialogueManager: {fileID: 1635961990}
 --- !u!4 &754948217
