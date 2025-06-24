@@ -4,6 +4,7 @@
     "com.unity.barracuda": "https://github.com/Unity-Technologies/barracuda-release.git",
     "com.unity.collab-proxy": "2.7.1",
     "com.unity.feature.development": "1.0.1",
+    "com.unity.postprocessing": "3.4.0",
     "com.unity.render-pipelines.universal": "12.1.15",
     "com.unity.textmeshpro": "3.0.6",
     "com.unity.timeline": "1.7.6",

@@ -12,7 +12,6 @@ public class MiniGameManager_Penguin : MonoBehaviour
     public GameObject successUI;
     public GameObject failUI;
     public GameObject tutorialPanel;
-    public Button retryButton;
     public Text timerText;
 
     public float timeLimit = 5f;
@@ -36,7 +35,6 @@ public class MiniGameManager_Penguin : MonoBehaviour
         tutorialPanel.SetActive(true);
 
         timer = timeLimit;
-        retryButton.onClick.AddListener(RestartGame);
         StartCoroutine(StartGameAfterTutorial());
     }
 
@@ -92,6 +90,6 @@ public class MiniGameManager_Penguin : MonoBehaviour
 
     public void RestartGame()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        SceneManager.LoadScene("MiniGame_Penguin_Scene");
     }
 }

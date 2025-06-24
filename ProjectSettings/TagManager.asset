@@ -8,14 +8,10 @@ TagManager:
   - Enemy
   - Projectile
   - Grabbable
-  - ToSlam
-  - ToOasis
-  - ToMulti
-  - ToRabbit
-  - ToBear
-  - ToFox
-  - ToPenguin
-  - ToMain
+  - Bucket
+  - Penguin
+  - Rabbit
+  - Oasis
   layers:
   - Default
   - TransparentFX
@@ -25,7 +21,7 @@ TagManager:
   - UI
   - HandLayer
   - Grabbable
-  - 
+  - Fx
   - 
   - 
   - 
