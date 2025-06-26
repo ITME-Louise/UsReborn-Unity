@@ -1383,6 +1383,10 @@ PrefabInstance:
       propertyPath: _hand
       value: 
       objectReference: {fileID: 2316449173803222526}
+    - target: {fileID: 7115514373378169641, guid: fb201b34921119e469e82d12fd963ae2, type: 3}
+      propertyPath: _transformer
+      value: 
+      objectReference: {fileID: 5948450291891926198}
     - target: {fileID: 7804022333523326321, guid: fb201b34921119e469e82d12fd963ae2, type: 3}
       propertyPath: _handler
       value: 
@@ -1518,6 +1522,10 @@ PrefabInstance:
       propertyPath: _hand
       value: 
       objectReference: {fileID: 2122289517317004103}
+    - target: {fileID: 7115514373378169641, guid: fb201b34921119e469e82d12fd963ae2, type: 3}
+      propertyPath: _transformer
+      value: 
+      objectReference: {fileID: 5948450291891926198}
     - target: {fileID: 7804022333523326321, guid: fb201b34921119e469e82d12fd963ae2, type: 3}
       propertyPath: _handler
       value: 
