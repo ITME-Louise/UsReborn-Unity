@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
 
+
 public class EnemyHP : MonoBehaviourPun
 {
     public float maxHp = 100f;
@@ -15,25 +16,32 @@ public class EnemyHP : MonoBehaviourPun
     void Start()
     {
         currentHp = maxHp;
-        if (hpSlider != null)
+        hpSlider.maxValue = maxHp;
+        hpSlider.value = currentHp;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        Debug.Log($"[EnemyHP] 충돌 감지: {other.name}, 태그: {other.tag}");
+
+        if (other.CompareTag("PlayerHand"))
         {
-            hpSlider.maxValue = maxHp;
-            hpSlider.value = currentHp;
+            TakeDamage(10f);
         }
     }
 
+
     public void TakeDamage(float amount)
     {
-        if (!photonView.IsMine) return;
-
         currentHp -= amount;
-        currentHp = Mathf.Max(currentHp, 0f);
-
-        if (hpSlider != null) hpSlider.value = currentHp;
+        hpSlider.value = currentHp;
 
         CheckAttackPhase();
 
-        if (currentHp <= 0f) Die();
+        if (currentHp <= 0f)
+        {
+            Die();
+        }
     }
 
     void CheckAttackPhase()
@@ -55,21 +63,16 @@ public class EnemyHP : MonoBehaviourPun
         }
     }
 
+    void Die()
+    {
+        Debug.Log("Enemy died!");
+        Destroy(gameObject);
+    }
+
     [PunRPC]
     void AttackAllPlayers()
     {
-        foreach (GameObject player in GameObject.FindGameObjectsWithTag("Player"))
-        {
-            PlayerHP hp = player.GetComponent<PlayerHP>();
-            if (hp != null)
-            {
-                hp.TakeDamage((int)10f);
-            }
-        }
-    }
-
-    void Die()
-    {
-        PhotonNetwork.Destroy(gameObject);
+        // 여기에 플레이어 전체 데미지 주는 RPC 호출 있음
+        Debug.Log("Enemy triggered RPC attack to all players!");
     }
 }
