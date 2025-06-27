@@ -12,6 +12,12 @@ TagManager:
   - Penguin
   - Rabbit
   - Oasis
+  - ToBear
+  - ToRabbit
+  - ToMulti
+  - ToPenguin
+  - ToFox
+  - ToOasis
   layers:
   - Default
   - TransparentFX
