@@ -37,4 +37,4 @@ public class TeleportToMultiplay : MonoBehaviourPun
             PhotonNetwork.LoadLevel(targetScene);
         }
     }
-}
+} 
