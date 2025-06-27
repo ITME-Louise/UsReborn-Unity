@@ -18,6 +18,9 @@ TagManager:
   - ToPenguin
   - ToFox
   - ToOasis
+  - Bullet
+  - ToMain
+  - ToSlam
   layers:
   - Default
   - TransparentFX
