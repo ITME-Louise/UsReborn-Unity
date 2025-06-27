@@ -18,6 +18,8 @@ TagManager:
   - ToPenguin
   - ToFox
   - ToOasis
+  - Bullet
+  - ToMain
   layers:
   - Default
   - TransparentFX
