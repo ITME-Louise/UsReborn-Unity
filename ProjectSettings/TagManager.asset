@@ -20,6 +20,7 @@ TagManager:
   - ToOasis
   - Bullet
   - ToMain
+  - ToSlam
   layers:
   - Default
   - TransparentFX
