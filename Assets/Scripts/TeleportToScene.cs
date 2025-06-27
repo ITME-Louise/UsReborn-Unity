@@ -48,5 +48,5 @@ public class TeleportToScene : MonoBehaviour
             hasTriggered = true; // 중복 호출 방지
             SceneManager.LoadScene(targetScene);
         }
-    }
+    } 
 }
