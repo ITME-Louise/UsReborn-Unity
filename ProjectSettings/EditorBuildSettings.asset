@@ -17,7 +17,7 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/Slam_Scene.unity
     guid: 82789e9aa3866d44d92584943fae7a56
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/MiniGame_Bear_Scene.unity
     guid: c2f4f14b9bb0d754187e07183abc113b
   - enabled: 0
@@ -29,7 +29,7 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/MiniGame_Rabbit_Scene.unity
     guid: 9ec60a89d17e89a4b86b63dd423524ea
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Mini_Oasis.unity
     guid: 32561d17e444dd541a7acb504330fd32
   - enabled: 0
