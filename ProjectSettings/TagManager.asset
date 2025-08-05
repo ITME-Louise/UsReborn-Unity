@@ -21,7 +21,6 @@ TagManager:
   - Bullet
   - ToMain
   - ToSlam
-  - trash
   layers:
   - Default
   - TransparentFX
