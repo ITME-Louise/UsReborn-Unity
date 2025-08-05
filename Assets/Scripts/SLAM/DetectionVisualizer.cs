@@ -4,114 +4,80 @@ using UnityEngine;
 public class DetectionVisualizer : MonoBehaviour
 {
     [SerializeField] private bool debugMode = true;
-    [SerializeField] private PotSpawner potSpawner;
     [SerializeField] private QuizManager quizManager;
-    
+    [SerializeField] private float raycastDistance = 50f;
+    [SerializeField] private bool showRaycastGizmo = true;
+
     private bool isQuizActive = false;
 
-    private float quizTimeoutDuration = 10f;
-    private float quizTimer = 0f;
-    private bool isTimeoutActive = false;
+    private readonly string[] classNames = { "paper", "pack", "can", "glass", "pet", "plastic", "vinyl" };
 
-    void Update()
+    public void VisualizeDetectionsWithRaycast(List<Detection> detections, Camera camera, Camera vrCamera, LayerMask trashLayerMask)
     {
-        if (isTimeoutActive)
+        if (isQuizActive || vrCamera == null || detections == null || detections.Count == 0)
+            return;
+
+        Vector3 rayOrigin = vrCamera.transform.position;
+        Vector3 rayDirection = vrCamera.transform.forward;
+
+        if (showRaycastGizmo)
+            Debug.DrawRay(rayOrigin, rayDirection * raycastDistance, Color.red, 2f);
+
+        if (Physics.Raycast(rayOrigin, rayDirection, out RaycastHit hit, raycastDistance))
         {
-            quizTimer += Time.deltaTime;
-            if (quizTimer >= quizTimeoutDuration)
+            if (debugMode) Debug.Log($"Raycast 히트: {hit.collider.name}, 위치: {hit.point}");
+
+            string trashClass = GetTrashClassFromObject(hit.collider.gameObject);
+            if (!string.IsNullOrEmpty(trashClass))
             {
-                if (debugMode) Debug.Log("DetectionVisualizer: 퀴즈 타임아웃 발생, 퀴즈 종료 처리");
-                OnQuizCompleted();
+                Detection matched = FindMatchingDetection(detections, trashClass);
+                if (matched != null)
+                {
+                    if (debugMode) Debug.Log($"매칭 감지: {matched.ClassName}, 신뢰도: {matched.Confidence:F2}");
+                    CreateVisualization(matched, hit.point, camera);
+                }
+                else if (debugMode) Debug.Log($"감지 결과에 {trashClass} 없음");
             }
+            else if (debugMode) Debug.Log($"클래스 없음: {hit.collider.name}");
         }
+        else if (debugMode)
+            Debug.Log("Raycast 히트 없음");
     }
-    
-    public void VisualizeDetections(List<Detection> detections, Camera camera, SLAMCalibrator calibrator)
+
+    private string GetTrashClassFromObject(GameObject obj)
     {
-        if (debugMode) Debug.Log("=== DetectionVisualizer.VisualizeDetections 시작 ===");
-        
-        if (isQuizActive)
-        {
-            if (debugMode) Debug.Log("DetectionVisualizer: 퀴즈가 진행 중이므로 새로운 감지를 건너뜁니다.");
-            return;
-        }
-        
-        if (camera == null)
-        {
-            Debug.LogError("DetectionVisualizer: 카메라가 null입니다!");
-            return;
-        }
-        
-        if (calibrator == null)
-        {
-            Debug.LogError("DetectionVisualizer: SLAMCalibrator가 null입니다!");
-            return;
-        }
-        
-        if (detections == null)
-        {
-            Debug.LogError("DetectionVisualizer: detections 리스트가 null입니다!");
-            return;
-        }
+        string lowerName = obj.name.ToLower();
+        foreach (var cname in classNames)
+            if (lowerName.Contains(cname))
+                return cname;
 
-        if (debugMode) Debug.Log($"DetectionVisualizer: 받은 감지 결과 개수: {detections.Count}");
-
-        if (detections.Count == 0)
-        {
-            if (debugMode) Debug.Log("DetectionVisualizer: 감지된 객체가 없습니다.");
-            return;
-        }
-
-        for (int i = 0; i < detections.Count; i++)
-        {
-            var det = detections[i];
-            if (debugMode) Debug.Log($"DetectionVisualizer: 처리 중인 감지 결과 [{i}] - 클래스: {det.ClassName}, 신뢰도: {det.Confidence:F3}");
-
-            Vector2 uv = new Vector2(det.BoundingBox.center.x, 1f - det.BoundingBox.center.y);
-
-            if (debugMode) Debug.Log($"DetectionVisualizer: 바운딩 박스 중심: ({det.BoundingBox.center.x:F2}, {det.BoundingBox.center.y:F2}) → UV: ({uv.x:F2}, {uv.y:F2})");
-
-            Vector3? worldPos = calibrator.GetWorldPosition(uv);
-
-            if (worldPos == null)
-            {
-                Debug.LogWarning($"DetectionVisualizer: UV → 3D 매핑 실패 : {uv}");
-                continue;
-            }
-
-            Vector3 finalWorldPos = worldPos.Value;
-
-            if (debugMode) Debug.Log($"DetectionVisualizer: 최종 처리 결과 - 클래스: {det.ClassName}, 신뢰도: {det.Confidence:F2}, UV: {uv}, 월드좌표: {finalWorldPos}");
-
-            CreateVisualization(det, finalWorldPos, camera);
-            break;
-        }
-        
-        if (debugMode) Debug.Log("=== DetectionVisualizer.VisualizeDetections 완료 ===");
+        var trashType = obj.GetComponent<TrashType>();
+        return trashType != null ? trashType.className : null;
     }
-    
-    private void CreateVisualization(Detection detection, Vector3 worldPos, Camera camera)
+
+    private Detection FindMatchingDetection(List<Detection> detections, string target)
     {
-        if (debugMode) Debug.Log($"DetectionVisualizer: CreateVisualization 호출 - 클래스: {detection.ClassName}, 위치: {worldPos}");
+        foreach (var d in detections)
+            if (d.ClassName == target)
+                return d;
+        return null;
+    }
 
-        if (quizManager == null)
-        {
-            Debug.LogError("DetectionVisualizer: QuizManager가 null입니다. Inspector에서 할당해주세요.");
-            return;
-        }
-
-        isQuizActive = true;
-        isTimeoutActive = true;
-        quizTimer = 0f;
-
-        quizManager.StartQuiz(detection.ClassName, worldPos);
+    private void CreateVisualization(Detection detection, Vector3 hitPoint, Camera camera)
+    {
+        Vector3 spawnPos = hitPoint;
+        quizManager.StartQuiz(detection.ClassName, spawnPos);
     }
 
     public void OnQuizCompleted()
     {
         isQuizActive = false;
-        isTimeoutActive = false;
-        quizTimer = 0f;
-        if (debugMode) Debug.Log("DetectionVisualizer: 퀴즈 완료, 다음 감지 준비됨");
+        if (debugMode) Debug.Log("퀴즈 완료 – 다음 감지 준비");
     }
+}
+
+[System.Serializable]
+public class TrashType : MonoBehaviour
+{
+    public string className;
 }
