@@ -17,13 +17,13 @@ public class DetectionVisualizer : MonoBehaviour
         if (isQuizActive || vrCamera == null || detections == null || detections.Count == 0)
             return;
 
-        Vector3 rayOrigin = vrCamera.transform.position;
-        Vector3 rayDirection = vrCamera.transform.forward;
+        Vector3 origin = vrCamera.transform.position;
+        Vector3 dir = vrCamera.transform.forward;
 
         if (showRaycastGizmo)
-            Debug.DrawRay(rayOrigin, rayDirection * raycastDistance, Color.red, 2f);
+            Debug.DrawRay(origin, dir * raycastDistance, Color.red, 2f);
 
-        if (Physics.Raycast(rayOrigin, rayDirection, out RaycastHit hit, raycastDistance))
+        if (Physics.Raycast(origin, dir, out RaycastHit hit, raycastDistance, trashLayerMask))
         {
             if (debugMode) Debug.Log($"Raycast 히트: {hit.collider.name}, 위치: {hit.point}");
 
@@ -33,12 +33,16 @@ public class DetectionVisualizer : MonoBehaviour
                 Detection matched = FindMatchingDetection(detections, trashClass);
                 if (matched != null)
                 {
-                    if (debugMode) Debug.Log($"매칭 감지: {matched.ClassName}, 신뢰도: {matched.Confidence:F2}");
+                    if (debugMode)
+                        Debug.Log($"매칭 감지: {matched.ClassName}, 신뢰도: {matched.Confidence:F2}");
                     CreateVisualization(matched, hit.point, camera);
+                    isQuizActive = true;
                 }
-                else if (debugMode) Debug.Log($"감지 결과에 {trashClass} 없음");
+                else if (debugMode)
+                    Debug.Log($"감지 결과에 {trashClass} 없음");
             }
-            else if (debugMode) Debug.Log($"클래스 없음: {hit.collider.name}");
+            else if (debugMode)
+                Debug.Log($"클래스 없음: {hit.collider.name}");
         }
         else if (debugMode)
             Debug.Log("Raycast 히트 없음");
@@ -48,25 +52,20 @@ public class DetectionVisualizer : MonoBehaviour
     {
         string lowerName = obj.name.ToLower();
         foreach (var cname in classNames)
-            if (lowerName.Contains(cname))
-                return cname;
+            if (lowerName.Contains(cname)) return cname;
 
         var trashType = obj.GetComponent<TrashType>();
-        return trashType != null ? trashType.className : null;
+        return trashType?.className;
     }
 
-    private Detection FindMatchingDetection(List<Detection> detections, string target)
+    private Detection FindMatchingDetection(List<Detection> detections, string targetClass)
     {
-        foreach (var d in detections)
-            if (d.ClassName == target)
-                return d;
-        return null;
+        return detections.Find(d => d.ClassName == targetClass);
     }
 
     private void CreateVisualization(Detection detection, Vector3 hitPoint, Camera camera)
     {
-        Vector3 spawnPos = hitPoint;
-        quizManager.StartQuiz(detection.ClassName, spawnPos);
+        quizManager?.StartQuiz(detection.ClassName, hitPoint);
     }
 
     public void OnQuizCompleted()
@@ -74,10 +73,4 @@ public class DetectionVisualizer : MonoBehaviour
         isQuizActive = false;
         if (debugMode) Debug.Log("퀴즈 완료 – 다음 감지 준비");
     }
-}
-
-[System.Serializable]
-public class TrashType : MonoBehaviour
-{
-    public string className;
 }
