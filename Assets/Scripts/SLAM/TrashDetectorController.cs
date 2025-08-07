@@ -18,29 +18,23 @@ public class TrashDetectorController : MonoBehaviour
 
     void Awake()
     {
-        Debug.Log("TrashDetector: 초기화 시작");
-
         modelManager = GetComponent<MLModelManager>();
         cameraCapture = GetComponent<CameraCapture>();
         detectionProcessor = GetComponent<DetectionProcessor>();
         visualizer = GetComponent<DetectionVisualizer>();
 
         // OVR Camera Rig에서 Center Eye Anchor 찾기
-        GameObject ovrCameraRig = GameObject.Find("OVRCameraRig");
-        if (ovrCameraRig != null)
+        var ovrRig = GameObject.Find("OVRCameraRig");
+        if (ovrRig != null)
         {
-            Transform centerEyeAnchor = ovrCameraRig.transform.Find("TrackingSpace/CenterEyeAnchor");
+            var centerEyeAnchor = ovrRig.transform.Find("TrackingSpace/CenterEyeAnchor");
             if (centerEyeAnchor != null)
-            {
                 vrCamera = centerEyeAnchor.GetComponent<Camera>();
-            }
         }
 
-        // OVRCameraRig가 없으면 다른 방법으로 찾기
         if (vrCamera == null)
         {
-            Camera[] cameras = FindObjectsOfType<Camera>();
-            foreach (Camera cam in cameras)
+            foreach (var cam in FindObjectsOfType<Camera>())
             {
                 if (cam.name.Contains("CenterEyeAnchor") || cam.name.Contains("Eye"))
                 {
@@ -51,72 +45,54 @@ public class TrashDetectorController : MonoBehaviour
         }
 
         if (vrCamera == null)
-        {
-            Debug.LogError("TrashDetectorController: OVR 카메라를 찾을 수 없습니다!");
-        }
-        else
-        {
-            Debug.Log($"TrashDetectorController: 카메라 찾음 - {vrCamera.name}");
-        }
+            Debug.LogError("TrashDetectorController: VR 카메라를 찾을 수 없습니다.");
+        else if (debugMode)
+            Debug.Log($"TrashDetectorController: VR 카메라 찾음: {vrCamera.name}");
 
-        // trash 레이어를 LayerMask로 설정
         trashLayerMask = LayerMask.GetMask("trash");
 
-        if (modelManager == null) Debug.LogError("TrashDetector: MLModelManager 컴포넌트가 필요합니다!");
-        if (cameraCapture == null) Debug.LogError("TrashDetector: CameraCapture 컴포넌트가 필요합니다!");
-        if (detectionProcessor == null) Debug.LogError("TrashDetector: DetectionProcessor 컴포넌트가 필요합니다!");
-        if (visualizer == null) Debug.LogError("TrashDetector: DetectionVisualizer 컴포넌트가 필요합니다!");
+        if (modelManager == null) Debug.LogError("MLModelManager 컴포넌트가 필요합니다!");
+        if (cameraCapture == null) Debug.LogError("CameraCapture 컴포넌트가 필요합니다!");
+        if (detectionProcessor == null) Debug.LogError("DetectionProcessor 컴포넌트가 필요합니다!");
+        if (visualizer == null) Debug.LogError("DetectionVisualizer 컴포넌트가 필요합니다!");
 
         if (modelManager != null)
         {
             modelManager.OnModelLoaded += OnModelLoaded;
             modelManager.OnModelLoadError += OnModelLoadError;
-            Debug.Log("TrashDetector: 이벤트 구독 완료");
         }
     }
 
     void Start()
     {
         if (modelManager != null && modelManager.IsModelLoaded)
-        {
-            Debug.Log("TrashDetector: 모델이 이미 로드되어 있음, 즉시 시작");
             OnModelLoaded();
-        }
-        else
-        {
-            Debug.Log("TrashDetector: 모델 로드 대기 중...");
-        }
     }
 
     private void OnModelLoaded()
     {
-        Debug.Log("OnModelLoaded 이벤트 호출됨");
-
-        if (!IsInvoking("DetectTrash"))
-        {
-            InvokeRepeating("DetectTrash", 3.0f, 3.0f);
-            Debug.Log("TrashDetector: 초기화 완료, 3초 후 쓰레기 감지 시작");
-        }
+        if (!IsInvoking(nameof(DetectTrash)))
+            InvokeRepeating(nameof(DetectTrash), 3f, 3f);
+        if (debugMode) Debug.Log("TrashDetectorController: 감지 시작");
     }
 
     private void OnModelLoadError(string error)
     {
-        Debug.LogError($"TrashDetector: 모델 로드 실패로 인한 감지 중단 - {error}");
+        Debug.LogError($"TrashDetectorController: 모델 로드 실패 - {error}");
     }
 
-    void DetectTrash()
+    private void DetectTrash()
     {
         if (isProcessing || !modelManager.IsModelLoaded) return;
         isProcessing = true;
-
         StartCoroutine(CaptureAndProcess());
     }
 
-    IEnumerator CaptureAndProcess()
+    private IEnumerator CaptureAndProcess()
     {
         yield return new WaitForEndOfFrame();
 
-        Camera camera = cameraCapture.GetCamera();
+        var camera = cameraCapture.GetCamera();
         if (camera == null)
         {
             isProcessing = false;
@@ -131,7 +107,7 @@ public class TrashDetectorController : MonoBehaviour
         }
         catch (System.Exception e)
         {
-            Debug.LogError($"TrashDetector: 이미지 처리 중 오류 - {e.Message}");
+            Debug.LogError($"TrashDetectorController: 이미지 처리 중 오류 - {e.Message}");
         }
 
         isProcessing = false;
@@ -139,46 +115,34 @@ public class TrashDetectorController : MonoBehaviour
 
     private void ProcessImage(Camera camera)
     {
-        if (debugMode) Debug.Log("TrashDetector: 이미지 처리 시작");
+        if (debugMode) Debug.Log("TrashDetectorController: 이미지 처리 시작");
 
-        Texture2D capturedTexture = cameraCapture.GetCapturedTexture();
-
-        if (capturedTexture == null)
+        Texture2D texture = cameraCapture.CurrentTexture;
+        if (texture == null)
         {
-            Debug.LogError("TrashDetector: 캡처된 텍스처가 null입니다!");
+            Debug.LogError("TrashDetectorController: 캡처된 텍스처가 null임");
             return;
         }
 
-        using (var inputTensor = new Tensor(capturedTexture, channels: 3))
+        using (var inputTensor = new Tensor(texture, 3))
         {
             if (debugMode)
-            {
-                Debug.Log($"TrashDetector: 입력 텐서 크기: {inputTensor.shape}");
-                Debug.Log($"TrashDetector: 입력 텐서 차원: batch={inputTensor.batch}, height={inputTensor.height}, width={inputTensor.width}, channels={inputTensor.channels}");
-            }
+                Debug.Log($"입력 텐서 크기 {inputTensor.shape}");
 
-            // 모델 실행
-            Tensor outputTensor = modelManager.ExecuteModel(inputTensor);
-
+            var outputTensor = modelManager.ExecuteModel(inputTensor);
             if (outputTensor == null)
             {
-                Debug.LogError("TrashDetector: 모델 실행 결과가 null입니다.");
+                Debug.LogError("TrashDetectorController: 모델 출력이 null");
                 return;
             }
 
             if (debugMode)
-            {
-                Debug.Log($"TrashDetector: 모델 실행 완료, 출력 텐서 크기: {outputTensor.shape}");
-                Debug.Log($"TrashDetector: 출력 텐서 차원: batch={outputTensor.batch}, height={outputTensor.height}, width={outputTensor.width}, channels={outputTensor.channels}");
-            }
+                Debug.Log($"출력 텐서 크기 {outputTensor.shape}");
 
-            // 결과 처리
-            List<Detection> detections = detectionProcessor.ProcessDetectionResults(outputTensor);
+            var detections = detectionProcessor.ProcessDetectionResults(outputTensor);
 
-            // 레이캐스트 방식으로 시각화
             visualizer.VisualizeDetectionsWithRaycast(detections, camera, vrCamera, trashLayerMask);
 
-            // 텐서 해제
             outputTensor.Dispose();
         }
     }
@@ -186,7 +150,6 @@ public class TrashDetectorController : MonoBehaviour
     void OnDestroy()
     {
         CancelInvoke();
-
         if (modelManager != null)
         {
             modelManager.OnModelLoaded -= OnModelLoaded;
