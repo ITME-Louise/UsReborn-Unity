@@ -87,28 +87,21 @@ public class QuizManager : MonoBehaviour
     public void StartQuiz(string className, Vector3 worldPos)
     {
         if (isQuizEnded) return;
-
         if (!quizData.ContainsKey(className)) return;
 
         var quizList = quizData[className];
         var selected = quizList[Random.Range(0, quizList.Count)];
-        string question = selected.Item1;
-        string answer = selected.Item2;
-
-        quizUI.ShowQuiz(className, question, answer, worldPos);
+        quizUI.ShowQuiz(className, selected.Item1, selected.Item2, worldPos);
     }
 
     public void OnAnswerSubmitted(string userAnswer, string correctAnswer, string className, Vector3 worldPos)
     {
-        if (detectionVisualizer != null)
-        {
-            detectionVisualizer.OnQuizCompleted();
-        }
-        
+        detectionVisualizer?.OnQuizCompleted();
+
         if (userAnswer == correctAnswer)
         {
             Debug.Log("정답입니다!");
-            potSpawner.SpawnPot(worldPos, className);
+            potSpawner?.SpawnPot(worldPos, className);
         }
         else
         {
