@@ -831,6 +831,19 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -2432090755550338912, guid: 06f2ce5ea66e97e4bbc399b6835d4a67, type: 3}
+--- !u!114 &414444813
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 414444811}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd08fa1026a30a142a6a5d4a21ca49fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  className: paper
 --- !u!1 &483087079
 GameObject:
   m_ObjectHideFlags: 0
@@ -1290,7 +1303,6 @@ GameObject:
   m_Component:
   - component: {fileID: 709663850}
   - component: {fileID: 709663856}
-  - component: {fileID: 709663855}
   - component: {fileID: 709663854}
   - component: {fileID: 709663853}
   - component: {fileID: 709663852}
@@ -1374,46 +1386,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   modelAsset: {fileID: 5022602860645237092, guid: 360781be86348d0439f8fa30864adb32, type: 3}
---- !u!114 &709663855
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 709663848}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 88ca023641d91c54e9da4790871df998, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  slamModel: {fileID: 2026718002}
-  calibrationPoints:
-  - name: vinyl
-    uv: {x: 0.36, y: 0.51}
-    worldPos: {x: 1.746, y: -2.13, z: 0.635}
-  - name: glass
-    uv: {x: 0.12, y: 0.5}
-    worldPos: {x: -0.008, y: -2.13, z: 2.24}
-  - name: paper
-    uv: {x: 0.29, y: 0.52}
-    worldPos: {x: 2.411, y: -2.13, z: 2.42}
-  - name: plastic
-    uv: {x: 0.43, y: 0.42}
-    worldPos: {x: 2.63, y: -2.13, z: 1.261}
-  - name: paper2
-    uv: {x: 0.57, y: 0.57}
-    worldPos: {x: 2.5, y: -2.13, z: -0.62}
-  - name: can
-    uv: {x: 0.59, y: 0.46}
-    worldPos: {x: 0.62, y: -2.13, z: 0.45}
-  translation: {x: 0, y: 0, z: 0}
-  rotation: {x: 0, y: 0, z: 0}
-  scale: {x: 1, y: 1, z: 1}
-  debugMode: 1
-  mesh: {fileID: 0}
-  uvs: []
-  vertices: []
-  meshTransform: {fileID: 0}
 --- !u!114 &709663856
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1429,7 +1401,7 @@ MonoBehaviour:
   debugMode: 1
   trashLayerMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 512
 --- !u!1 &754948215
 GameObject:
   m_ObjectHideFlags: 0
@@ -1590,6 +1562,19 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -2432090755550338912, guid: 3a78d4c1656aab64daa48f0d5fb0156f, type: 3}
+--- !u!114 &757313427
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 757313425}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd08fa1026a30a142a6a5d4a21ca49fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  className: can
 --- !u!1001 &828089930
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2097,6 +2082,19 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -2432090755550338912, guid: dcfe7060aefd7ac49b334f8dbbb2f235, type: 3}
+--- !u!114 &1077658760
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1077658758}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd08fa1026a30a142a6a5d4a21ca49fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  className: paper
 --- !u!114 &1105374041 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3351887280093960702, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
@@ -3690,6 +3688,19 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -2432090755550338912, guid: e63c49888fb125044a0331ed35981057, type: 3}
+--- !u!114 &1884597312
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1884597310}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd08fa1026a30a142a6a5d4a21ca49fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  className: pet
 --- !u!1 &1885363493 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1479451536458054904, guid: ca7259da3631df14d9aa688b92d282e8, type: 3}
@@ -3808,6 +3819,19 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -2432090755550338912, guid: cfac677ae0fe50f42aab45858c956ca2, type: 3}
+--- !u!114 &1997067395
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1997067393}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd08fa1026a30a142a6a5d4a21ca49fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  className: glass
 --- !u!1 &2013245388
 GameObject:
   m_ObjectHideFlags: 0
@@ -3978,11 +4002,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &2026718002 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: -8098169881513260187, guid: 9c31e6f2bae91d94a924f16d96758ca3, type: 3}
-  m_PrefabInstance: {fileID: 828089930}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2099303609 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3351887280100700214, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
@@ -4088,6 +4107,19 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: -2432090755550338912, guid: 96a07444cd82b0244b3a738fed27d7bd, type: 3}
+--- !u!114 &2115540840
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2115540838}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd08fa1026a30a142a6a5d4a21ca49fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  className: vinyl
 --- !u!1001 &1479451534572691933
 PrefabInstance:
   m_ObjectHideFlags: 0
