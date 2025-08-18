@@ -15,6 +15,7 @@ public class TrashDetectorController : MonoBehaviour
     private Camera vrCamera;
 
     private bool isProcessing = false;
+    private bool shouldDetect = false; // 손 충돌 시에만 감지
 
     void Awake()
     {
@@ -71,9 +72,7 @@ public class TrashDetectorController : MonoBehaviour
 
     private void OnModelLoaded()
     {
-        if (!IsInvoking(nameof(DetectTrash)))
-            InvokeRepeating(nameof(DetectTrash), 3f, 3f);
-        if (debugMode) Debug.Log("TrashDetectorController: 감지 시작");
+        if (debugMode) Debug.Log("TrashDetectorController: 모델 로드 완료, 손 충돌 대기 중");
     }
 
     private void OnModelLoadError(string error)
@@ -81,10 +80,22 @@ public class TrashDetectorController : MonoBehaviour
         Debug.LogError($"TrashDetectorController: 모델 로드 실패 - {error}");
     }
 
+    // 손 충돌 시 호출
+    public void TriggerDetection()
+    {
+
+        if (isProcessing || !modelManager.IsModelLoaded) return;
+
+        shouldDetect = true;
+        DetectTrash();
+    }
+
     private void DetectTrash()
     {
-        if (isProcessing || !modelManager.IsModelLoaded) return;
+        if (isProcessing || !modelManager.IsModelLoaded || !shouldDetect) return;
+
         isProcessing = true;
+        shouldDetect = false;
         StartCoroutine(CaptureAndProcess());
     }
 

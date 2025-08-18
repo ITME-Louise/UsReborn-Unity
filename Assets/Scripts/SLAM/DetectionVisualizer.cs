@@ -9,68 +9,61 @@ public class DetectionVisualizer : MonoBehaviour
     [SerializeField] private bool showRaycastGizmo = true;
 
     private bool isQuizActive = false;
-
+    private GameObject waitingTrashObject = null;
     private readonly string[] classNames = { "paper", "pack", "can", "glass", "pet", "plastic", "vinyl" };
+
+    public void SetWaitingForRecognition(GameObject trashObj)
+    {
+        waitingTrashObject = trashObj;
+        Debug.Log($"ML 인식 대기 중: {trashObj.name}");
+    }
 
     public void VisualizeDetectionsWithRaycast(List<Detection> detections, Camera camera, Camera vrCamera, LayerMask trashLayerMask)
     {
-        if (isQuizActive || vrCamera == null || detections == null || detections.Count == 0)
+        if (isQuizActive || detections == null || detections.Count == 0 || waitingTrashObject == null)
             return;
 
-        Vector3 origin = vrCamera.transform.position;
-        Vector3 dir = vrCamera.transform.forward;
-
-        if (showRaycastGizmo)
-            Debug.DrawRay(origin, dir * raycastDistance, Color.red, 2f);
-
-        if (Physics.Raycast(origin, dir, out RaycastHit hit, raycastDistance, trashLayerMask))
+        if (debugMode)
         {
-            if (debugMode) Debug.Log($"Raycast 히트: {hit.collider.name}, 위치: {hit.point}");
-
-            string trashClass = GetTrashClassFromObject(hit.collider.gameObject);
-            if (!string.IsNullOrEmpty(trashClass))
+            foreach (var detection in detections)
             {
-                Detection matched = FindMatchingDetection(detections, trashClass);
-                if (matched != null)
-                {
-                    if (debugMode)
-                        Debug.Log($"매칭 감지: {matched.ClassName}, 신뢰도: {matched.Confidence:F2}");
-                    CreateVisualization(matched, hit.point, camera);
-                    isQuizActive = true;
-                }
-                else if (debugMode)
-                    Debug.Log($"감지 결과에 {trashClass} 없음");
+                Debug.Log($"ML 감지: {detection.ClassName}, 신뢰도: {detection.Confidence:F2}");
             }
-            else if (debugMode)
-                Debug.Log($"클래스 없음: {hit.collider.name}");
+        }
+
+        // 가장 높은 신뢰도의 감지 결과 사용
+        Detection bestDetection = null;
+        float maxConfidence = 0f;
+
+        foreach (var detection in detections)
+        {
+            if (detection.Confidence > maxConfidence)
+            {
+                maxConfidence = detection.Confidence;
+                bestDetection = detection;
+            }
+        }
+
+        if (bestDetection != null && bestDetection.Confidence > 0.5f) // 신뢰도 임계값
+        {
+            Debug.Log($"인식된 쓰레기: {bestDetection.ClassName} (신뢰도: {bestDetection.Confidence:F2})");
+
+            Vector3 spawnPos = waitingTrashObject.transform.position;
+            quizManager?.StartQuiz(bestDetection.ClassName, spawnPos);
+
+            isQuizActive = true;
+            waitingTrashObject = null;
         }
         else if (debugMode)
-            Debug.Log("Raycast 히트 없음");
-    }
-
-    private string GetTrashClassFromObject(GameObject obj)
-    {
-        string lowerName = obj.name.ToLower();
-        foreach (var cname in classNames)
-            if (lowerName.Contains(cname)) return cname;
-
-        var trashType = obj.GetComponent<TrashType>();
-        return trashType?.className;
-    }
-
-    private Detection FindMatchingDetection(List<Detection> detections, string targetClass)
-    {
-        return detections.Find(d => d.ClassName == targetClass);
-    }
-
-    private void CreateVisualization(Detection detection, Vector3 hitPoint, Camera camera)
-    {
-        quizManager?.StartQuiz(detection.ClassName, hitPoint);
+        {
+            Debug.Log("신뢰도가 낮아 퀴즈를 시작하지 않음");
+        }
     }
 
     public void OnQuizCompleted()
     {
         isQuizActive = false;
+        waitingTrashObject = null;
         if (debugMode) Debug.Log("퀴즈 완료 – 다음 감지 준비");
     }
 }
