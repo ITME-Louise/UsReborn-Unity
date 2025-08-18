@@ -5,11 +5,10 @@ using UnityEngine;
 public class HandCollisionDetector : MonoBehaviour
 {
     [SerializeField] private LayerMask trashLayerMask; // trash
-
     private bool isHoldingTrash = false;
     private GameObject currentTrash = null;
 
-    private void OnTriggerExit(Collider other)
+    private void OnTriggerEnter(Collider other)
     {
         if (((1 << other.gameObject.layer) & trashLayerMask) != 0 && !isHoldingTrash)
         {
@@ -17,10 +16,12 @@ public class HandCollisionDetector : MonoBehaviour
             currentTrash = other.gameObject;
             Debug.Log("손-쓰레기 충돌 인식 " + currentTrash.name);
 
-            TrashRecognitionManager.Instance.OnTrashPicked(currentTrash);
+            // ML 인식 트리거
+            QuizManager.Instance?.TriggerMLRecognition(currentTrash);
         }
     }
-    private void OntriggerExit(Collider other)
+
+    private void OnTriggerExit(Collider other)
     {
         if (other.gameObject == currentTrash)
         {

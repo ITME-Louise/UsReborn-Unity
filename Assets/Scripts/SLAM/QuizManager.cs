@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class QuizManager : MonoBehaviour
 {
+    public static QuizManager Instance;
+
     [SerializeField] private QuizUIController quizUI;
     [SerializeField] private SlamQuiizUIController quizUII;
     [SerializeField] private PotSpawner potSpawner;
@@ -78,10 +80,34 @@ public class QuizManager : MonoBehaviour
         }}
     };
 
+    private void Awake()
+    {
+        Instance = this;
+    }
+
     private void Start()
     {
         quizUI.Initialize(this);
         StartTimer();
+    }
+
+    // 손 충돌 시 ML 인식 트리거
+    public void TriggerMLRecognition(GameObject trashObj)
+    {
+        Debug.Log($"ML 인식 트리거: {trashObj.name}");
+
+        // DetectionVisualizer에 대기 설정
+        if (detectionVisualizer != null)
+        {
+            detectionVisualizer.SetWaitingForRecognition(trashObj);
+        }
+
+        // TrashDetectorController에 감지 명령
+        var trashDetector = FindObjectOfType<TrashDetectorController>();
+        if (trashDetector != null)
+        {
+            trashDetector.TriggerDetection();
+        }
     }
 
     public void StartQuiz(string className, Vector3 worldPos)
@@ -119,7 +145,6 @@ public class QuizManager : MonoBehaviour
     {
         if (!isTimerRunning) return;
 
-
         timer += Time.deltaTime;
 
         float timeRemaining = Mathf.Max(0f, timeLimitInSeconds - timer);
@@ -139,8 +164,8 @@ public class QuizManager : MonoBehaviour
             {
                 dialogueManager.ShowTimeoutNoticeAndChangeScene(
                     "시간이 초과되었습니다.\n이제 다음 단계로 이동합니다.",
-                    5f, // 메시지를 5초 보여주고
-                    sceneToLoadAfterTimeout // 이후 씬 이동
+                    5f,
+                    sceneToLoadAfterTimeout
                 );
             }
         }
@@ -152,8 +177,8 @@ public class QuizManager : MonoBehaviour
         {
             dialogueManager.ShowTimeoutNoticeAndChangeScene(
                 "시간이 초과되었습니다.\n이제 다음 단계로 이동합니다.",
-                5f, // UI 표시 시간
-                sceneToLoadAfterTimeout // 이동할 씬 이름
+                5f,
+                sceneToLoadAfterTimeout
             );
         }
         else
@@ -168,5 +193,4 @@ public class QuizManager : MonoBehaviour
         int seconds = Mathf.FloorToInt(timeRemaining % 60f);
         timerText.text = $"{minutes:00}:{seconds:00}";
     }
-
 }
