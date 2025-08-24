@@ -6,7 +6,6 @@ using Unity.Barracuda;
 public class TrashDetectorController : MonoBehaviour
 {
     [SerializeField] private bool debugMode = true;
-    [SerializeField] private LayerMask trashLayerMask = -1;
 
     private MLModelManager modelManager;
     private CameraCapture cameraCapture;
@@ -49,8 +48,6 @@ public class TrashDetectorController : MonoBehaviour
             Debug.LogError("TrashDetectorController: VR 카메라를 찾을 수 없습니다.");
         else if (debugMode)
             Debug.Log($"TrashDetectorController: VR 카메라 찾음: {vrCamera.name}");
-
-        trashLayerMask = LayerMask.GetMask("trash");
 
         if (modelManager == null) Debug.LogError("MLModelManager 컴포넌트가 필요합니다!");
         if (cameraCapture == null) Debug.LogError("CameraCapture 컴포넌트가 필요합니다!");
@@ -152,7 +149,7 @@ public class TrashDetectorController : MonoBehaviour
 
             var detections = detectionProcessor.ProcessDetectionResults(outputTensor);
 
-            visualizer.VisualizeDetectionsWithRaycast(detections, camera, vrCamera, trashLayerMask);
+            visualizer.VisualizeDetections(detections, camera, vrCamera);
 
             outputTensor.Dispose();
         }
