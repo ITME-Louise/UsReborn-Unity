@@ -5,8 +5,6 @@ public class DetectionVisualizer : MonoBehaviour
 {
     [SerializeField] private bool debugMode = true;
     [SerializeField] private QuizManager quizManager;
-    [SerializeField] private float raycastDistance = 50f;
-    [SerializeField] private bool showRaycastGizmo = true;
 
     private bool isQuizActive = false;
     private GameObject waitingTrashObject = null;
@@ -18,7 +16,7 @@ public class DetectionVisualizer : MonoBehaviour
         Debug.Log($"ML 인식 대기 중: {trashObj.name}");
     }
 
-    public void VisualizeDetectionsWithRaycast(List<Detection> detections, Camera camera, Camera vrCamera, LayerMask trashLayerMask)
+    public void VisualizeDetections(List<Detection> detections, Camera camera, Camera vrCamera)
     {
         if (isQuizActive || detections == null || detections.Count == 0 || waitingTrashObject == null)
             return;
