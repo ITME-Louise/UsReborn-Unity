@@ -3414,7 +3414,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   panel: {fileID: 1833759404}
   questionText: {fileID: 205492219}
-  classNameText: {fileID: 1597264573}
+  trashImage: {fileID: 340880589}
+  paperSprite: {fileID: 21300000, guid: cd70895905f082c4a9f67b2a892a347f, type: 3}
+  packSprite: {fileID: 21300000, guid: ad263913d30f6724f91d02b640343d81, type: 3}
+  canSprite: {fileID: 21300000, guid: 33d87fd9475e4ee4f9c1d5ec136ca991, type: 3}
+  glassSprite: {fileID: 21300000, guid: f9218c98bd838744c9104ffb7c5739bf, type: 3}
+  petSprite: {fileID: 21300000, guid: 1e908026d31715148b025c316d2f7fd3, type: 3}
+  plasticSprite: {fileID: 21300000, guid: ebbbe3c8f46547d40b7cc2f690bb359e, type: 3}
+  vinylSprite: {fileID: 21300000, guid: 685033cd07e9b7c428c2d2760bf52d31, type: 3}
 --- !u!114 &1833759407
 MonoBehaviour:
   m_ObjectHideFlags: 0

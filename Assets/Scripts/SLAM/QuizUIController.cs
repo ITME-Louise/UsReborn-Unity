@@ -1,33 +1,42 @@
 using UnityEngine;
 using TMPro;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class QuizUIController : MonoBehaviour
 {
     [SerializeField] private GameObject panel;
     [SerializeField] private TMP_Text questionText;
-    [SerializeField] private TMP_Text classNameText;
+    [SerializeField] private Image trashImage;
+
+    [Header("퀴즈 UI용 쓰레기 이미지")]
+    [SerializeField] private Sprite paperSprite;
+    [SerializeField] private Sprite packSprite;
+    [SerializeField] private Sprite canSprite;
+    [SerializeField] private Sprite glassSprite;
+    [SerializeField] private Sprite petSprite;
+    [SerializeField] private Sprite plasticSprite;
+    [SerializeField] private Sprite vinylSprite;
 
     private QuizManager quizManager;
     private string correctAnswer;
     private string currentClassName;
     private Vector3 spawnPosition;
 
-    private Dictionary<string, string> classNameGameText = new Dictionary<string, string>()
-    {
-        { "paper", "종이 아이템 발견!" },
-        { "pack", "팩 아이템 발견!" },
-        { "can", "캔 아이템 발견!" },
-        { "glass", "유리 아이템 발견!" },
-        { "pet", "PET류 아이템 발견!" },
-        { "plastic", "플라스틱 아이템 발견!" },
-        { "vinyl", "비닐 아이템 발견!" }
-    };
+    private Dictionary<string, Sprite> classImageSprites = new Dictionary<string, Sprite>();
 
     public void Initialize(QuizManager manager)
     {
         quizManager = manager;
         panel.SetActive(false);
+
+        classImageSprites["paper"] = paperSprite;
+        classImageSprites["pack"] = packSprite;
+        classImageSprites["can"] = canSprite;
+        classImageSprites["glass"] = glassSprite;
+        classImageSprites["pet"] = petSprite;
+        classImageSprites["plastic"] = plasticSprite;
+        classImageSprites["vinyl"] = vinylSprite;
     }
 
     public void ShowQuiz(string className, string question, string answer, Vector3 worldPos)
@@ -37,7 +46,16 @@ public class QuizUIController : MonoBehaviour
         spawnPosition = worldPos;
 
         questionText.text = question;
-        classNameText.text = classNameGameText.ContainsKey(className) ? classNameGameText[className] : $"🔍 {className} 아이템 발견!";
+        
+        if (trashImage != null && classImageSprites.ContainsKey(className))
+        {
+            trashImage.sprite = classImageSprites[className];
+            trashImage.gameObject.SetActive(true);
+        }
+        else if (trashImage != null)
+        {
+            trashImage.gameObject.SetActive(false);
+        }
 
         panel.SetActive(true);
     }
