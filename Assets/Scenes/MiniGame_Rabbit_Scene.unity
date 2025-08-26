@@ -427,6 +427,38 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 1026903726, guid: eb63ddfaf7d158a47b098d6ec8180dec, type: 3}
   m_PrefabInstance: {fileID: 402185384}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &402185386 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 264528032, guid: eb63ddfaf7d158a47b098d6ec8180dec, type: 3}
+  m_PrefabInstance: {fileID: 402185384}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &402185387 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 744023060696746619, guid: eb63ddfaf7d158a47b098d6ec8180dec, type: 3}
+  m_PrefabInstance: {fileID: 402185384}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &402185388 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8672111322488145969, guid: eb63ddfaf7d158a47b098d6ec8180dec, type: 3}
+  m_PrefabInstance: {fileID: 402185384}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &402185389 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8672111323871156724, guid: eb63ddfaf7d158a47b098d6ec8180dec, type: 3}
+  m_PrefabInstance: {fileID: 402185384}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &611912410
 GameObject:
   m_ObjectHideFlags: 0
@@ -1874,12 +1906,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2636eb82aee76ab4e8e45201ab3dbdd3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  successUI: {fileID: 0}
+  successUI: {fileID: 402185387}
   failUI: {fileID: 1909085514}
-  retryButton: {fileID: 0}
+  retryButton: {fileID: 402185386}
   timeLimit: 5
-  timerText: {fileID: 0}
-  tutorialPanel: {fileID: 0}
+  timerText: {fileID: 402185388}
+  tutorialPanel: {fileID: 402185389}
   tutorialDuration: 5
 --- !u!1 &1972788387
 GameObject:
