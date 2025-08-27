@@ -6,35 +6,32 @@ public class BucketFiller : MonoBehaviour
 {
     // Start is called before the first frame update
     private bool isFilled = false;
-    private BucketFillTrigger visual; // 비주얼 관리 스크립트
+    private BucketFillTrigger visual;
 
     private void Awake()
     {
         visual = GetComponent<BucketFillTrigger>();
+        if (visual == null)
+            Debug.LogWarning("BucketFillTrigger가 같은 오브젝트에 없습니다. 비주얼 교체가 실행되지 않습니다.");
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider other)
     {
         if (isFilled) return;
 
-        // 충돌한 오브젝트가 Oasis인지 체크
-        if (collision.gameObject.CompareTag("Oasis"))
+        if (other.CompareTag("Oasis"))
         {
             isFilled = true;
 
-            // 버킷 색상/머티리얼 적용
-            if (visual != null)
-                visual.ApplyFilledVisual();
+            // 머티리얼/색 교체 (비주얼 전용 스크립트 호출)
+            visual?.ApplyFilledVisual();
 
             // 미니게임 매니저 알림
             MiniGameManager_Bear.Instance.OnBucketFilled();
 
-            Debug.Log("버킷에 물이 채워졌습니다. (OnCollisionEnter)");
+            Debug.Log("[BucketFiller] 버킷에 물이 채워졌습니다.");
         }
     }
 
-    public bool IsFilled()
-    {
-        return isFilled;
-    }
+    public bool IsFilled() => isFilled;
 }
