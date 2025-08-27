@@ -3,13 +3,13 @@ using UnityEngine;
 [RequireComponent(typeof(Animator))]
 public class FoxTeleporter : MonoBehaviour
 {
-    [Header("Target (목적지)")]
+    [Header("Target")]
     [SerializeField] private Transform target;
 
-    [Header("When (언제 텔레포트?)")]
+    [Header("When")]
     [SerializeField] private float teleportDelay = 10f;   // 씬 시작 후 몇 초 뒤 텔레포트
 
-    [Header("Where (어디에 텔레포트?)")]
+    [Header("Where")]
     [Tooltip("타겟에 딱 붙지 않고 앞에서 멈추려면 켜기")]
     [SerializeField] private bool stopBeforeTarget = true;
     [SerializeField] private float stopDistance = 0.20f;
