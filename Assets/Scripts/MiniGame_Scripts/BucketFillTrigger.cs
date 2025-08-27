@@ -5,25 +5,44 @@ using UnityEngine;
 public class BucketFillTrigger : MonoBehaviour
 {
     // Start is called before the first frame update
-    [SerializeField] private Material filledMaterial; // 물이 찼을 때 적용할 머티리얼
+    [Header("URP Lit 머티리얼 할당")]
+    [SerializeField] private Material filledMaterial; // URP → Lit 로 생성한 머티리얼
 
-    private Renderer rend;
+    private MeshRenderer[] renderers;
 
     private void Awake()
     {
-        rend = GetComponent<Renderer>();
+        // 자기 자신 + 자식까지 안전하게 커버
+        renderers = GetComponentsInChildren<MeshRenderer>(true);
+
+        if (renderers == null || renderers.Length == 0)
+            Debug.LogError("[BucketFillTrigger] MeshRenderer가 이 오브젝트(또는 자식)에 없습니다.");
     }
 
-    // 외부에서 호출 가능하게 public 메서드 제공
+    /// <summary>버킷이 채워졌을 때 비주얼 반영</summary>
     public void ApplyFilledVisual()
     {
-        if (rend != null && filledMaterial != null)
+        if (renderers == null || renderers.Length == 0) return;
+
+        foreach (var r in renderers)
         {
-            rend.material = filledMaterial; // 머티리얼 교체
+            if (r == null) continue;
+
+            if (filledMaterial != null)
+            {
+                // 단일 머티리얼 구성 가정(일반적인 케이스)
+                r.material = filledMaterial;
+            }
+            else
+            {
+                // 머티리얼 미할당 시 대비책
+                var mat = r.material;       // 인스턴스화된 머티리얼
+                mat.color = Color.blue;     // 색상만 변경
+                r.material = mat;
+                Debug.LogWarning("[BucketFillTrigger] filledMaterial 미할당. 파란색으로만 변경합니다.");
+            }
         }
-        else if (rend != null)
-        {
-            rend.material.color = Color.blue; // fallback: 색상만 파란색으로 변경
-        }
+
+        Debug.Log("[BucketFillTrigger] 머티리얼 교체 완료.");
     }
 }
