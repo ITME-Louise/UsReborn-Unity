@@ -6,8 +6,12 @@ public class BucketFiller : MonoBehaviour
 {
     // Start is called before the first frame update
     private bool isFilled = false;
+    private BucketFillTrigger visual; // 비주얼 관리 스크립트
 
-    [SerializeField] private GameObject waterVisual; // 물이 찬 시각적 효과 (예: 파란색 물)
+    private void Awake()
+    {
+        visual = GetComponent<BucketFillTrigger>();
+    }
 
     private void OnTriggerEnter(Collider other)
     {
@@ -17,12 +21,14 @@ public class BucketFiller : MonoBehaviour
         {
             isFilled = true;
 
-            // 물 찬 비주얼 활성화
-            if (waterVisual != null)
-                waterVisual.SetActive(true);
+            // 버킷 색상/머티리얼 적용
+            if (visual != null)
+                visual.ApplyFilledVisual();
 
-            // MiniGameManager에 알림
+            // 미니게임 매니저 알림
             MiniGameManager_Bear.Instance.OnBucketFilled();
+
+            Debug.Log("버킷에 물이 채워졌습니다.");
         }
     }
 

@@ -5,22 +5,25 @@ using UnityEngine;
 public class BucketFillTrigger : MonoBehaviour
 {
     // Start is called before the first frame update
-    public Material filledMaterial;
+    [SerializeField] private Material filledMaterial; // 물이 찼을 때 적용할 머티리얼
 
-    void OnTriggerEnter(Collider other)
+    private Renderer rend;
+
+    private void Awake()
     {
-        if (other.CompareTag("Bucket"))
+        rend = GetComponent<Renderer>();
+    }
+
+    // 외부에서 호출 가능하게 public 메서드 제공
+    public void ApplyFilledVisual()
+    {
+        if (rend != null && filledMaterial != null)
         {
-            Renderer rend = other.GetComponent<Renderer>();
-            if (rend != null && filledMaterial != null)
-            {
-                rend.material = filledMaterial;  // 머티리얼 자체를 교체
-                Debug.Log("버킷에 물이 채워졌습니다.");
-
-            }
-            MiniGameManager_Bear.Instance.OnBucketFilled();
-            Debug.Log("버킷에 물이 채워졌습니다.");
-
+            rend.material = filledMaterial; // 머티리얼 교체
+        }
+        else if (rend != null)
+        {
+            rend.material.color = Color.blue; // fallback: 색상만 파란색으로 변경
         }
     }
 }
