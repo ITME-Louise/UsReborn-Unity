@@ -15,13 +15,14 @@ public class MiniGameManager_Bear : MonoBehaviour
     public Button retryButton;
     public Text timerText;
 
-    public float timeLimit = 5f;
+    public float timeLimit = 180f; // 제한 시간 180초
     private float timer;
     private bool isTimerRunning = false;
     private bool gameEnded = false;
 
     private int filledBucketCount = 0;
     private int satisfiedBearCount = 0;
+
     public int totalBucketsToFill = 3;
     public int totalBears = 3;
 
@@ -72,6 +73,7 @@ public class MiniGameManager_Bear : MonoBehaviour
     public void OnBucketFilled()
     {
         filledBucketCount++;
+        // 버킷 수를 세고 싶다면 유지, 아니라면 없어도 무방
         CheckForSuccess();
     }
 
@@ -80,8 +82,10 @@ public class MiniGameManager_Bear : MonoBehaviour
         satisfiedBearCount++;
         CheckForSuccess();
     }
+
     private void CheckForSuccess()
     {
+        // 버킷을 3개 채우고, 곰도 3마리 만족시키면 성공
         if (filledBucketCount >= totalBucketsToFill && satisfiedBearCount >= totalBears)
         {
             OnSuccess();
@@ -93,6 +97,7 @@ public class MiniGameManager_Bear : MonoBehaviour
         if (gameEnded) return;
         gameEnded = true;
         successUI.SetActive(true);
+        isTimerRunning = false;
     }
 
     public void OnFail()
@@ -100,6 +105,7 @@ public class MiniGameManager_Bear : MonoBehaviour
         if (gameEnded) return;
         gameEnded = true;
         failUI.SetActive(true);
+        isTimerRunning = false;
     }
 
     public void RestartGame()
