@@ -1085,7 +1085,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1050750393}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 8.84, y: 0, z: -10.49}
+  m_LocalPosition: {x: 8.84, y: 0.04, z: -10.49}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3545,7 +3545,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1819890377431768425, guid: ce6537d701cfc834b9d0322229283c43, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.15499997
+      value: 0.04
       objectReference: {fileID: 0}
     - target: {fileID: 1819890377431768425, guid: ce6537d701cfc834b9d0322229283c43, type: 3}
       propertyPath: m_LocalPosition.z
@@ -3623,18 +3623,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 1050750394}
+  teleportDelay: 10
+  stopBeforeTarget: 1
   stopDistance: 0.15
-  autoStartAfterDelay: 1
-  startDelay: 10
-  moveSpeed: 1.5
-  turnDegPerSec: 360
-  anim: {fileID: 2041352592}
-  walkBoolParam: IsWalking
-  speedParam: Speed
-  speedDamp: 0.12
-  rotateBackOnArrive: 1
-  rotateBackDegreesY: 90
-  rotateBackDuration: 0.25
+  keepCurrentY: 1
+  yOffset: 0
+  snapToGround: 0
+  groundMask:
+    m_Bits: 0
+  rayStartHeight: 1
+  footClearance: 0.02
+  anim: {fileID: 0}
+  rb: {fileID: 0}
 --- !u!54 &2041352596
 Rigidbody:
   m_ObjectHideFlags: 0
