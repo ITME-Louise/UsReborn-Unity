@@ -13,11 +13,12 @@ public class BucketFiller : MonoBehaviour
         visual = GetComponent<BucketFillTrigger>();
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnCollisionEnter(Collision collision)
     {
         if (isFilled) return;
 
-        if (other.CompareTag("Oasis"))
+        // 충돌한 오브젝트가 Oasis인지 체크
+        if (collision.gameObject.CompareTag("Oasis"))
         {
             isFilled = true;
 
@@ -28,7 +29,7 @@ public class BucketFiller : MonoBehaviour
             // 미니게임 매니저 알림
             MiniGameManager_Bear.Instance.OnBucketFilled();
 
-            Debug.Log("버킷에 물이 채워졌습니다.");
+            Debug.Log("버킷에 물이 채워졌습니다. (OnCollisionEnter)");
         }
     }
 
