@@ -21,6 +21,8 @@ TagManager:
   - Bullet
   - ToMain
   - ToSlam
+  - Stone
+  - Target
   layers:
   - Default
   - TransparentFX

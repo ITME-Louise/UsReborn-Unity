@@ -3,11 +3,13 @@ using UnityEngine;
 [RequireComponent(typeof(Animator))]
 public class FoxTeleporter : MonoBehaviour
 {
-    [Header("Target")]
+    [Header("Target #1")]
     [SerializeField] private Transform target;
+    [SerializeField] private float teleportDelay = 10f;   // 씬 시작 후 몇 초 뒤 텔레포트 (Target)
 
-    [Header("When")]
-    [SerializeField] private float teleportDelay = 10f;   // 씬 시작 후 몇 초 뒤 텔레포트
+    [Header("Target #2 (절대 시각)")]
+    [SerializeField] private Transform target2;           // 36초에 이동할 타겟
+    [SerializeField] private float teleport2At = 36f;     // 씬 시작 기준 36초
 
     [Header("Where")]
     [Tooltip("타겟에 딱 붙지 않고 앞에서 멈추려면 켜기")]
@@ -26,7 +28,8 @@ public class FoxTeleporter : MonoBehaviour
     [SerializeField] private float footClearance = 0.02f;
 
     private Animator anim;
-    private Rigidbody rb;   // 있어도/없어도 동작 (회전은 건드리지 않음)
+    private Rigidbody rb;
+    private float sceneStartTime;
 
     void Awake()
     {
@@ -37,34 +40,46 @@ public class FoxTeleporter : MonoBehaviour
 
     void Start()
     {
-        StartCoroutine(TeleportFlow());
+        sceneStartTime = Time.time;
+        StartCoroutine(ScheduleFlow());
     }
 
-    private System.Collections.IEnumerator TeleportFlow()
+    private System.Collections.IEnumerator ScheduleFlow()
     {
-        yield return new WaitForSeconds(teleportDelay);
-        TeleportNow();
-    }
-
-    [ContextMenu("Teleport Now")]
-    public void TeleportNow()
-    {
-        if (!target)
+        // 1) teleportDelay 후 Target으로 텔레포트
+        if (teleportDelay > 0f)
         {
-            Debug.LogWarning("[FoxTeleporter] target이 비어 있어요.");
+            yield return new WaitForSeconds(teleportDelay);
+            TeleportTo(target);
+        }
+
+        // 2) 씬 시작 기준 teleport2At(기본 36초)에 Target2로 텔레포트
+        float remainAbs = teleport2At - (Time.time - sceneStartTime);
+        if (remainAbs > 0f) yield return new WaitForSeconds(remainAbs);
+        TeleportTo(target2);
+    }
+
+    [ContextMenu("Teleport Now (Target #1)")]
+    public void TeleportNow() => TeleportTo(target);
+
+    private void TeleportTo(Transform tgt)
+    {
+        if (!tgt)
+        {
+            Debug.LogWarning("[FoxTeleporter] 지정된 타겟이 없습니다.");
             return;
         }
 
         // 1) 목표 위치 계산(수평 방향)
-        Vector3 dir = target.position - transform.position; dir.y = 0f;
-        Vector3 goal = target.position;
+        Vector3 dir = tgt.position - transform.position; dir.y = 0f;
+        Vector3 goal = tgt.position;
 
         if (stopBeforeTarget && dir.sqrMagnitude > 1e-6f)
             goal -= dir.normalized * stopDistance;
 
         // 2) Y 처리
         goal.y = keepCurrentY ? transform.position.y + yOffset
-                              : target.position.y + yOffset;
+                              : tgt.position.y + yOffset;
 
         // 3) (선택) 지면에 붙이기
         if (snapToGround)
@@ -82,7 +97,7 @@ public class FoxTeleporter : MonoBehaviour
             }
         }
 
-        // 4) 위치만 텔레포트 (회전은 절대 변경하지 않음)
+        // 4) 위치만 텔레포트 (회전은 변경하지 않음)
         if (rb && !rb.isKinematic)
         {
             rb.position = goal;
@@ -96,5 +111,7 @@ public class FoxTeleporter : MonoBehaviour
 
         // 5) 애니 상태 정리(선택)
         if (anim) anim.SetBool("IsWalking", false);
+
+        Debug.Log($"[FoxTeleporter] Teleported to {(tgt ? tgt.name : "NULL")} @ {goal}");
     }
 }

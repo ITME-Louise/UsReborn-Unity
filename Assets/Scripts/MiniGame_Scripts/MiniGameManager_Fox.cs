@@ -1,7 +1,8 @@
-using System.Collections;
+ï»¿using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.InputSystem; // F6 ë””ë²„ê·¸ í† ê¸€ìš©
 
 public class MiniGameManager_Fox : MonoBehaviour
 {
@@ -13,118 +14,204 @@ public class MiniGameManager_Fox : MonoBehaviour
     public Button retryButton;
     public Text timerText;
 
-    [Tooltip("Æ©Åä¸®¾ó ÀüÃ¼ ÄÁÅ×ÀÌ³Ê(ÆĞ³Î)")]
-    public GameObject tutorialPanel;
+    [Header("Tutorial / Start UI")]
+    public GameObject tutorialPanel;   // 10ì´ˆ í›„ ì¼œì§
+    public GameObject gameStartPanel;  // 8ì´ˆ ê²½ê³¼ í›„ 2ì´ˆ í‘œì‹œ
 
-    [Tooltip("Æ©Åä¸®¾óÀÌ ³¡³­ µÚ 2ÃÊ Ç¥½ÃÇÒ '°ÔÀÓ½ºÅ¸Æ®' ÆĞ³Î/ÅØ½ºÆ®")]
-    public GameObject gameStartPanel;
+    [Header("Panels")]
+    [Tooltip("20sì— ì¼œì§ˆ íŒ¨ë„")]
+    public GameObject extraPanel;      // (ì˜ˆ: ExtraPanel)
+    [Tooltip("21s~25sì— ë³´ì˜€ë‹¤ê°€ êº¼ì§ˆ íŒ¨ë„")]
+    public GameObject stoneCanvas;     // (ì˜ˆ: StoneCanvas)
+    [Tooltip("25s~28s")]
+    public GameObject stoneCanvas2;    // (ì˜ˆ: StoneCanvas2)
+    [Tooltip("28s~30s")]
+    public GameObject stoneCanvas3;    // (ì˜ˆ: StoneCanvas3)
 
-    [Header("Timer Settings")]
-    public float timeLimit = 5f;   // Ä«¿îÆ®´Ù¿î ÃÑ ½Ã°£(ÃÊ)
+    [Header("Timer (ì˜µì…˜)")]
+    public float timeLimit = 5f;       // í•„ìš” ì‹œ ì‚¬ìš©
     private float timer;
-    private bool isTimerRunning = false;
-    private bool gameEnded = false;
+    private bool isTimerRunning;
 
-    [Header("Game Progress")]
-    public int totalSlotsToFill = 5;
-    private int filledSlots = 0;
+    [Header("Flow Flags")]
+    private bool gameEnded;
 
-    [Header("Flow Settings")]
-    [Tooltip("¾À ½ÃÀÛ ÈÄ Æ©Åä¸®¾óÀÌ ³ªÅ¸³ª±â±îÁö Áö¿¬(ÃÊ)")]
-    public float tutorialShowDelay = 10f;     // ¿ä±¸: 10ÃÊ µÚ µîÀå
-    [Tooltip("Æ©Åä¸®¾ó Ç¥½Ã ½Ã°£(ÃÊ)")]
-    public float tutorialDuration = 8f;       // ¿ä±¸: 8ÃÊ Ç¥½Ã
-    [Tooltip("'°ÔÀÓ½ºÅ¸Æ®' Ç¥½Ã ½Ã°£(ÃÊ)")]
-    public float gameStartDuration = 2f;      // ¿ä±¸: 2ÃÊ Ç¥½Ã
-    [Tooltip("¾À ½ÃÀÛ ½Ã°¢À¸·ÎºÎÅÍ Å¸ÀÌ¸Ó¸¦ ½ÃÀÛÇÒ Àı´ë ½Ã°¢(ÃÊ)")]
-    public float timerGlobalStartAt = 20f;    // ¿ä±¸: 20ÃÊ¿¡ Å¸ÀÌ¸Ó ½ÃÀÛ
+    [Header("Tutorial Durations")]
+    public float tutorialShowDelay = 10f; // 0~10s ëŒ€ê¸°
+    public float tutorialDuration = 8f;   // 10~18s íŠœí†  íŒ¨ë„
+    public float gameStartDuration = 2f;  // 18~20s ê²Œì„ìŠ¤íƒ€íŠ¸
 
-    void Awake()
+    [Header("Absolute Schedule (sec from scene start)")]
+    public float extraOnAt = 20f; // extraPanel ON
+    public float stone1OnAt = 21f; // stoneCanvas ON
+    public float stone1OffAt = 25f; // stoneCanvas OFF
+    public float stone2OnAt = 25f; // stoneCanvas2 ON
+    public float stone2OffAt = 28f; // stoneCanvas2 OFF
+    public float stone3OnAt = 28f; // stoneCanvas3 ON
+    public float stone3OffAt = 30f; // stoneCanvas3 OFF
+    public float successAt = 32f;   // ì„±ê³µ íŒ¨ë„ í‘œì‹œ
+    public float successOffAt = 35f; // NEW: 35ì´ˆì— ì„±ê³µ íŒ¨ë„ OFF
+
+    [Header("Restart After End")]
+    [Tooltip("ì„±ê³µ/ì‹¤íŒ¨ ì´í›„ ìë™ ì¬ì‹œì‘í• ì§€ (ê¸°ë³¸: êº¼ì§)")]
+    public bool autoRestartOnEnd = false;
+    public float restartDelay = 2f;
+
+    private void Awake()
     {
-        if (Instance == null) Instance = this;
-        else Destroy(gameObject);
-    }
+        if (Instance == null) Instance = this; else Destroy(gameObject);
 
-    void Start()
-    {
-        // ÃÊ±â UI »óÅÂ
+        // ì´ë¦„ ìë™ íƒìƒ‰(ì„ íƒ)
+        if (!extraPanel) { var f = GameObject.Find("extraPanel") ?? GameObject.Find("ExtraPanel"); if (f) extraPanel = f; }
+        if (!stoneCanvas) { var f = GameObject.Find("stoneCanvas") ?? GameObject.Find("StoneCanvas"); if (f) stoneCanvas = f; }
+        if (!stoneCanvas2) { var f = GameObject.Find("stoneCanvas2") ?? GameObject.Find("StoneCanvas2"); if (f) stoneCanvas2 = f; }
+        if (!stoneCanvas3) { var f = GameObject.Find("stoneCanvas3") ?? GameObject.Find("StoneCanvas3"); if (f) stoneCanvas3 = f; }
+
+        // ì‹œì‘ ì¦‰ì‹œ OFF
+        if (extraPanel && extraPanel.activeSelf) extraPanel.SetActive(false);
+        if (stoneCanvas && stoneCanvas.activeSelf) stoneCanvas.SetActive(false);
+        if (stoneCanvas2 && stoneCanvas2.activeSelf) stoneCanvas2.SetActive(false);
+        if (stoneCanvas3 && stoneCanvas3.activeSelf) stoneCanvas3.SetActive(false);
         if (successUI) successUI.SetActive(false);
         if (failUI) failUI.SetActive(false);
+    }
 
+    private void Start()
+    {
+        // íŠœí† /ìŠ¤íƒ€íŠ¸ íŒ¨ë„ OFFë¡œ ì‹œì‘
         if (tutorialPanel) tutorialPanel.SetActive(false);
         if (gameStartPanel) gameStartPanel.SetActive(false);
 
+        // Canvas ì •ë ¬ìˆœì„œë§Œ ë³´ì •(â€» renderModeëŠ” ê±´ë“œë¦¬ì§€ ì•ŠìŒ: ë¹„ìœ¨ê¹¨ì§ ë°©ì§€)
+        SetupCanvasOrder(extraPanel);
+        SetupCanvasOrder(stoneCanvas);
+        SetupCanvasOrder(stoneCanvas2);
+        SetupCanvasOrder(stoneCanvas3);
+
         timer = timeLimit;
+        if (retryButton) retryButton.onClick.AddListener(RestartGame);
 
-        if (retryButton != null)
-            retryButton.onClick.AddListener(RestartGame);
-
-        // ¸ŞÀÎ ÇÃ·Î¿ì ½ÃÀÛ
         StartCoroutine(GameFlow());
+    }
+
+    private void SetupCanvasOrder(GameObject go)
+    {
+        if (!go) return;
+        var cv = go.GetComponentInParent<Canvas>();
+        if (cv) cv.sortingOrder = Mathf.Max(cv.sortingOrder, 500);
+    }
+
+    private IEnumerator WaitUntilAbs(float targetSec, float t0)
+    {
+        float remain = targetSec - (Time.time - t0);
+        if (remain > 0f) yield return new WaitForSeconds(remain);
     }
 
     private IEnumerator GameFlow()
     {
-        float sceneStartTime = Time.time;
-        isTimerRunning = false;
+        float t0 = Time.time;
+        isTimerRunning = false; // í•„ìš”ì‹œ panel íƒ€ì´ë°ì— ë§ì¶° StartTimer() í˜¸ì¶œ
 
-        // 0) Æ©Åä¸®¾ó µîÀå Àü 10ÃÊ ´ë±â
-        if (tutorialShowDelay > 0f)
-            yield return new WaitForSeconds(tutorialShowDelay);
+        // 0~10s : ëŒ€ê¸°
+        if (tutorialShowDelay > 0f) yield return new WaitForSeconds(tutorialShowDelay);
+        if (gameEnded) yield break;
 
-        // 1) Æ©Åä¸®¾ó 8ÃÊ Ç¥½Ã
+        // 10~18s : íŠœí† ë¦¬ì–¼
         if (tutorialPanel) tutorialPanel.SetActive(true);
-        if (tutorialDuration > 0f)
-            yield return new WaitForSeconds(tutorialDuration);
+        if (tutorialDuration > 0f) yield return new WaitForSeconds(tutorialDuration);
+        if (gameEnded) yield break;
         if (tutorialPanel) tutorialPanel.SetActive(false);
 
-        // 2) '°ÔÀÓ½ºÅ¸Æ®' 2ÃÊ Ç¥½Ã
+        // 18~20s : ê²Œì„ìŠ¤íƒ€íŠ¸
         if (gameStartPanel)
         {
             gameStartPanel.SetActive(true);
-            if (gameStartDuration > 0f)
-                yield return new WaitForSeconds(gameStartDuration);
+            if (gameStartDuration > 0f) yield return new WaitForSeconds(gameStartDuration);
+            if (gameEnded) yield break;
             gameStartPanel.SetActive(false);
         }
 
-        // 3) ¾À ½ÃÀÛ ±âÁØ 20ÃÊ°¡ µÉ ¶§±îÁö ³²Àº ½Ã°£¸¸Å­ ´ë±â
-        float elapsed = Time.time - sceneStartTime;
-        float remainUntilTimer = timerGlobalStartAt - elapsed;
-        if (remainUntilTimer > 0f)
-            yield return new WaitForSeconds(remainUntilTimer);
+        // 20s : extraPanel ON
+        yield return WaitUntilAbs(extraOnAt, t0);
+        if (gameEnded) yield break;
+        if (extraPanel) extraPanel.SetActive(true);
+        Debug.Log("[Flow] extraPanel ON (20s)");
 
-        // 4) Å¸ÀÌ¸Ó ½ÃÀÛ
-        StartTimer();
+        // 21s : stoneCanvas ON
+        yield return WaitUntilAbs(stone1OnAt, t0);
+        if (gameEnded) yield break;
+        if (stoneCanvas) stoneCanvas.SetActive(true);
+        Debug.Log("[Flow] StoneCanvas ON (21s)");
+
+        // 25s : stoneCanvas OFF + stoneCanvas2 ON
+        yield return WaitUntilAbs(stone1OffAt, t0);
+        if (gameEnded) yield break;
+        if (stoneCanvas) stoneCanvas.SetActive(false);
+        if (stoneCanvas2) stoneCanvas2.SetActive(true);
+        Debug.Log("[Flow] StoneCanvas OFF, StoneCanvas2 ON (25s)");
+
+        // 28s : stoneCanvas2 OFF + stoneCanvas3 ON
+        yield return WaitUntilAbs(stone2OffAt, t0);
+        if (gameEnded) yield break;
+        if (stoneCanvas2) stoneCanvas2.SetActive(false);
+        if (stoneCanvas3) stoneCanvas3.SetActive(true);
+        Debug.Log("[Flow] StoneCanvas2 OFF, StoneCanvas3 ON (28s)");
+
+        // 30s : stoneCanvas3 OFF
+        yield return WaitUntilAbs(stone3OffAt, t0);
+        if (gameEnded) yield break;
+        if (stoneCanvas3) stoneCanvas3.SetActive(false);
+        Debug.Log("[Flow] StoneCanvas3 OFF (30s)");
+
+        // 32s : ì„±ê³µ íŒ¨ë„ í‘œì‹œ (ìë™ ì¬ì‹œì‘ ì—†ìŒ)
+        yield return WaitUntilAbs(successAt, t0);
+        if (gameEnded) yield break;
+        OnSuccess(); // gameEnded = true ë¡œ ì „í™˜
+        Debug.Log("[Flow] Success shown (32s)");
+
+        // NEW: 35s ì— ì„±ê³µ íŒ¨ë„ ë„ê¸°(ì ˆëŒ€ì‹œê°„). gameEnded ì—¬ë„ ë™ì‘í•˜ë„ë¡ ë³„ë„ ì½”ë£¨í‹´ ì‹¤í–‰.
+        if (successOffAt > successAt)
+            StartCoroutine(HideSuccessAtAbs(successOffAt, t0));
     }
 
-    void Update()
+    // NEW: ì„±ê³µ íŒ¨ë„ì„ ì ˆëŒ€ ì‹œê°ì— ë„ëŠ” ì½”ë£¨í‹´
+    private IEnumerator HideSuccessAtAbs(float targetSec, float t0)
     {
+        float remain = targetSec - (Time.time - t0);
+        if (remain > 0f) yield return new WaitForSeconds(remain);
+        if (successUI && successUI.activeSelf)
+        {
+            successUI.SetActive(false);
+            Debug.Log("[Flow] Success hidden (" + targetSec + "s)");
+        }
+    }
+
+    private void Update()
+    {
+        // (ì˜µì…˜) íƒ€ì´ë¨¸ ì‚¬ìš© ì‹œë§Œ
         if (!gameEnded && isTimerRunning)
         {
             timer -= Time.deltaTime;
-            if (timerText != null)
-                timerText.text = "Time: " + Mathf.Ceil(timer).ToString();
+            if (timerText) timerText.text = "Time: " + Mathf.Ceil(timer);
+            if (timer <= 0f) OnFail();
+        }
 
-            if (timer <= 0f)
-            {
-                OnFail();
-            }
+        // ë””ë²„ê·¸: F6 â†’ í˜„ì¬ ì¼œì ¸ìˆëŠ” íŒ¨ë„ í† ê¸€(ìš°ì„ ìˆœìœ„: 3 > 2 > 1 > extra)
+        var kb = Keyboard.current;
+        if (kb != null && kb.f6Key.wasPressedThisFrame)
+        {
+            if (stoneCanvas3 && stoneCanvas3.activeInHierarchy) stoneCanvas3.SetActive(!stoneCanvas3.activeSelf);
+            else if (stoneCanvas2 && stoneCanvas2.activeInHierarchy) stoneCanvas2.SetActive(!stoneCanvas2.activeSelf);
+            else if (stoneCanvas && stoneCanvas.activeInHierarchy) stoneCanvas.SetActive(!stoneCanvas.activeSelf);
+            else if (extraPanel && extraPanel.activeInHierarchy) extraPanel.SetActive(!extraPanel.activeSelf);
         }
     }
 
+    // === ê³µê°œ API ===
     public void StartTimer()
     {
-        timer = timeLimit;      // Ä«¿îÆ®´Ù¿î ±æÀÌ
+        timer = timeLimit;
         isTimerRunning = true;
-    }
-
-    public void OnSlotFilled()
-    {
-        filledSlots++;
-        if (filledSlots >= totalSlotsToFill)
-        {
-            OnSuccess();
-        }
     }
 
     public void OnSuccess()
@@ -132,7 +219,17 @@ public class MiniGameManager_Fox : MonoBehaviour
         if (gameEnded) return;
         gameEnded = true;
         isTimerRunning = false;
+
+        // ì§„í–‰ ì¤‘ íŒ¨ë„ ëª¨ë‘ OFF (ì„±ê³µ UIë§Œ ì¼¬)
+        if (extraPanel) extraPanel.SetActive(false);
+        if (stoneCanvas) stoneCanvas.SetActive(false);
+        if (stoneCanvas2) stoneCanvas2.SetActive(false);
+        if (stoneCanvas3) stoneCanvas3.SetActive(false);
+
         if (successUI) successUI.SetActive(true);
+
+        if (autoRestartOnEnd)
+            StartCoroutine(RestartGameDelayed(restartDelay)); // ê¸°ë³¸ê°’ falseì´ë¯€ë¡œ ì‹¤í–‰ ì•ˆ ë¨
     }
 
     public void OnFail()
@@ -140,11 +237,27 @@ public class MiniGameManager_Fox : MonoBehaviour
         if (gameEnded) return;
         gameEnded = true;
         isTimerRunning = false;
+
+        if (extraPanel) extraPanel.SetActive(false);
+        if (stoneCanvas) stoneCanvas.SetActive(false);
+        if (stoneCanvas2) stoneCanvas2.SetActive(false);
+        if (stoneCanvas3) stoneCanvas3.SetActive(false);
+
         if (failUI) failUI.SetActive(true);
+
+        if (autoRestartOnEnd)
+            StartCoroutine(RestartGameDelayed(restartDelay)); // ê¸°ë³¸ê°’ false
+    }
+
+    private IEnumerator RestartGameDelayed(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        RestartGame();
     }
 
     public void RestartGame()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        var scene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(scene.name);
     }
 }
