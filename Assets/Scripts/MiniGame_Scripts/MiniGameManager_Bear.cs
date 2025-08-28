@@ -15,15 +15,16 @@ public class MiniGameManager_Bear : MonoBehaviour
     public Button retryButton;
     public Text timerText;
 
-    public float timeLimit = 5f;
+    public float timeLimit = 180f;
     private float timer;
     private bool isTimerRunning = false;
     private bool gameEnded = false;
 
-    private int filledBucketCount = 0;
-    private int satisfiedBearCount = 0;
-    public int totalBucketsToFill = 3;
-    public int totalBears = 3;
+    private int filledBucketCount = 0;   // 물 채워진 버킷 개수
+    private int satisfiedBearCount = 0;  // 버킷 3개 받은 곰의 수
+
+    public int totalBucketsToFill = 3;   // 버킷 3개 채워야 함
+    public int totalBearsToSatisfy = 1;  // 곰 한 마리만 만족시키면 됨
 
     void Awake()
     {
@@ -69,20 +70,26 @@ public class MiniGameManager_Bear : MonoBehaviour
         timer = timeLimit;
     }
 
+    // 버킷이 물로 채워졌을 때
     public void OnBucketFilled()
     {
         filledBucketCount++;
+        Debug.Log($"[GameManager] 현재 채워진 버킷 수: {filledBucketCount}");
         CheckForSuccess();
     }
 
+    // 곰이 버킷 3개를 받았을 때
     public void OnBearSatisfied()
     {
         satisfiedBearCount++;
+        Debug.Log($"[GameManager] 만족한 곰 수: {satisfiedBearCount}");
         CheckForSuccess();
     }
+
     private void CheckForSuccess()
     {
-        if (filledBucketCount >= totalBucketsToFill && satisfiedBearCount >= totalBears)
+        // 버킷 3개 채우고, 곰 한 마리 만족시키면 성공
+        if (filledBucketCount >= totalBucketsToFill && satisfiedBearCount >= totalBearsToSatisfy)
         {
             OnSuccess();
         }
@@ -93,6 +100,8 @@ public class MiniGameManager_Bear : MonoBehaviour
         if (gameEnded) return;
         gameEnded = true;
         successUI.SetActive(true);
+        isTimerRunning = false;
+        Debug.Log("[GameManager] 게임 성공!");
     }
 
     public void OnFail()
@@ -100,6 +109,8 @@ public class MiniGameManager_Bear : MonoBehaviour
         if (gameEnded) return;
         gameEnded = true;
         failUI.SetActive(true);
+        isTimerRunning = false;
+        Debug.Log("[GameManager] 게임 실패!");
     }
 
     public void RestartGame()
