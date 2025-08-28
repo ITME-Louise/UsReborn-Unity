@@ -464,7 +464,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneToLoad: Main_Scene
-  subSceneToLoad: Example_01
+  subSceneToLoad: SciFiLivingRoom1B
 --- !u!1 &856275823
 GameObject:
   m_ObjectHideFlags: 0
@@ -673,7 +673,7 @@ PrefabInstance:
       objectReference: {fileID: 123966710}
     - target: {fileID: 3351887280093960692, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
       propertyPath: _trackingOriginType
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3351887280100535312, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
       propertyPath: m_Name
