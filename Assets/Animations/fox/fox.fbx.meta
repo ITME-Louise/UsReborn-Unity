@@ -83,11 +83,164 @@ ModelImporter:
   - f5db5af986151b545b2a8ee1ebeea218
   - 76ee890c1c6eec8409a9fdff5c82e51c
   - f18983ece84c2fb4da33d23ccb63ca95
+  - 56f0cb2a8b0fd6a4f9d8b78c7ff9b84a
   importAnimation: 1
   humanDescription:
     serializedVersion: 3
-    human: []
-    skeleton: []
+    human:
+    - boneName: pCube1
+      humanName: Hips
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: pCube2
+      humanName: LeftUpperLeg
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: pasted__pCube1
+      humanName: RightUpperLeg
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: pCube7
+      humanName: Spine
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    skeleton:
+    - name: fox(Clone)
+      parentName: 
+      position: {x: 0, y: 0, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Camera
+      parentName: fox(Clone)
+      position: {x: -7.3588915, y: 4.958309, z: 6.925791}
+      rotation: {x: 0.09062847, y: 0.89379627, z: -0.20997298, w: 0.3857799}
+      scale: {x: 100, y: 100.00001, z: 99.99999}
+    - name: Camera.001
+      parentName: fox(Clone)
+      position: {x: -7.3588915, y: 4.958309, z: 6.925791}
+      rotation: {x: 0.09062848, y: 0.89379627, z: -0.20997296, w: 0.3857799}
+      scale: {x: 99.99999, y: 100, z: 99.99999}
+    - name: Light
+      parentName: fox(Clone)
+      position: {x: -4.0762453, y: 5.903862, z: -1.005454}
+      rotation: {x: 0.52327543, y: -0.34203392, z: 0.72694236, w: 0.28416622}
+      scale: {x: 100.00001, y: 100, z: 100}
+    - name: Light.001
+      parentName: fox(Clone)
+      position: {x: -4.0762453, y: 5.903862, z: -1.005454}
+      rotation: {x: 0.52327543, y: -0.34203395, z: 0.7269424, w: 0.2841662}
+      scale: {x: 100, y: 99.99999, z: 100}
+    - name: pCube1
+      parentName: fox(Clone)
+      position: {x: -0, y: -0.66659606, z: -0.5046475}
+      rotation: {x: -0.000000026692545, y: -0.70710665, z: -0.000000026692533, w: 0.70710695}
+      scale: {x: 28.888884, y: 86.93482, z: 29.492086}
+    - name: pCube2
+      parentName: pCube1
+      position: {x: -0.0000000011920929, y: 0.006928766, z: 0.0077789472}
+      rotation: {x: -0.6854242, y: 0.1658254, z: 0.16333485, w: 0.6899401}
+      scale: {x: 0.69230783, y: 2.5873682, z: 0.265075}
+    - name: pCube3
+      parentName: pCube1
+      position: {x: -0.023724064, y: 0.0031771332, z: -0.007620478}
+      rotation: {x: -2.9474892e-15, y: -2.9842642e-15, z: -0.020798834, w: 0.9997837}
+      scale: {x: 3.4391232, y: 0.48216754, z: 1.5069956}
+    - name: pCube4
+      parentName: pCube1
+      position: {x: 0.017436929, y: 0.011934141, z: -0.0077118576}
+      rotation: {x: 0.00000008857446, y: 0.0000000059626837, z: -0.025524879, w: 0.9996742}
+      scale: {x: 0.25914732, y: 0.13715029, z: 0.44353518}
+    - name: pCube5
+      parentName: pCube1
+      position: {x: 0.0063064503, y: 0.0077068093, z: -0.007511038}
+      rotation: {x: -2.3557551e-15, y: -5.117277e-15, z: 0.009424993, w: 0.9999556}
+      scale: {x: 1.2007189, y: 0.37311995, z: 1.8852086}
+    - name: pCube6
+      parentName: pCube1
+      position: {x: -0.000326252, y: 0.01747145, z: 0.0059322095}
+      rotation: {x: 0.4761037, y: -0.026190124, z: 0.08534623, w: 0.8748459}
+      scale: {x: 0.40637788, y: 0.5140089, z: 0.5351361}
+    - name: pCube7
+      parentName: pCube1
+      position: {x: -0.0037037563, y: 0.019720167, z: -0.0054276697}
+      rotation: {x: -0.3197051, y: 0.024588685, z: 0.014430906, w: 0.94708806}
+      scale: {x: 0.38442728, y: 0.31049985, z: 0.3100665}
+    - name: pCube8
+      parentName: pCube1
+      position: {x: -0.003703754, y: 0.019671721, z: -0.0066097216}
+      rotation: {x: 0.11472637, y: 0.012230031, z: -0.00071264897, w: 0.9933216}
+      scale: {x: 0.38464075, y: 0.26140988, z: 0.36808917}
+    - name: pSphere1
+      parentName: pCube1
+      position: {x: -0.0018831479, y: 0.013663639, z: -0.007244136}
+      rotation: {x: 4.3505836e-16, y: -3.4339669e-15, z: -4.187331e-38, w: 1}
+      scale: {x: 1.6673142, y: 0.6094066, z: 2.0415156}
+    - name: pSphere2
+      parentName: pCube1
+      position: {x: -0.0000000023841857, y: 0.0033323886, z: -0.0076204785}
+      rotation: {x: -1.908838e-39, y: -1.4897529e-15, z: 4.0070514e-16, w: 1}
+      scale: {x: 1.1082693, y: 0.32198504, z: 1.4984365}
+    - name: pSphere3
+      parentName: pCube1
+      position: {x: 0.011517867, y: 0.013828313, z: -0.015326298}
+      rotation: {x: -0.033219874, y: 0.07941723, z: 0.028819567, w: 0.9958709}
+      scale: {x: 0.30333605, y: 0.1471469, z: 0.41584867}
+    - name: pSphere4
+      parentName: pCube1
+      position: {x: 0.011517866, y: 0.013828314, z: -0.00039905694}
+      rotation: {x: -0.033219885, y: 0.07941723, z: 0.028819576, w: 0.9958709}
+      scale: {x: 0.3357095, y: 0.14732738, z: 0.41635868}
+    - name: pasted__pCube1
+      parentName: pCube1
+      position: {x: -0.0000000023841857, y: -4.5465212e-10, z: -0.015283425}
+      rotation: {x: 1.7763568e-15, y: -3.5062133e-15, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: pasted__pCube2
+      parentName: pCube1
+      position: {x: -0.0000000166893, y: 0.0069479523, z: -0.023376025}
+      rotation: {x: 0.00000008252079, y: 0.7093209, z: 0.7048857, w: -0.000000024432063}
+      scale: {x: 0.69230783, y: 2.587369, z: 0.26507503}
+    - name: pasted__pCube4
+      parentName: pCube1
+      position: {x: -0.0037072466, y: 0.019270722, z: -0.019195018}
+      rotation: {x: 5.3903025e-15, y: 1, z: 6.278481e-15, w: 0.0000000754979}
+      scale: {x: 1.845522, y: 0.56766653, z: 1.6269981}
+    - name: pasted__pCube5
+      parentName: pCube1
+      position: {x: -0.0037072466, y: 0.007390341, z: 0.019833067}
+      rotation: {x: -6.123165e-17, y: 1, z: -9.165061e-15, w: 0.0000000754979}
+      scale: {x: 3.4615388, y: 1.1830435, z: 3.3907397}
+    - name: pasted__pCube6
+      parentName: pCube1
+      position: {x: 0.0001686406, y: 0.01747145, z: -0.020355653}
+      rotation: {x: -0.36351323, y: -0.0814777, z: 0.066492744, w: 0.92563397}
+      scale: {x: 0.38398826, y: 0.4292873, z: 0.678108}
+    - name: pSphere4.001
+      parentName: fox(Clone)
+      position: {x: 0.009375958, y: 0.5986109, z: -0.08331478}
+      rotation: {x: -0.7662963, y: 0.048792463, z: -0.07110314, w: 0.63667387}
+      scale: {x: 1.9874357, y: 0.89808404, z: 1.8211881}
+    - name: pSphere4.002
+      parentName: fox(Clone)
+      position: {x: 0.43588588, y: 0.5986109, z: -0.09436915}
+      rotation: {x: -0.7685238, y: 0.07416671, z: -0.040459357, w: 0.6342189}
+      scale: {x: 1.9874358, y: 0.8980839, z: 1.8211881}
     armTwist: 0.5
     foreArmTwist: 0.5
     upperLegTwist: 0.5
