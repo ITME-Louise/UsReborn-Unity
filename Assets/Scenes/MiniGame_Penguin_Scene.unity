@@ -1500,10 +1500,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73b548ec530750441a77becfffe25f0f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  successUI: {fileID: 0}
-  failUI: {fileID: 0}
-  tutorialPanel: {fileID: 0}
-  timerText: {fileID: 0}
+  successUI: {fileID: 1957630230}
+  failUI: {fileID: 1957630229}
+  tutorialPanel: {fileID: 1957630232}
+  timerText: {fileID: 1957630231}
   timeLimit: 5
   totalStonesToSnap: 5
 --- !u!1001 &1957630228
@@ -1640,6 +1640,32 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: eb63ddfaf7d158a47b098d6ec8180dec, type: 3}
+--- !u!1 &1957630229 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1849369156, guid: eb63ddfaf7d158a47b098d6ec8180dec, type: 3}
+  m_PrefabInstance: {fileID: 1957630228}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1957630230 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 744023060696746619, guid: eb63ddfaf7d158a47b098d6ec8180dec, type: 3}
+  m_PrefabInstance: {fileID: 1957630228}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1957630231 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8672111322488145969, guid: eb63ddfaf7d158a47b098d6ec8180dec, type: 3}
+  m_PrefabInstance: {fileID: 1957630228}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &1957630232 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8672111323871156724, guid: eb63ddfaf7d158a47b098d6ec8180dec, type: 3}
+  m_PrefabInstance: {fileID: 1957630228}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &2118316136
 GameObject:
   m_ObjectHideFlags: 0
