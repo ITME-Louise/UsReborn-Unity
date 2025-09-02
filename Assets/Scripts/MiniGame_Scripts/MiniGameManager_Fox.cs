@@ -1,7 +1,8 @@
-using System.Collections;
+ï»¿using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 
 public class MiniGameManager_Fox : MonoBehaviour
 {
@@ -13,126 +14,179 @@ public class MiniGameManager_Fox : MonoBehaviour
     public Button retryButton;
     public Text timerText;
 
-    [Tooltip("Æ©Åä¸®¾ó ÀüÃ¼ ÄÁÅ×ÀÌ³Ê(ÆĞ³Î)")]
+    [Header("Tutorial / Start UI (ìë™ íƒ€ì´ë¨¸)")]
     public GameObject tutorialPanel;
-
-    [Tooltip("Æ©Åä¸®¾óÀÌ ³¡³­ µÚ 2ÃÊ Ç¥½ÃÇÒ '°ÔÀÓ½ºÅ¸Æ®' ÆĞ³Î/ÅØ½ºÆ®")]
     public GameObject gameStartPanel;
+    public float tutorialShowDelay = 10f;
+    public float tutorialDuration = 8f;
+    public float gameStartDuration = 2f;
 
-    [Header("Timer Settings")]
-    public float timeLimit = 5f;   // Ä«¿îÆ®´Ù¿î ÃÑ ½Ã°£(ÃÊ)
-    private float timer;
-    private bool isTimerRunning = false;
-    private bool gameEnded = false;
+    [Header("Panels (ìŠ¤í…Œì´ì§€)")]
+    [Tooltip("Stage 1")] public GameObject stoneCanvas;
+    [Tooltip("Stage 2")] public GameObject stoneCanvas2;
+    [Tooltip("Stage 3")] public GameObject stoneCanvas3;
+    [Tooltip("ì ìˆ˜/HUD/ì•ˆë‚´ ë“±(ê²Œì„ ì‹œì‘ í›„ ì¼œì§)")]
+    public GameObject extraPanel;
 
-    [Header("Game Progress")]
-    public int totalSlotsToFill = 5;
-    private int filledSlots = 0;
+    [Header("Timer")]
+    public bool useTimer = true;
+    public float timeLimit = 60f;
+    float timer;
+    bool isTimerRunning;
 
-    [Header("Flow Settings")]
-    [Tooltip("¾À ½ÃÀÛ ÈÄ Æ©Åä¸®¾óÀÌ ³ªÅ¸³ª±â±îÁö Áö¿¬(ÃÊ)")]
-    public float tutorialShowDelay = 10f;     // ¿ä±¸: 10ÃÊ µÚ µîÀå
-    [Tooltip("Æ©Åä¸®¾ó Ç¥½Ã ½Ã°£(ÃÊ)")]
-    public float tutorialDuration = 8f;       // ¿ä±¸: 8ÃÊ Ç¥½Ã
-    [Tooltip("'°ÔÀÓ½ºÅ¸Æ®' Ç¥½Ã ½Ã°£(ÃÊ)")]
-    public float gameStartDuration = 2f;      // ¿ä±¸: 2ÃÊ Ç¥½Ã
-    [Tooltip("¾À ½ÃÀÛ ½Ã°¢À¸·ÎºÎÅÍ Å¸ÀÌ¸Ó¸¦ ½ÃÀÛÇÒ Àı´ë ½Ã°¢(ÃÊ)")]
-    public float timerGlobalStartAt = 20f;    // ¿ä±¸: 20ÃÊ¿¡ Å¸ÀÌ¸Ó ½ÃÀÛ
+    [Header("ìŠ¹ë¦¬ ì¡°ê±´")]
+    public int finalStage = 3;                 // ë§ˆì§€ë§‰ ìŠ¤í…Œì´ì§€ ë²ˆí˜¸
+    public ReefStageCounter finalStageCounter; // ìŠ¤í…Œì´ì§€3 íƒ€ê²Ÿ ì¹´ìš´í„° (ì”¬ì—ì„œ ì—°ê²° í•„ìˆ˜)
+
+    [Header("ì„±ê³µ UI ë³´ì¥ ì˜µì…˜")]
+    public bool bringSuccessUIToFront = true;  // ì„±ê³µì‹œ ìµœìƒë‹¨ìœ¼ë¡œ ë³´ì´ê²Œ ê°•ì œ
+    public int successSortingOrder = 1000;     // ì„±ê³µ íŒ¨ë„ ì •ë ¬ ìš°ì„ ìˆœìœ„
+
+    // ë‚´ë¶€ ìƒíƒœ
+    bool gameEnded = false;
+    int currentStage = 0; // 0: ë¯¸ì‹œì‘
+    bool gameStarted = false;
 
     void Awake()
     {
         if (Instance == null) Instance = this;
-        else Destroy(gameObject);
+        else { Destroy(gameObject); return; }
+
+        SetActiveSafe(successUI, false);
+        SetActiveSafe(failUI, false);
+        SetActiveSafe(stoneCanvas, false);
+        SetActiveSafe(stoneCanvas2, false);
+        SetActiveSafe(stoneCanvas3, false);
+        SetActiveSafe(extraPanel, false);
+
+        SetActiveSafe(tutorialPanel, false);
+        SetActiveSafe(gameStartPanel, false);
     }
 
     void Start()
     {
-        // ÃÊ±â UI »óÅÂ
-        if (successUI) successUI.SetActive(false);
-        if (failUI) failUI.SetActive(false);
-
-        if (tutorialPanel) tutorialPanel.SetActive(false);
-        if (gameStartPanel) gameStartPanel.SetActive(false);
+        if (retryButton) retryButton.onClick.AddListener(RestartGame);
 
         timer = timeLimit;
+        if (useTimer) UpdateTimerUI();
 
-        if (retryButton != null)
-            retryButton.onClick.AddListener(RestartGame);
-
-        // ¸ŞÀÎ ÇÃ·Î¿ì ½ÃÀÛ
-        StartCoroutine(GameFlow());
+        StartCoroutine(TutorialFlow());
     }
 
-    private IEnumerator GameFlow()
+    IEnumerator TutorialFlow()
     {
-        float sceneStartTime = Time.time;
-        isTimerRunning = false;
+        if (tutorialShowDelay > 0f) yield return new WaitForSeconds(tutorialShowDelay);
 
-        // 0) Æ©Åä¸®¾ó µîÀå Àü 10ÃÊ ´ë±â
-        if (tutorialShowDelay > 0f)
-            yield return new WaitForSeconds(tutorialShowDelay);
+        if (tutorialPanel) { tutorialPanel.SetActive(true); }
+        if (tutorialDuration > 0f) yield return new WaitForSeconds(tutorialDuration);
+        if (tutorialPanel) { tutorialPanel.SetActive(false); }
 
-        // 1) Æ©Åä¸®¾ó 8ÃÊ Ç¥½Ã
-        if (tutorialPanel) tutorialPanel.SetActive(true);
-        if (tutorialDuration > 0f)
-            yield return new WaitForSeconds(tutorialDuration);
-        if (tutorialPanel) tutorialPanel.SetActive(false);
-
-        // 2) '°ÔÀÓ½ºÅ¸Æ®' 2ÃÊ Ç¥½Ã
         if (gameStartPanel)
         {
             gameStartPanel.SetActive(true);
-            if (gameStartDuration > 0f)
-                yield return new WaitForSeconds(gameStartDuration);
+            if (gameStartDuration > 0f) yield return new WaitForSeconds(gameStartDuration);
             gameStartPanel.SetActive(false);
         }
 
-        // 3) ¾À ½ÃÀÛ ±âÁØ 20ÃÊ°¡ µÉ ¶§±îÁö ³²Àº ½Ã°£¸¸Å­ ´ë±â
-        float elapsed = Time.time - sceneStartTime;
-        float remainUntilTimer = timerGlobalStartAt - elapsed;
-        if (remainUntilTimer > 0f)
-            yield return new WaitForSeconds(remainUntilTimer);
-
-        // 4) Å¸ÀÌ¸Ó ½ÃÀÛ
-        StartTimer();
+        StartGame();
     }
 
     void Update()
     {
-        if (!gameEnded && isTimerRunning)
+        // íƒ€ì´ë¨¸ ë™ì‘
+        if (useTimer && gameStarted && !gameEnded && isTimerRunning)
         {
             timer -= Time.deltaTime;
-            if (timerText != null)
-                timerText.text = "Time: " + Mathf.Ceil(timer).ToString();
+            UpdateTimerUI();
 
             if (timer <= 0f)
             {
-                OnFail();
+                timer = 0f;
+                if (!gameEnded)
+                {
+                    if (CheckWinCondition()) OnSuccess();
+                    else OnFail();
+                }
             }
         }
-    }
 
-    public void StartTimer()
-    {
-        timer = timeLimit;      // Ä«¿îÆ®´Ù¿î ±æÀÌ
-        isTimerRunning = true;
-    }
-
-    public void OnSlotFilled()
-    {
-        filledSlots++;
-        if (filledSlots >= totalSlotsToFill)
-        {
+        // ì¡°ê±´ ë§Œì¡± ì¦‰ì‹œ ì„±ê³µ(íƒ€ì´ë¨¸ì™€ ë¬´ê´€)
+        if (gameStarted && !gameEnded && CheckWinCondition())
             OnSuccess();
+
+        // F6 ë””ë²„ê·¸ í† ê¸€
+        var kb = Keyboard.current;
+        if (kb != null && kb.f6Key.wasPressedThisFrame && gameStarted && !gameEnded)
+        {
+            if (stoneCanvas3 && stoneCanvas3.activeInHierarchy) stoneCanvas3.SetActive(!stoneCanvas3.activeSelf);
+            else if (stoneCanvas2 && stoneCanvas2.activeInHierarchy) stoneCanvas2.SetActive(!stoneCanvas2.activeSelf);
+            else if (stoneCanvas && stoneCanvas.activeInHierarchy) stoneCanvas.SetActive(!stoneCanvas.activeSelf);
+            else if (extraPanel && extraPanel.activeInHierarchy) extraPanel.SetActive(!extraPanel.activeSelf);
         }
     }
 
+    // ========= ê²Œì„ ì‹œì‘ =========
+    public void StartGame()
+    {
+        if (gameEnded) return;
+
+        gameStarted = true;
+        SetStage(1);
+        if (extraPanel) extraPanel.SetActive(true);
+
+        // ì ìˆ˜ 0ìœ¼ë¡œ
+        ReefMissionManager.Instance?.ResetScore();
+        // ì¹´ìš´í„°ë„ 0ìœ¼ë¡œ
+        if (finalStageCounter) finalStageCounter.ResetCount();
+
+        if (useTimer)
+        {
+            timer = timeLimit;
+            isTimerRunning = true;
+            UpdateTimerUI();
+        }
+    }
+
+    // ========= ìŠ¤í…Œì´ì§€ ì´ë™ =========
+    public void ForceStage(int stage)
+    {
+        if (!gameStarted || gameEnded) return;
+        SetStage(stage);
+    }
+
+    public void OnTargetZoneHit(int stageToForce)
+    {
+        if (!gameStarted || gameEnded) return;
+        ForceStage(stageToForce);
+    }
+
+    void SetStage(int stage)
+    {
+        currentStage = stage;
+        if (stoneCanvas) stoneCanvas.SetActive(stage == 1);
+        if (stoneCanvas2) stoneCanvas2.SetActive(stage == 2);
+        if (stoneCanvas3) stoneCanvas3.SetActive(stage == 3);
+    }
+
+    // ========= ScoringZoneì—ì„œ ë“ì  ì‹œ ì•Œë¦¼ =========
+    public void OnZoneScored(ReefStageCounter counter)
+    {
+        if (!gameStarted || gameEnded) return;
+        if (CheckWinCondition()) OnSuccess();
+    }
+
+    // ========= ì„±ê³µ/ì‹¤íŒ¨/ì¬ì‹œì‘ =========
     public void OnSuccess()
     {
         if (gameEnded) return;
         gameEnded = true;
         isTimerRunning = false;
-        if (successUI) successUI.SetActive(true);
+
+        // ì„±ê³µ ì‹œ ìŠ¤í…Œì´ì§€ 3ì„ ìœ ì§€ (0ìœ¼ë¡œ ì´ˆê¸°í™”í•˜ì§€ ì•ŠìŒ)
+        SetStage(finalStage);
+
+        if (extraPanel) extraPanel.SetActive(false);
+        ShowSuccessUI();
     }
 
     public void OnFail()
@@ -140,11 +194,81 @@ public class MiniGameManager_Fox : MonoBehaviour
         if (gameEnded) return;
         gameEnded = true;
         isTimerRunning = false;
+
+        SetStage(0);
+        if (extraPanel) extraPanel.SetActive(false);
         if (failUI) failUI.SetActive(true);
     }
 
     public void RestartGame()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        var scene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(scene.name);
+    }
+
+    // ========= íƒ€ì´ë¨¸ UI =========
+    void UpdateTimerUI()
+    {
+        if (!timerText) return;
+        int t = Mathf.CeilToInt(Mathf.Max(0f, timer));
+        timerText.text = $"Time: {t}";
+    }
+
+    // ========= ë³µí•© ìŠ¹ë¦¬ ì¡°ê±´ =========
+    bool CheckWinCondition()
+    {
+        bool reachedFinalStage = (currentStage == finalStage);
+        int totalScore = ReefMissionManager.Instance ? ReefMissionManager.Instance.Score : 0;
+        bool scoreOk = totalScore >= 3;  // ì „ì²´ ì ìˆ˜ í•©ê³„ ê¸°ì¤€
+
+        Debug.Log($"[CheckWin] stage={currentStage}, score={totalScore}, ok={reachedFinalStage && scoreOk}");
+        return reachedFinalStage && scoreOk;
+    }
+
+    // ========= Helper =========
+    static void SetActiveSafe(GameObject go, bool on)
+    {
+        if (go && go.activeSelf != on) go.SetActive(on);
+    }
+
+    void ShowSuccessUI()
+    {
+        if (!successUI)
+        {
+            Debug.LogWarning("[MiniGameManager_Fox] successUI is not assigned.");
+            return;
+        }
+
+        // ë¶€ëª¨ ì²´ì¸ í™œì„±í™” ë³´ì¥
+        Transform t = successUI.transform;
+        while (t != null)
+        {
+            t.gameObject.SetActive(true);
+            t = t.parent;
+        }
+
+        // ìµœìƒë‹¨ ì˜¤ë²„ë ˆì´ë¡œ ë…¸ì¶œ ë³´ì¥(ê°€ë ¤ì§ ë°©ì§€)
+        if (bringSuccessUIToFront)
+        {
+            var root = successUI;
+            var canvas = root.GetComponent<Canvas>();
+            if (!canvas) canvas = root.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.overrideSorting = true;
+            canvas.sortingOrder = successSortingOrder;
+
+            var gr = root.GetComponent<UnityEngine.UI.GraphicRaycaster>();
+            if (!gr) root.AddComponent<UnityEngine.UI.GraphicRaycaster>();
+
+            var cg = root.GetComponent<CanvasGroup>();
+            if (!cg) cg = root.AddComponent<CanvasGroup>();
+            cg.alpha = 1f; cg.interactable = true; cg.blocksRaycasts = true;
+
+            successUI.transform.SetAsLastSibling();
+        }
+
+        successUI.SetActive(true);
+        Debug.Log("[MiniGameManager_Fox] Success UI shown.");
     }
 }
+
