@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using UnityEngine.InputSystem; // F6 디버그 토글용
+using UnityEngine.InputSystem;
 
 public class MiniGameManager_Fox : MonoBehaviour
 {
@@ -14,191 +14,100 @@ public class MiniGameManager_Fox : MonoBehaviour
     public Button retryButton;
     public Text timerText;
 
-    [Header("Tutorial / Start UI")]
-    public GameObject tutorialPanel;   // 10초 후 켜짐
-    public GameObject gameStartPanel;  // 8초 경과 후 2초 표시
+    [Header("Tutorial / Start UI (자동 타이머)")]
+    public GameObject tutorialPanel;
+    public GameObject gameStartPanel;
+    public float tutorialShowDelay = 10f;
+    public float tutorialDuration = 8f;
+    public float gameStartDuration = 2f;
 
-    [Header("Panels")]
-    [Tooltip("20s에 켜질 패널")]
-    public GameObject extraPanel;      // (예: ExtraPanel)
-    [Tooltip("21s~25s에 보였다가 꺼질 패널")]
-    public GameObject stoneCanvas;     // (예: StoneCanvas)
-    [Tooltip("25s~28s")]
-    public GameObject stoneCanvas2;    // (예: StoneCanvas2)
-    [Tooltip("28s~30s")]
-    public GameObject stoneCanvas3;    // (예: StoneCanvas3)
+    [Header("Panels (스테이지)")]
+    [Tooltip("Stage 1")] public GameObject stoneCanvas;
+    [Tooltip("Stage 2")] public GameObject stoneCanvas2;
+    [Tooltip("Stage 3")] public GameObject stoneCanvas3;
+    [Tooltip("점수/HUD/안내 등(게임 시작 후 켜짐)")]
+    public GameObject extraPanel;
 
-    [Header("Timer (옵션)")]
-    public float timeLimit = 5f;       // 필요 시 사용
+    [Header("Timer")]
+    public bool useTimer = true;
+    public float timeLimit = 60f;
     private float timer;
     private bool isTimerRunning;
 
-    [Header("Flow Flags")]
-    private bool gameEnded;
+    [Header("승리 조건")]
+    public int finalStage = 3;                      // 마지막 스테이지 번호
+    public ReefStageCounter finalStageCounter;      // 스테이지3 타겟 카운터(필수)
 
-    [Header("Tutorial Durations")]
-    public float tutorialShowDelay = 10f; // 0~10s 대기
-    public float tutorialDuration = 8f;   // 10~18s 튜토 패널
-    public float gameStartDuration = 2f;  // 18~20s 게임스타트
+    // 내부 상태
+    private bool gameEnded = false;
+    private int currentStage = 0;  // 0: 미시작
+    private bool gameStarted = false;
 
-    [Header("Absolute Schedule (sec from scene start)")]
-    public float extraOnAt = 20f; // extraPanel ON
-    public float stone1OnAt = 21f; // stoneCanvas ON
-    public float stone1OffAt = 25f; // stoneCanvas OFF
-    public float stone2OnAt = 25f; // stoneCanvas2 ON
-    public float stone2OffAt = 28f; // stoneCanvas2 OFF
-    public float stone3OnAt = 28f; // stoneCanvas3 ON
-    public float stone3OffAt = 30f; // stoneCanvas3 OFF
-    public float successAt = 32f;   // 성공 패널 표시
-    public float successOffAt = 35f; // NEW: 35초에 성공 패널 OFF
-
-    [Header("Restart After End")]
-    [Tooltip("성공/실패 이후 자동 재시작할지 (기본: 꺼짐)")]
-    public bool autoRestartOnEnd = false;
-    public float restartDelay = 2f;
-
+    // ========= Unity =========
     private void Awake()
     {
-        if (Instance == null) Instance = this; else Destroy(gameObject);
+        if (Instance == null) Instance = this;
+        else { Destroy(gameObject); return; }
 
-        // 이름 자동 탐색(선택)
-        if (!extraPanel) { var f = GameObject.Find("extraPanel") ?? GameObject.Find("ExtraPanel"); if (f) extraPanel = f; }
-        if (!stoneCanvas) { var f = GameObject.Find("stoneCanvas") ?? GameObject.Find("StoneCanvas"); if (f) stoneCanvas = f; }
-        if (!stoneCanvas2) { var f = GameObject.Find("stoneCanvas2") ?? GameObject.Find("StoneCanvas2"); if (f) stoneCanvas2 = f; }
-        if (!stoneCanvas3) { var f = GameObject.Find("stoneCanvas3") ?? GameObject.Find("StoneCanvas3"); if (f) stoneCanvas3 = f; }
+        SetActiveSafe(successUI, false);
+        SetActiveSafe(failUI, false);
+        SetActiveSafe(stoneCanvas, false);
+        SetActiveSafe(stoneCanvas2, false);
+        SetActiveSafe(stoneCanvas3, false);
+        SetActiveSafe(extraPanel, false);
 
-        // 시작 즉시 OFF
-        if (extraPanel && extraPanel.activeSelf) extraPanel.SetActive(false);
-        if (stoneCanvas && stoneCanvas.activeSelf) stoneCanvas.SetActive(false);
-        if (stoneCanvas2 && stoneCanvas2.activeSelf) stoneCanvas2.SetActive(false);
-        if (stoneCanvas3 && stoneCanvas3.activeSelf) stoneCanvas3.SetActive(false);
-        if (successUI) successUI.SetActive(false);
-        if (failUI) failUI.SetActive(false);
+        SetActiveSafe(tutorialPanel, false);
+        SetActiveSafe(gameStartPanel, false);
     }
 
     private void Start()
     {
-        // 튜토/스타트 패널 OFF로 시작
-        if (tutorialPanel) tutorialPanel.SetActive(false);
-        if (gameStartPanel) gameStartPanel.SetActive(false);
-
-        // Canvas 정렬순서만 보정(※ renderMode는 건드리지 않음: 비율깨짐 방지)
-        SetupCanvasOrder(extraPanel);
-        SetupCanvasOrder(stoneCanvas);
-        SetupCanvasOrder(stoneCanvas2);
-        SetupCanvasOrder(stoneCanvas3);
-
-        timer = timeLimit;
         if (retryButton) retryButton.onClick.AddListener(RestartGame);
 
-        StartCoroutine(GameFlow());
+        timer = timeLimit;
+        if (useTimer) UpdateTimerUI();
+
+        StartCoroutine(TutorialFlow());
     }
 
-    private void SetupCanvasOrder(GameObject go)
+    private IEnumerator TutorialFlow()
     {
-        if (!go) return;
-        var cv = go.GetComponentInParent<Canvas>();
-        if (cv) cv.sortingOrder = Mathf.Max(cv.sortingOrder, 500);
-    }
-
-    private IEnumerator WaitUntilAbs(float targetSec, float t0)
-    {
-        float remain = targetSec - (Time.time - t0);
-        if (remain > 0f) yield return new WaitForSeconds(remain);
-    }
-
-    private IEnumerator GameFlow()
-    {
-        float t0 = Time.time;
-        isTimerRunning = false; // 필요시 panel 타이밍에 맞춰 StartTimer() 호출
-
-        // 0~10s : 대기
         if (tutorialShowDelay > 0f) yield return new WaitForSeconds(tutorialShowDelay);
-        if (gameEnded) yield break;
 
-        // 10~18s : 튜토리얼
         if (tutorialPanel) tutorialPanel.SetActive(true);
         if (tutorialDuration > 0f) yield return new WaitForSeconds(tutorialDuration);
-        if (gameEnded) yield break;
         if (tutorialPanel) tutorialPanel.SetActive(false);
 
-        // 18~20s : 게임스타트
         if (gameStartPanel)
         {
             gameStartPanel.SetActive(true);
             if (gameStartDuration > 0f) yield return new WaitForSeconds(gameStartDuration);
-            if (gameEnded) yield break;
             gameStartPanel.SetActive(false);
         }
 
-        // 20s : extraPanel ON
-        yield return WaitUntilAbs(extraOnAt, t0);
-        if (gameEnded) yield break;
-        if (extraPanel) extraPanel.SetActive(true);
-        Debug.Log("[Flow] extraPanel ON (20s)");
-
-        // 21s : stoneCanvas ON
-        yield return WaitUntilAbs(stone1OnAt, t0);
-        if (gameEnded) yield break;
-        if (stoneCanvas) stoneCanvas.SetActive(true);
-        Debug.Log("[Flow] StoneCanvas ON (21s)");
-
-        // 25s : stoneCanvas OFF + stoneCanvas2 ON
-        yield return WaitUntilAbs(stone1OffAt, t0);
-        if (gameEnded) yield break;
-        if (stoneCanvas) stoneCanvas.SetActive(false);
-        if (stoneCanvas2) stoneCanvas2.SetActive(true);
-        Debug.Log("[Flow] StoneCanvas OFF, StoneCanvas2 ON (25s)");
-
-        // 28s : stoneCanvas2 OFF + stoneCanvas3 ON
-        yield return WaitUntilAbs(stone2OffAt, t0);
-        if (gameEnded) yield break;
-        if (stoneCanvas2) stoneCanvas2.SetActive(false);
-        if (stoneCanvas3) stoneCanvas3.SetActive(true);
-        Debug.Log("[Flow] StoneCanvas2 OFF, StoneCanvas3 ON (28s)");
-
-        // 30s : stoneCanvas3 OFF
-        yield return WaitUntilAbs(stone3OffAt, t0);
-        if (gameEnded) yield break;
-        if (stoneCanvas3) stoneCanvas3.SetActive(false);
-        Debug.Log("[Flow] StoneCanvas3 OFF (30s)");
-
-        // 32s : 성공 패널 표시 (자동 재시작 없음)
-        yield return WaitUntilAbs(successAt, t0);
-        if (gameEnded) yield break;
-        OnSuccess(); // gameEnded = true 로 전환
-        Debug.Log("[Flow] Success shown (32s)");
-
-        // NEW: 35s 에 성공 패널 끄기(절대시간). gameEnded 여도 동작하도록 별도 코루틴 실행.
-        if (successOffAt > successAt)
-            StartCoroutine(HideSuccessAtAbs(successOffAt, t0));
-    }
-
-    // NEW: 성공 패널을 절대 시각에 끄는 코루틴
-    private IEnumerator HideSuccessAtAbs(float targetSec, float t0)
-    {
-        float remain = targetSec - (Time.time - t0);
-        if (remain > 0f) yield return new WaitForSeconds(remain);
-        if (successUI && successUI.activeSelf)
-        {
-            successUI.SetActive(false);
-            Debug.Log("[Flow] Success hidden (" + targetSec + "s)");
-        }
+        StartGame();
     }
 
     private void Update()
     {
-        // (옵션) 타이머 사용 시만
-        if (!gameEnded && isTimerRunning)
+        if (useTimer && gameStarted && !gameEnded && isTimerRunning)
         {
             timer -= Time.deltaTime;
-            if (timerText) timerText.text = "Time: " + Mathf.Ceil(timer);
-            if (timer <= 0f) OnFail();
+            UpdateTimerUI();
+
+            if (timer <= 0f)
+            {
+                timer = 0f;
+                if (!gameEnded)
+                {
+                    if (CheckWinCondition()) OnSuccess();
+                    else OnFail();
+                }
+            }
         }
 
-        // 디버그: F6 → 현재 켜져있는 패널 토글(우선순위: 3 > 2 > 1 > extra)
         var kb = Keyboard.current;
-        if (kb != null && kb.f6Key.wasPressedThisFrame)
+        if (kb != null && kb.f6Key.wasPressedThisFrame && gameStarted && !gameEnded)
         {
             if (stoneCanvas3 && stoneCanvas3.activeInHierarchy) stoneCanvas3.SetActive(!stoneCanvas3.activeSelf);
             else if (stoneCanvas2 && stoneCanvas2.activeInHierarchy) stoneCanvas2.SetActive(!stoneCanvas2.activeSelf);
@@ -207,29 +116,74 @@ public class MiniGameManager_Fox : MonoBehaviour
         }
     }
 
-    // === 공개 API ===
-    public void StartTimer()
+    // ========= 게임 시작 =========
+    public void StartGame()
     {
-        timer = timeLimit;
-        isTimerRunning = true;
+        if (gameEnded) return;
+
+        gameStarted = true;
+        SetStage(1);
+        if (extraPanel) extraPanel.SetActive(true);
+
+        ReefMissionManager.Instance?.ResetScore();
+
+        if (useTimer)
+        {
+            timer = timeLimit;
+            isTimerRunning = true;
+            UpdateTimerUI();
+        }
     }
 
+    // === 득점 이벤트(이제 점수는 ScoringZone만 처리하도록 비활성화해도 됨) ===
+    public void OnTargetHit(int points = 1)
+    {
+        if (!gameStarted || gameEnded) return;
+        // 점수 처리는 ReefScoringZone에서만 수행. 여기선 승리조건만 체크 가능.
+        if (CheckWinCondition()) OnSuccess();
+    }
+
+    // === ScoringZone에서 득점 시 알림 ===
+    public void OnZoneScored(ReefStageCounter zone)
+    {
+        if (!gameStarted || gameEnded) return;
+        if (CheckWinCondition()) OnSuccess();
+    }
+
+    // ========= 스테이지 이동 =========
+    public void ForceStage(int stage)
+    {
+        if (!gameStarted || gameEnded) return;
+        SetStage(stage);
+        if (CheckWinCondition()) OnSuccess();
+    }
+
+    public void OnTargetZoneHit(int stageToForce, int pointsIgnored = 1)
+    {
+        if (!gameStarted || gameEnded) return;
+        // 점수는 ScoringZone이 전담 -> 여기선 순수 스테이지 전환만
+        ForceStage(stageToForce);
+    }
+
+    private void SetStage(int stage)
+    {
+        currentStage = stage;
+
+        if (stoneCanvas) stoneCanvas.SetActive(stage == 1);
+        if (stoneCanvas2) stoneCanvas2.SetActive(stage == 2);
+        if (stoneCanvas3) stoneCanvas3.SetActive(stage == 3);
+    }
+
+    // ========= 성공/실패/재시작 =========
     public void OnSuccess()
     {
         if (gameEnded) return;
         gameEnded = true;
         isTimerRunning = false;
 
-        // 진행 중 패널 모두 OFF (성공 UI만 켬)
+        SetStage(0);
         if (extraPanel) extraPanel.SetActive(false);
-        if (stoneCanvas) stoneCanvas.SetActive(false);
-        if (stoneCanvas2) stoneCanvas2.SetActive(false);
-        if (stoneCanvas3) stoneCanvas3.SetActive(false);
-
         if (successUI) successUI.SetActive(true);
-
-        if (autoRestartOnEnd)
-            StartCoroutine(RestartGameDelayed(restartDelay)); // 기본값 false이므로 실행 안 됨
     }
 
     public void OnFail()
@@ -238,26 +192,36 @@ public class MiniGameManager_Fox : MonoBehaviour
         gameEnded = true;
         isTimerRunning = false;
 
+        SetStage(0);
         if (extraPanel) extraPanel.SetActive(false);
-        if (stoneCanvas) stoneCanvas.SetActive(false);
-        if (stoneCanvas2) stoneCanvas2.SetActive(false);
-        if (stoneCanvas3) stoneCanvas3.SetActive(false);
-
         if (failUI) failUI.SetActive(true);
-
-        if (autoRestartOnEnd)
-            StartCoroutine(RestartGameDelayed(restartDelay)); // 기본값 false
-    }
-
-    private IEnumerator RestartGameDelayed(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        RestartGame();
     }
 
     public void RestartGame()
     {
         var scene = SceneManager.GetActiveScene();
         SceneManager.LoadScene(scene.name);
+    }
+
+    // ========= 타이머 UI =========
+    private void UpdateTimerUI()
+    {
+        if (!timerText) return;
+        int t = Mathf.CeilToInt(Mathf.Max(0f, timer));
+        timerText.text = $"Time: {t}";
+    }
+
+    // ========= 복합 승리 조건 =========
+    private bool CheckWinCondition()
+    {
+        bool reachedFinalStage = (currentStage == finalStage);
+        bool counterOk = (finalStageCounter && finalStageCounter.IsComplete);
+        return reachedFinalStage && counterOk;
+    }
+
+    // ========= Helper =========
+    private static void SetActiveSafe(GameObject go, bool on)
+    {
+        if (go && go.activeSelf != on) go.SetActive(on);
     }
 }
