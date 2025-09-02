@@ -1,40 +1,40 @@
-using System.Collections;
+ï»¿using System.Collections;
 using UnityEngine;
 
 public class FoxAnicontroller : MonoBehaviour
 {
     [Header("Animation")]
-    [SerializeField] private Animator anim;                     // ºñ¿öµÎ¸é ÀÚµ¿ GetComponent
-    [SerializeField] private string triggerName = "Clapping";   // delay ÈÄ ½ÇÇàÇÒ Æ®¸®°Å
-    [SerializeField] private float delayToShow = 5f;            // ³ªÅ¸³ª±â±îÁö ´ë±â(ÃÊ)
+    [SerializeField] private Animator anim;                     // ë¹„ì›Œë‘ë©´ ìë™ GetComponent
+    [SerializeField] private string triggerName = "Clapping";   // delay í›„ ì‹¤í–‰í•  íŠ¸ë¦¬ê±°
+    [SerializeField] private float delayToShow = 5f;            // ë‚˜íƒ€ë‚˜ê¸°ê¹Œì§€ ëŒ€ê¸°(ì´ˆ)
 
     [Header("UI Root")]
     [SerializeField] private string talkCanvasName = "TALK";
-    [SerializeField] private GameObject talkCanvas;             // ºñ¿öµÎ¸é ÀÌ¸§À¸·Î ÀÚµ¿ Å½»ö(ºñÈ°¼º Æ÷ÇÔ)
+    [SerializeField] private GameObject talkCanvas;             // ë¹„ì›Œë‘ë©´ ì´ë¦„ìœ¼ë¡œ ìë™ íƒìƒ‰(ë¹„í™œì„± í¬í•¨)
 
     [Header("Sequence (Children of TALK)")]
     [SerializeField] private string talk1Name = "foxtalk";
     [SerializeField] private string talk2Name = "foxtalk2";
-    [SerializeField] private float talk1Duration = 3f;          // foxtalk Ç¥½Ã ½Ã°£
-    [SerializeField] private float talk2Duration = 2f;          // foxtalk2 Ç¥½Ã ½Ã°£
-    [SerializeField] private GameObject talk1;                  // ºñ¿öµÎ¸é ÀÚµ¿ Ã£±â
-    [SerializeField] private GameObject talk2;                  // ºñ¿öµÎ¸é ÀÚµ¿ Ã£±â
+    [SerializeField] private float talk1Duration = 3f;          // foxtalk í‘œì‹œ ì‹œê°„
+    [SerializeField] private float talk2Duration = 2f;          // foxtalk2 í‘œì‹œ ì‹œê°„
+    [SerializeField] private GameObject talk1;                  // ë¹„ì›Œë‘ë©´ ìë™ ì°¾ê¸°
+    [SerializeField] private GameObject talk2;                  // ë¹„ì›Œë‘ë©´ ìë™ ì°¾ê¸°
 
     void Start()
     {
         if (anim == null) anim = GetComponent<Animator>();
 
-        // TALK Äµ¹ö½º ÀÚµ¿ Å½»ö(ºñÈ°¼º Æ÷ÇÔ)
+        // TALK ìº”ë²„ìŠ¤ ìë™ íƒìƒ‰(ë¹„í™œì„± í¬í•¨)
         if (talkCanvas == null)
             talkCanvas = FindInSceneByName(talkCanvasName);
 
-        // ÀÚ½Ä ¿ä¼Ò ÀÚµ¿ Å½»ö(ºñÈ°¼º Æ÷ÇÔ)
+        // ìì‹ ìš”ì†Œ ìë™ íƒìƒ‰(ë¹„í™œì„± í¬í•¨)
         if (talkCanvas != null)
         {
             if (talk1 == null) talk1 = FindChildByName(talkCanvas.transform, talk1Name);
             if (talk2 == null) talk2 = FindChildByName(talkCanvas.transform, talk2Name);
 
-            // ½ÃÀÛ ½Ã ¸ğµÎ ²ô±â
+            // ì‹œì‘ ì‹œ ëª¨ë‘ ë„ê¸°
             talkCanvas.SetActive(false);
             if (talk1 != null) talk1.SetActive(false);
             if (talk2 != null) talk2.SetActive(false);
@@ -45,14 +45,14 @@ public class FoxAnicontroller : MonoBehaviour
 
     private IEnumerator Flow()
     {
-        // 1) ´ë±â
+        // 1) ëŒ€ê¸°
         yield return new WaitForSeconds(delayToShow);
 
-        // 2) ¾Ö´Ï¸ŞÀÌ¼Ç Æ®¸®°Å
+        // 2) ì• ë‹ˆë©”ì´ì…˜ íŠ¸ë¦¬ê±°
         if (anim != null && !string.IsNullOrEmpty(triggerName))
             anim.SetTrigger(triggerName);
 
-        // 3) TALK ½ÃÄö½º: foxtalk(3s) ¡æ foxtalk2(2s)
+        // 3) TALK ì‹œí€€ìŠ¤: foxtalk(3s) â†’ foxtalk2(2s)
         if (talkCanvas != null)
         {
             talkCanvas.SetActive(true);
@@ -65,13 +65,13 @@ public class FoxAnicontroller : MonoBehaviour
             if (talk2 != null) talk2.SetActive(true);
             yield return new WaitForSeconds(talk2Duration);
 
-            // 4) Á¾·á: ÀüºÎ ²ô±â
+            // 4) ì¢…ë£Œ: ì „ë¶€ ë„ê¸°
             if (talk2 != null) talk2.SetActive(false);
             talkCanvas.SetActive(false);
         }
     }
 
-    // ¾À ÀüÃ¼¿¡¼­ ÀÌ¸§À¸·Î GameObject Ã£±â(ºñÈ°¼º Æ÷ÇÔ)
+    // ì”¬ ì „ì²´ì—ì„œ ì´ë¦„ìœ¼ë¡œ GameObject ì°¾ê¸°(ë¹„í™œì„± í¬í•¨)
     private GameObject FindInSceneByName(string targetName)
     {
         var roots = gameObject.scene.GetRootGameObjects();
@@ -84,7 +84,7 @@ public class FoxAnicontroller : MonoBehaviour
         return null;
     }
 
-    // Æ¯Á¤ ºÎ¸ğ ¾Æ·¡¿¡¼­ ÀÌ¸§À¸·Î ÀÚ½Ä Ã£±â(ºñÈ°¼º Æ÷ÇÔ)
+    // íŠ¹ì • ë¶€ëª¨ ì•„ë˜ì—ì„œ ì´ë¦„ìœ¼ë¡œ ìì‹ ì°¾ê¸°(ë¹„í™œì„± í¬í•¨)
     private GameObject FindChildByName(Transform parent, string childName)
     {
         var all = parent.GetComponentsInChildren<Transform>(true);
