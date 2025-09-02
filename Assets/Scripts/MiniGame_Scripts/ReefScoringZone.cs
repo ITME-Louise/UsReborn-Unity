@@ -12,21 +12,25 @@ public class ReefScoringZone : MonoBehaviour
     public float settleSpeedThreshold = 0.05f; // m/s 이하
     public float settleTime = 0.7f;            // s 이상 유지
 
-    [Header("즉시 득점 옵션")]
-    [Tooltip("켜면 존에 들어오는 즉시 점수 처리(정지판정 생략)")]
+    [Header("즉시 득점")]
+    [Tooltip("켜면 존에 들어오면 곧바로 점수(+1) 처리, 정지 판정 생략")]
     public bool scoreOnEnter = true;
 
+    [Header("Final Stage Counter (명시 연결 권장)")]
+    public ReefStageCounter targetCounter; // 스테이지3의 카운터 컴포넌트를 지정
+
     // 내부 상태
-    private readonly Dictionary<Rock, Coroutine> running = new();
-    private readonly HashSet<int> scoredBodies = new(); // Rigidbody 기준 1회만 득점
-    private Collider col;
-    private ReefStageCounter cachedCounter; // 같은 오브젝트에 붙는 카운터(선택)
+    readonly Dictionary<Rock, Coroutine> running = new();
+    readonly HashSet<int> scoredBodies = new(); // Rigidbody 기준 1회만 득점
+    Collider col;
 
     void Awake()
     {
         col = GetComponent<Collider>();
         col.isTrigger = true;
-        cachedCounter = GetComponent<ReefStageCounter>(); // 있으면 캐시
+
+        if (!targetCounter) targetCounter = GetComponent<ReefStageCounter>();
+        if (!targetCounter) targetCounter = GetComponentInParent<ReefStageCounter>();
     }
 
     void Start()
@@ -42,6 +46,7 @@ public class ReefScoringZone : MonoBehaviour
         var rb = other.attachedRigidbody;
         if (rb == null) return;
 
+        // 이미 득점한 리지드바디면 무시(콜라이더 중복 방지)
         if (scoredBodies.Contains(rb.GetInstanceID())) return;
 
         if (scoreOnEnter)
@@ -50,6 +55,7 @@ public class ReefScoringZone : MonoBehaviour
             return;
         }
 
+        // 정지 판정 코루틴
         if (running.ContainsKey(rock)) return;
         running[rock] = StartCoroutine(WaitSettleAndScore(rock, rb));
     }
@@ -105,12 +111,11 @@ public class ReefScoringZone : MonoBehaviour
             {
                 held = 0f;
             }
-
             yield return null;
         }
     }
 
-    // 무조건 +1, 한 리지드바디당 1회
+    // 무조건 +1, 한 리지드바디당 1회만
     void ScoreNow(Rock rock, Rigidbody rb)
     {
         if (!rock || !rb) return;
@@ -122,9 +127,10 @@ public class ReefScoringZone : MonoBehaviour
         if (rock.TryMarkScored())
         {
             scoredBodies.Add(id);
-            ReefMissionManager.Instance?.AddScore(1);          // +1
-            if (cachedCounter) cachedCounter.OnScoredOne();     // 카운터 증가
-            MiniGameManager_Fox.Instance?.OnZoneScored(cachedCounter);
+            ReefMissionManager.Instance?.AddScore(1);              // +1 점수 (가산점 없음)
+            if (targetCounter) targetCounter.OnScoredOne();         // 카운터 +1
+            MiniGameManager_Fox.Instance?.OnZoneScored(targetCounter);
+            // Debug.Log($"[ScoringZone] Scored: {id}, counter={targetCounter?.IsComplete}");
         }
     }
 

@@ -5,25 +5,24 @@ using UnityEngine;
 [RequireComponent(typeof(Collider))]
 public class RockTargetAdvance : MonoBehaviour
 {
-    [Tooltip("이 타겟에 돌이 들어오면 전환할 스테이지 (RockTarget_01=2, RockTarget_02=3)")]
+    [Tooltip("이 타겟에 돌이 들어오면 전환할 스테이지 (Stage1 끝=2, Stage2 끝=3)")]
     public int stageOnHit = 2;
 
     [Tooltip("점수도 1점 줄까요? (권장: false, 점수는 ScoringZone 전담)")]
-    public bool awardPoint = false;   // ✅ 기본값 false
+    public bool awardPoint = false; // 점수는 ReefScoringZone에서만 처리
 
     [Tooltip("같은 돌로 중복 발동 방지 (Rigidbody 기준)")]
     public bool oneShotPerRock = true;
 
-    [Header("정지(쌓임) 판정")]
-    public float settleSpeedThreshold = 0.05f;
-    public float settleTime = 0.7f;
-    public float settleMaxWait = 3f;
-
-    [Header("고정 옵션")]
+    [Header("자연 낙하 후 고정")]
+    public float settleSpeedThreshold = 0.05f; // m/s
+    public float settleTime = 0.7f;            // s
+    public float settleMaxWait = 3f;           // s (최대 대기 후 강제 고정)
     public bool freezeRockOnSettle = true;
     public bool disableRockColliderAfterSettle = true;
 
-    private readonly HashSet<int> _firedBodyIds = new();
+   
+    readonly HashSet<long> _firedKeys = new();
 
     void Awake()
     {
@@ -36,20 +35,21 @@ public class RockTargetAdvance : MonoBehaviour
         var rb = other.attachedRigidbody;
         if (rb == null) return;
 
-        int id = rb.GetInstanceID();
-        if (oneShotPerRock && _firedBodyIds.Contains(id)) return;
-        _firedBodyIds.Add(id);
+        long key = ((long)stageOnHit << 32) | (uint)rb.GetInstanceID();
+        if (oneShotPerRock && _firedKeys.Contains(key)) return;
+        _firedKeys.Add(key);
 
-        // 스테이지 전환(점수는 ScoringZone이 담당)
+        // 스테이지 전환 (점수는 ScoringZone이 전담)
         if (awardPoint)
-            MiniGameManager_Fox.Instance?.OnTargetZoneHit(stageOnHit, 1);
+            MiniGameManager_Fox.Instance?.OnTargetZoneHit(stageOnHit);
         else
             MiniGameManager_Fox.Instance?.ForceStage(stageOnHit);
+
 
         StartCoroutine(SettleAndFreeze(rb));
     }
 
-    private IEnumerator SettleAndFreeze(Rigidbody rb)
+    IEnumerator SettleAndFreeze(Rigidbody rb)
     {
         if (rb == null) yield break;
 

@@ -31,20 +31,23 @@ public class MiniGameManager_Fox : MonoBehaviour
     [Header("Timer")]
     public bool useTimer = true;
     public float timeLimit = 60f;
-    private float timer;
-    private bool isTimerRunning;
+    float timer;
+    bool isTimerRunning;
 
     [Header("승리 조건")]
-    public int finalStage = 3;                      // 마지막 스테이지 번호
-    public ReefStageCounter finalStageCounter;      // 스테이지3 타겟 카운터(필수)
+    public int finalStage = 3;                 // 마지막 스테이지 번호
+    public ReefStageCounter finalStageCounter; // 스테이지3 타겟 카운터 (씬에서 연결 필수)
+
+    [Header("성공 UI 보장 옵션")]
+    public bool bringSuccessUIToFront = true;  // 성공시 최상단으로 보이게 강제
+    public int successSortingOrder = 1000;     // 성공 패널 정렬 우선순위
 
     // 내부 상태
-    private bool gameEnded = false;
-    private int currentStage = 0;  // 0: 미시작
-    private bool gameStarted = false;
+    bool gameEnded = false;
+    int currentStage = 0; // 0: 미시작
+    bool gameStarted = false;
 
-    // ========= Unity =========
-    private void Awake()
+    void Awake()
     {
         if (Instance == null) Instance = this;
         else { Destroy(gameObject); return; }
@@ -60,7 +63,7 @@ public class MiniGameManager_Fox : MonoBehaviour
         SetActiveSafe(gameStartPanel, false);
     }
 
-    private void Start()
+    void Start()
     {
         if (retryButton) retryButton.onClick.AddListener(RestartGame);
 
@@ -70,13 +73,13 @@ public class MiniGameManager_Fox : MonoBehaviour
         StartCoroutine(TutorialFlow());
     }
 
-    private IEnumerator TutorialFlow()
+    IEnumerator TutorialFlow()
     {
         if (tutorialShowDelay > 0f) yield return new WaitForSeconds(tutorialShowDelay);
 
-        if (tutorialPanel) tutorialPanel.SetActive(true);
+        if (tutorialPanel) { tutorialPanel.SetActive(true); }
         if (tutorialDuration > 0f) yield return new WaitForSeconds(tutorialDuration);
-        if (tutorialPanel) tutorialPanel.SetActive(false);
+        if (tutorialPanel) { tutorialPanel.SetActive(false); }
 
         if (gameStartPanel)
         {
@@ -88,8 +91,9 @@ public class MiniGameManager_Fox : MonoBehaviour
         StartGame();
     }
 
-    private void Update()
+    void Update()
     {
+        // 타이머 동작
         if (useTimer && gameStarted && !gameEnded && isTimerRunning)
         {
             timer -= Time.deltaTime;
@@ -106,6 +110,11 @@ public class MiniGameManager_Fox : MonoBehaviour
             }
         }
 
+        // 조건 만족 즉시 성공(타이머와 무관)
+        if (gameStarted && !gameEnded && CheckWinCondition())
+            OnSuccess();
+
+        // F6 디버그 토글
         var kb = Keyboard.current;
         if (kb != null && kb.f6Key.wasPressedThisFrame && gameStarted && !gameEnded)
         {
@@ -125,7 +134,10 @@ public class MiniGameManager_Fox : MonoBehaviour
         SetStage(1);
         if (extraPanel) extraPanel.SetActive(true);
 
+        // 점수 0으로
         ReefMissionManager.Instance?.ResetScore();
+        // 카운터도 0으로
+        if (finalStageCounter) finalStageCounter.ResetCount();
 
         if (useTimer)
         {
@@ -135,43 +147,32 @@ public class MiniGameManager_Fox : MonoBehaviour
         }
     }
 
-    // === 득점 이벤트(이제 점수는 ScoringZone만 처리하도록 비활성화해도 됨) ===
-    public void OnTargetHit(int points = 1)
-    {
-        if (!gameStarted || gameEnded) return;
-        // 점수 처리는 ReefScoringZone에서만 수행. 여기선 승리조건만 체크 가능.
-        if (CheckWinCondition()) OnSuccess();
-    }
-
-    // === ScoringZone에서 득점 시 알림 ===
-    public void OnZoneScored(ReefStageCounter zone)
-    {
-        if (!gameStarted || gameEnded) return;
-        if (CheckWinCondition()) OnSuccess();
-    }
-
     // ========= 스테이지 이동 =========
     public void ForceStage(int stage)
     {
         if (!gameStarted || gameEnded) return;
         SetStage(stage);
-        if (CheckWinCondition()) OnSuccess();
     }
 
-    public void OnTargetZoneHit(int stageToForce, int pointsIgnored = 1)
+    public void OnTargetZoneHit(int stageToForce)
     {
         if (!gameStarted || gameEnded) return;
-        // 점수는 ScoringZone이 전담 -> 여기선 순수 스테이지 전환만
         ForceStage(stageToForce);
     }
 
-    private void SetStage(int stage)
+    void SetStage(int stage)
     {
         currentStage = stage;
-
         if (stoneCanvas) stoneCanvas.SetActive(stage == 1);
         if (stoneCanvas2) stoneCanvas2.SetActive(stage == 2);
         if (stoneCanvas3) stoneCanvas3.SetActive(stage == 3);
+    }
+
+    // ========= ScoringZone에서 득점 시 알림 =========
+    public void OnZoneScored(ReefStageCounter counter)
+    {
+        if (!gameStarted || gameEnded) return;
+        if (CheckWinCondition()) OnSuccess();
     }
 
     // ========= 성공/실패/재시작 =========
@@ -181,9 +182,11 @@ public class MiniGameManager_Fox : MonoBehaviour
         gameEnded = true;
         isTimerRunning = false;
 
-        SetStage(0);
+        // 성공 시 스테이지 3을 유지 (0으로 초기화하지 않음)
+        SetStage(finalStage);
+
         if (extraPanel) extraPanel.SetActive(false);
-        if (successUI) successUI.SetActive(true);
+        ShowSuccessUI();
     }
 
     public void OnFail()
@@ -204,7 +207,7 @@ public class MiniGameManager_Fox : MonoBehaviour
     }
 
     // ========= 타이머 UI =========
-    private void UpdateTimerUI()
+    void UpdateTimerUI()
     {
         if (!timerText) return;
         int t = Mathf.CeilToInt(Mathf.Max(0f, timer));
@@ -212,16 +215,60 @@ public class MiniGameManager_Fox : MonoBehaviour
     }
 
     // ========= 복합 승리 조건 =========
-    private bool CheckWinCondition()
+    bool CheckWinCondition()
     {
         bool reachedFinalStage = (currentStage == finalStage);
-        bool counterOk = (finalStageCounter && finalStageCounter.IsComplete);
-        return reachedFinalStage && counterOk;
+        int totalScore = ReefMissionManager.Instance ? ReefMissionManager.Instance.Score : 0;
+        bool scoreOk = totalScore >= 3;  // 전체 점수 합계 기준
+
+        Debug.Log($"[CheckWin] stage={currentStage}, score={totalScore}, ok={reachedFinalStage && scoreOk}");
+        return reachedFinalStage && scoreOk;
     }
 
     // ========= Helper =========
-    private static void SetActiveSafe(GameObject go, bool on)
+    static void SetActiveSafe(GameObject go, bool on)
     {
         if (go && go.activeSelf != on) go.SetActive(on);
     }
+
+    void ShowSuccessUI()
+    {
+        if (!successUI)
+        {
+            Debug.LogWarning("[MiniGameManager_Fox] successUI is not assigned.");
+            return;
+        }
+
+        // 부모 체인 활성화 보장
+        Transform t = successUI.transform;
+        while (t != null)
+        {
+            t.gameObject.SetActive(true);
+            t = t.parent;
+        }
+
+        // 최상단 오버레이로 노출 보장(가려짐 방지)
+        if (bringSuccessUIToFront)
+        {
+            var root = successUI;
+            var canvas = root.GetComponent<Canvas>();
+            if (!canvas) canvas = root.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvas.overrideSorting = true;
+            canvas.sortingOrder = successSortingOrder;
+
+            var gr = root.GetComponent<UnityEngine.UI.GraphicRaycaster>();
+            if (!gr) root.AddComponent<UnityEngine.UI.GraphicRaycaster>();
+
+            var cg = root.GetComponent<CanvasGroup>();
+            if (!cg) cg = root.AddComponent<CanvasGroup>();
+            cg.alpha = 1f; cg.interactable = true; cg.blocksRaycasts = true;
+
+            successUI.transform.SetAsLastSibling();
+        }
+
+        successUI.SetActive(true);
+        Debug.Log("[MiniGameManager_Fox] Success UI shown.");
+    }
 }
+
