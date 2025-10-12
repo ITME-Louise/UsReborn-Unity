@@ -39,6 +39,22 @@ public class QuizUIController : MonoBehaviour
         classImageSprites["vinyl"] = vinylSprite;
     }
 
+    void Update()
+    {
+        // 퀴즈 UI가 활성화되어 있을 때만 입력 감지
+        if (!panel.activeInHierarchy) return;
+
+        // 오른쪽 컨트롤러만 사용함
+        if (OVRInput.GetDown(OVRInput.Button.Two, OVRInput.Controller.RTouch)) // B버튼 -> O
+        {
+            OnOButtonPressed();
+        }    
+        else if (OVRInput.GetDown(OVRInput.Button.One, OVRInput.Controller.RTouch)) // A버튼 -> X
+        {
+            OnXButtonPressed();
+        }
+    }
+
     public void ShowQuiz(string className, string question, string answer, Vector3 worldPos)
     {
         currentClassName = className;
