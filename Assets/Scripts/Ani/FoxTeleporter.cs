@@ -31,6 +31,10 @@ public class FoxTeleporter : MonoBehaviour
     private Rigidbody rb;
     private float sceneStartTime;
 
+    // 시작 위치 저장용
+    private Vector3 startPosition;
+    private Quaternion startRotation;
+
     void Awake()
     {
         anim = GetComponent<Animator>();
@@ -40,6 +44,10 @@ public class FoxTeleporter : MonoBehaviour
 
     void Start()
     {
+        // 시작 위치 저장
+        startPosition = transform.position;
+        startRotation = transform.rotation;
+
         sceneStartTime = Time.time;
         StartCoroutine(ScheduleFlow());
     }
@@ -113,5 +121,29 @@ public class FoxTeleporter : MonoBehaviour
         if (anim) anim.SetBool("IsWalking", false);
 
         Debug.Log($"[FoxTeleporter] Teleported to {(tgt ? tgt.name : "NULL")} @ {goal}");
+    }
+
+    //  원래 자리로 복귀
+    public void TeleportBackToOrigin()
+    {
+        Vector3 goal = startPosition;
+        Quaternion rot = startRotation;
+
+        if (rb && !rb.isKinematic)
+        {
+            rb.position = goal;
+            rb.rotation = rot;
+            rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+        }
+        else
+        {
+            transform.position = goal;
+            transform.rotation = rot;
+        }
+
+        if (anim) anim.SetBool("IsWalking", false);
+
+        Debug.Log("[FoxTeleporter] Returned to original position.");
     }
 }
