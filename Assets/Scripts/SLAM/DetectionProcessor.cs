@@ -3,6 +3,15 @@ using System.Linq;
 using UnityEngine;
 using Unity.Barracuda;
 
+[System.Serializable]
+public class Detection
+{
+    public Rect BoundingBox;
+    public float Confidence;
+    public int ClassIndex;
+    public string ClassName;
+}
+
 public class DetectionProcessor : MonoBehaviour
 {
     [SerializeField] private float confidenceThreshold = 0.7f;

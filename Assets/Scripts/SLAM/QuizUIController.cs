@@ -103,6 +103,16 @@ public class QuizUIController : MonoBehaviour
         }
     }
 
+    public void HideQuiz()
+    {
+        isQuizActive = false;
+
+        if (panel != null)
+        {
+            panel.SetActive(false); // 실제 퀴즈 패널을 꺼야 함
+        }
+    }
+
     public void OnOButtonPressed() { Submit("O"); }
     public void OnXButtonPressed() { Submit("X"); }
 

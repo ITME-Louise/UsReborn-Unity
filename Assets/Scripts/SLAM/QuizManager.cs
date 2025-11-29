@@ -8,7 +8,6 @@ public class QuizManager : MonoBehaviour
     public static QuizManager Instance { get; private set; }
 
     [SerializeField] private QuizUIController quizUI;
-    [SerializeField] private SlamQuiizUIController quizUII;
     [SerializeField] private PotSpawner potSpawner;
     [SerializeField] private DetectionVisualizer detectionVisualizer;
 
@@ -210,9 +209,9 @@ public class QuizManager : MonoBehaviour
         isQuizEnded = true;
 
         // 퀴즈 UI 숨기기
-        if (quizUII != null)
+        if (quizUI != null)
         {
-            quizUII.HideQuiz();
+            quizUI.HideQuiz();
         }
 
         if (dialogueManager != null)
