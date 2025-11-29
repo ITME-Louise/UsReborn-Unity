@@ -7,9 +7,10 @@ public class CameraCapture : MonoBehaviour
 
     private RenderTexture renderTexture;
     private Texture2D cameraTexture;
+    private Camera cachedCamera;
 
-    private int captureWidth = 640;
-    private int captureHeight = 640;
+    private const int CAPTURE_WIDTH = 640;
+    private const int CAPTURE_HEIGHT = 640;
 
     public Texture2D CurrentTexture => cameraTexture;
 
@@ -20,64 +21,99 @@ public class CameraCapture : MonoBehaviour
 
     private void InitializeCamera()
     {
+        // OVRCameraRig 자동 찾기
         if (ovrCameraRig == null)
         {
             ovrCameraRig = FindObjectOfType<OVRCameraRig>();
             if (ovrCameraRig == null)
-                Debug.LogError("CameraCapture: OVRCameraRig를 찾을 수 없습니다!");
-            else if (debugMode)
-                Debug.Log("CameraCapture: OVRCameraRig 자동 찾기 성공");
+            {
+                Debug.LogError("CameraCapture: OVRCameraRig를 찾을 수 없습니다");
+            }
         }
 
-        renderTexture = new RenderTexture(captureWidth, captureHeight, 24);
-        renderTexture.Create();
-        cameraTexture = new Texture2D(captureWidth, captureHeight, TextureFormat.RGB24, false);
+        // RenderTexture 초기화
+        renderTexture = new RenderTexture(CAPTURE_WIDTH, CAPTURE_HEIGHT, 24);
+        cameraTexture = new Texture2D(CAPTURE_WIDTH, CAPTURE_HEIGHT, TextureFormat.RGB24, false);
+
+        // 카메라 캐싱
+        cachedCamera = FindCamera();
+    }
+
+    private Camera FindCamera()
+    {
+        // OVR 중앙 카메라 우선
+        if (ovrCameraRig != null && ovrCameraRig.centerEyeAnchor != null)
+        {
+            Camera ovrCamera = ovrCameraRig.centerEyeAnchor.GetComponent<Camera>();
+            if (ovrCamera != null)
+            {
+                if (debugMode) Debug.Log("CameraCapture: OVR 중앙 카메라 사용");
+                return ovrCamera;
+            }
+        }
+
+        if (Camera.main != null)
+        {
+            if (debugMode) Debug.Log("CameraCapture: 메인 카메라 사용");
+            return Camera.main;
+        }
+
+        Debug.LogError("CameraCapture: 카메라를 찾을 수 없습니다.");
+        return null;
     }
 
     public Camera GetCamera()
     {
-        if (ovrCameraRig != null && ovrCameraRig.centerEyeAnchor != null)
+        // 캐시된 카메라 반환, null이면 다시 찾기
+        if (cachedCamera == null)
         {
-            if (debugMode) Debug.Log("CameraCapture: OVR 중앙 카메라 사용");
-            return ovrCameraRig.centerEyeAnchor.GetComponent<Camera>();
+            cachedCamera = FindCamera();
         }
-
-        if (Camera.main == null)
-        {
-            Debug.LogError("CameraCapture: 카메라를 찾을 수 없습니다!");
-            return null;
-        }
-
-        if (debugMode) Debug.Log("CameraCapture: 메인 카메라 사용");
-        return Camera.main;
+        return cachedCamera;
     }
 
     public void CaptureImage(Camera camera)
     {
-        var prevTarget = camera.targetTexture;
+        if (camera == null || renderTexture == null || cameraTexture == null) return;
+
+        // 카메라 렌더링
+        RenderTexture prevTarget = camera.targetTexture;
         camera.targetTexture = renderTexture;
         camera.Render();
         camera.targetTexture = prevTarget;
 
+        // 텍스처 읽기
+        RenderTexture prevActive = RenderTexture.active;
         RenderTexture.active = renderTexture;
-        cameraTexture.ReadPixels(new Rect(0, 0, captureWidth, captureHeight), 0, 0);
+        cameraTexture.ReadPixels(new Rect(0, 0, CAPTURE_WIDTH, CAPTURE_HEIGHT), 0, 0, false);
         cameraTexture.Apply();
-        RenderTexture.active = null;
+        RenderTexture.active = prevActive;
 
         if (debugMode) Debug.Log("CameraCapture: 카메라 이미지 캡처 완료");
     }
 
     void OnDestroy()
     {
+        // RenderTexture 정리
         if (renderTexture != null)
         {
-            renderTexture.Release();
+            if (renderTexture.IsCreated())
+            {
+                renderTexture.Release();
+            }
             Destroy(renderTexture);
+            renderTexture = null;
         }
+
+        // Texture2D 정리
         if (cameraTexture != null)
         {
             Destroy(cameraTexture);
+            cameraTexture = null;
         }
+
+        cachedCamera = null;
+
         if (debugMode) Debug.Log("CameraCapture: 리소스 해제 완료");
     }
 }
