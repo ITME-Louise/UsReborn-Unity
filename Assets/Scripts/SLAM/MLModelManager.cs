@@ -16,6 +16,13 @@ public class MLModelManager : MonoBehaviour
 
     void Start()
     {
+        if (modelAsset == null)
+        {
+            Debug.LogError("MLModelManager: NNModel 에셋이 할당되지 않았습니다.");
+            OnModelLoadError?.Invoke("Model asset is null");
+            return;
+        }
+
         LoadModel();
     }
 
@@ -24,7 +31,19 @@ public class MLModelManager : MonoBehaviour
         try
         {
             runtimeModel = ModelLoader.Load(modelAsset);
+
+            if (runtimeModel == null)
+            {
+                throw new Exception("ModelLoader.Load returned null");
+            }
+
             worker = WorkerFactory.CreateWorker(WorkerFactory.Type.CSharpBurst, runtimeModel);
+
+            if (worker == null)
+            {
+                throw new Exception("WorkerFactory.CreateWorker returned null");
+            }
+
             Debug.Log("MLModelManager: 모델 로드 완료");
             OnModelLoaded?.Invoke();
         }
@@ -43,13 +62,33 @@ public class MLModelManager : MonoBehaviour
             return null;
         }
 
-        worker.Execute(inputTensor);
-        return worker.PeekOutput("output0");
+        if (inputTensor == null)
+        {
+            Debug.LogError("MLModelManager: 입력 텐서가 null입니다.");
+            return null;
+        }
+
+        try
+        {
+            worker.Execute(inputTensor);
+            return worker.PeekOutput("output0");
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"MLModelManager: 모델 실행 실패 - {e.Message}");
+            return null;
+        }
     }
 
     void OnDestroy()
     {
-        worker?.Dispose();
+        if (worker != null)
+        {
+            worker.Dispose();
+            worker = null;
+        }
+
+        runtimeModel = null;
         Debug.Log("MLModelManager: 리소스 해제 완료");
     }
 }
