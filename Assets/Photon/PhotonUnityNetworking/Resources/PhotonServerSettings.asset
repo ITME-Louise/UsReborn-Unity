@@ -40,6 +40,10 @@ MonoBehaviour:
   - Fire
   - RespawnSpaceship
   - AttackAllPlayers
+  - RPC_AttackAllPlayers
+  - RPC_DestroyEnemy
+  - RPC_TakeDamage
+  - RPC_UpdateUI
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
