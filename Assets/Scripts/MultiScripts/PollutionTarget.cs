@@ -22,8 +22,8 @@ public class PollutionTarget : MonoBehaviourPun
     /// </summary>
     public void ApplyPurify(float purifyAmount)
     {
-        // Host/Owner만 실제 데미지 적용
-        if (!photonView.IsMine) return;
+        // EnemyHP.TakeDamage 안에서 MasterClient 처리까지 해주므로
+        // 여기서는 Master 검사 없이 바로 데미지 전달만 한다.
         if (enemyHP == null) return;
 
         float damage = purifyAmount * damagePerSecond;
