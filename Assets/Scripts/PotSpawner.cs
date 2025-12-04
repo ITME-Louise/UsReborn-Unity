@@ -74,7 +74,7 @@ public class PotSpawner : MonoBehaviour
 
     private IEnumerator SpawnVaseSequence(Vector3 spawnPosition, VaseStages vaseStages)
     {
-        GameObject pot1 = Instantiate(vaseStages.stage1, spawnPosition, Quaternion.identity);
+        GameObject pot1 = Instantiate(vaseStages.stage1, spawnPosition, vaseStages.stage1.transform.rotation);
         Debug.Log($"1단계 화분 생성 - 요청위치: {spawnPosition}, 실제위치: {pot1.transform.position}");
         yield return new WaitForSeconds(10f);
 

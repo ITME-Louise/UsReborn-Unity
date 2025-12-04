@@ -1,0 +1,285 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2820623141383616444
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5649300770094377735}
+  m_Layer: 0
+  m_Name: TulipVase3
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5649300770094377735
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2820623141383616444}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.03966977, y: 0.4902665, z: 0.61970425}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 8511497859837020514}
+  - {fileID: 4943761383203784357}
+  - {fileID: 5101759495759166314}
+  - {fileID: 1959213231080737427}
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &2070036732680433016
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 5649300770094377735}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 46fb76021ce87bd4e94ffc27e2941f1f, type: 3}
+      propertyPath: m_RootOrder
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 46fb76021ce87bd4e94ffc27e2941f1f, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.045
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 46fb76021ce87bd4e94ffc27e2941f1f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.14276206
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 46fb76021ce87bd4e94ffc27e2941f1f, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.0184
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 46fb76021ce87bd4e94ffc27e2941f1f, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.2505048
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 46fb76021ce87bd4e94ffc27e2941f1f, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.24699683
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 46fb76021ce87bd4e94ffc27e2941f1f, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.7821024
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 46fb76021ce87bd4e94ffc27e2941f1f, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.51434976
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 46fb76021ce87bd4e94ffc27e2941f1f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -68.171
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 46fb76021ce87bd4e94ffc27e2941f1f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -158.256
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 46fb76021ce87bd4e94ffc27e2941f1f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 20.243
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 46fb76021ce87bd4e94ffc27e2941f1f, type: 3}
+      propertyPath: m_Name
+      value: uploads_files_1916312_tulips_alutaroma_free (5)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 46fb76021ce87bd4e94ffc27e2941f1f, type: 3}
+--- !u!4 &1959213231080737427 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 46fb76021ce87bd4e94ffc27e2941f1f, type: 3}
+  m_PrefabInstance: {fileID: 2070036732680433016}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &4703919952901315713
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 5649300770094377735}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 46fb76021ce87bd4e94ffc27e2941f1f, type: 3}
+      propertyPath: m_RootOrder
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 46fb76021ce87bd4e94ffc27e2941f1f, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.05656977
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 46fb76021ce87bd4e94ffc27e2941f1f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.102
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 46fb76021ce87bd4e94ffc27e2941f1f, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.037204266
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 46fb76021ce87bd4e94ffc27e2941f1f, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7058205
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 46fb76021ce87bd4e94ffc27e2941f1f, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.6025684
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 46fb76021ce87bd4e94ffc27e2941f1f, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.30604276
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 46fb76021ce87bd4e94ffc27e2941f1f, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.2122892
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 46fb76021ce87bd4e94ffc27e2941f1f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -78.681
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 46fb76021ce87bd4e94ffc27e2941f1f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -63.851
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 46fb76021ce87bd4e94ffc27e2941f1f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 20.628
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 46fb76021ce87bd4e94ffc27e2941f1f, type: 3}
+      propertyPath: m_Name
+      value: uploads_files_1916312_tulips_alutaroma_free (4)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 46fb76021ce87bd4e94ffc27e2941f1f, type: 3}
+--- !u!4 &5101759495759166314 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 46fb76021ce87bd4e94ffc27e2941f1f, type: 3}
+  m_PrefabInstance: {fileID: 4703919952901315713}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &4832782093947412814
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 5649300770094377735}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: ed285f0fbec773b49bd8cb4f7381f7fd, type: 3}
+      propertyPath: m_RootOrder
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: ed285f0fbec773b49bd8cb4f7381f7fd, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.03966977
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: ed285f0fbec773b49bd8cb4f7381f7fd, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.4902665
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: ed285f0fbec773b49bd8cb4f7381f7fd, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.036704242
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: ed285f0fbec773b49bd8cb4f7381f7fd, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071067
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: ed285f0fbec773b49bd8cb4f7381f7fd, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: ed285f0fbec773b49bd8cb4f7381f7fd, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: ed285f0fbec773b49bd8cb4f7381f7fd, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: ed285f0fbec773b49bd8cb4f7381f7fd, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: ed285f0fbec773b49bd8cb4f7381f7fd, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: ed285f0fbec773b49bd8cb4f7381f7fd, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: ed285f0fbec773b49bd8cb4f7381f7fd, type: 3}
+      propertyPath: m_Name
+      value: uploads_files_3004576_Ceramic+White+Vase+1 (2)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: ed285f0fbec773b49bd8cb4f7381f7fd, type: 3}
+--- !u!4 &4943761383203784357 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: ed285f0fbec773b49bd8cb4f7381f7fd, type: 3}
+  m_PrefabInstance: {fileID: 4832782093947412814}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &8184257992962092681
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 5649300770094377735}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 46fb76021ce87bd4e94ffc27e2941f1f, type: 3}
+      propertyPath: m_RootOrder
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 46fb76021ce87bd4e94ffc27e2941f1f, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.04156977
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 46fb76021ce87bd4e94ffc27e2941f1f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.1270665
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 46fb76021ce87bd4e94ffc27e2941f1f, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.02890426
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 46fb76021ce87bd4e94ffc27e2941f1f, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.5623462
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 46fb76021ce87bd4e94ffc27e2941f1f, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.7149283
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 46fb76021ce87bd4e94ffc27e2941f1f, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.2568819
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 46fb76021ce87bd4e94ffc27e2941f1f, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0.32658222
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 46fb76021ce87bd4e94ffc27e2941f1f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -103.624
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 46fb76021ce87bd4e94ffc27e2941f1f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -49.10199
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 46fb76021ce87bd4e94ffc27e2941f1f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 46fb76021ce87bd4e94ffc27e2941f1f, type: 3}
+      propertyPath: m_Name
+      value: uploads_files_1916312_tulips_alutaroma_free (3)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 46fb76021ce87bd4e94ffc27e2941f1f, type: 3}
+--- !u!4 &8511497859837020514 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 46fb76021ce87bd4e94ffc27e2941f1f, type: 3}
+  m_PrefabInstance: {fileID: 8184257992962092681}
+  m_PrefabAsset: {fileID: 0}
