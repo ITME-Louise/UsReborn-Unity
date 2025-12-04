@@ -1,17 +1,3 @@
-Shader "Oculus/Unlit Transparent Color" {
-Properties {
-    _Color ("Main Color", Color) = (1,1,1,1)
-}
-
-SubShader {
-    Tags {"Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent"}
-    LOD 100
-    Fog {Mode Off}
-
-    ZTest Always
-    Blend SrcAlpha OneMinusSrcAlpha
-    Color [_Color]
-
-    Pass {}
-}
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:3c5626b8622a1ebda697bfb668b099a61eb57e8189f60cb07ccfcc259d60eca5
+size 338
