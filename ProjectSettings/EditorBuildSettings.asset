@@ -21,7 +21,7 @@ EditorBuildSettings:
     path: Assets/Scenes/MiniGame_Bear_Scene.unity
     guid: c2f4f14b9bb0d754187e07183abc113b
   - enabled: 0
-    path: Assets/Scenes/MiniGame-fox/MiniGame_Fox_Scene.unity
+    path: Assets/Scenes/MiniGame_Fox_Scene.unity
     guid: 5ad4241a916b64245a1733e1bc75968b
   - enabled: 0
     path: Assets/Scenes/MiniGame_Penguin_Scene.unity
