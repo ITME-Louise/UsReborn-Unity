@@ -439,7 +439,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 79905043}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: eee2f8c687cbba348ad18fab0cde3e2a, type: 3}
   m_Name: 
@@ -449,7 +449,7 @@ MonoBehaviour:
   pollutionLayerMask:
     serializedVersion: 2
     m_Bits: 4096
-  lineRenderer: {fileID: 0}
+  lineRenderer: {fileID: 175015864}
   showLineWhenFiring: 1
 --- !u!1 &79905045 stripped
 GameObject:
@@ -494,6 +494,11 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!120 &175015864 stripped
+LineRenderer:
+  m_CorrespondingSourceObject: {fileID: 4746867689181497371, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
+  m_PrefabInstance: {fileID: 79905042}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &187317681
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2040,9 +2045,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHp: 100
-  currentHp: 0
+  currentHp: 100
   hpSlider: {fileID: 1374471172}
-  coopMultiplier: 1.5
+  coopMultiplier: 2
 --- !u!114 &1701768781
 MonoBehaviour:
   m_ObjectHideFlags: 0
