@@ -4,74 +4,113 @@ using UnityEngine;
 public class FoxAnicontroller : MonoBehaviour
 {
     [Header("Animation")]
-    [SerializeField] private Animator anim;                     // 비워두면 자동 GetComponent
-    [SerializeField] private string triggerName = "Clapping";   // delay 후 실행할 트리거
-    [SerializeField] private float delayToShow = 5f;            // 나타나기까지 대기(초)
+    [SerializeField] private Animator anim;
+    [SerializeField] private string triggerName = "Clapping";
+    [SerializeField] private float delayToShow = 5f;
 
     [Header("UI Root")]
     [SerializeField] private string talkCanvasName = "TALK";
-    [SerializeField] private GameObject talkCanvas;             // 비워두면 이름으로 자동 탐색(비활성 포함)
+    [SerializeField] private GameObject talkCanvas;
 
-    [Header("Sequence (Children of TALK)")]
+    [Header("Normal Sequence (Children of TALK)")]
     [SerializeField] private string talk1Name = "foxtalk";
     [SerializeField] private string talk2Name = "foxtalk2";
-    [SerializeField] private float talk1Duration = 3f;          // foxtalk 표시 시간
-    [SerializeField] private float talk2Duration = 2f;          // foxtalk2 표시 시간
-    [SerializeField] private GameObject talk1;                  // 비워두면 자동 찾기
-    [SerializeField] private GameObject talk2;                  // 비워두면 자동 찾기
+    [SerializeField] private float talk1Duration = 3f;
+    [SerializeField] private float talk2Duration = 2f;
+    [SerializeField] private GameObject talk1;
+    [SerializeField] private GameObject talk2;
+
+    [Header("Success Sequence (Children of TALK)")]
+    [SerializeField] private string successTalk1Name = "foxtalk_success1";
+    [SerializeField] private string successTalk2Name = "foxtalk_success2";
+    [SerializeField] private float successTalk1Duration = 3f;
+    [SerializeField] private float successTalk2Duration = 2f;
+    [SerializeField] private GameObject successTalk1;
+    [SerializeField] private GameObject successTalk2;
 
     void Start()
     {
         if (anim == null) anim = GetComponent<Animator>();
-
-        // TALK 캔버스 자동 탐색(비활성 포함)
         if (talkCanvas == null)
             talkCanvas = FindInSceneByName(talkCanvasName);
 
-        // 자식 요소 자동 탐색(비활성 포함)
         if (talkCanvas != null)
         {
             if (talk1 == null) talk1 = FindChildByName(talkCanvas.transform, talk1Name);
             if (talk2 == null) talk2 = FindChildByName(talkCanvas.transform, talk2Name);
+            if (successTalk1 == null) successTalk1 = FindChildByName(talkCanvas.transform, successTalk1Name);
+            if (successTalk2 == null) successTalk2 = FindChildByName(talkCanvas.transform, successTalk2Name);
 
-            // 시작 시 모두 끄기
             talkCanvas.SetActive(false);
-            if (talk1 != null) talk1.SetActive(false);
-            if (talk2 != null) talk2.SetActive(false);
+            if (talk1) talk1.SetActive(false);
+            if (talk2) talk2.SetActive(false);
+            if (successTalk1) successTalk1.SetActive(false);
+            if (successTalk2) successTalk2.SetActive(false);
         }
 
         StartCoroutine(Flow());
     }
 
+    // 기존 일반 대사 시퀀스
     private IEnumerator Flow()
     {
-        // 1) 대기
         yield return new WaitForSeconds(delayToShow);
-
-        // 2) 애니메이션 트리거
         if (anim != null && !string.IsNullOrEmpty(triggerName))
             anim.SetTrigger(triggerName);
 
-        // 3) TALK 시퀀스: foxtalk(3s) → foxtalk2(2s)
         if (talkCanvas != null)
         {
             talkCanvas.SetActive(true);
 
-            if (talk1 != null) talk1.SetActive(true);
-            if (talk2 != null) talk2.SetActive(false);
+            if (talk1) talk1.SetActive(true);
+            if (talk2) talk2.SetActive(false);
             yield return new WaitForSeconds(talk1Duration);
 
-            if (talk1 != null) talk1.SetActive(false);
-            if (talk2 != null) talk2.SetActive(true);
+            if (talk1) talk1.SetActive(false);
+            if (talk2) talk2.SetActive(true);
             yield return new WaitForSeconds(talk2Duration);
 
-            // 4) 종료: 전부 끄기
-            if (talk2 != null) talk2.SetActive(false);
+            if (talk2) talk2.SetActive(false);
             talkCanvas.SetActive(false);
         }
     }
 
-    // 씬 전체에서 이름으로 GameObject 찾기(비활성 포함)
+    // 성공용 대사 시퀀스 추가
+    public void PlaySuccessTalkSequence()
+    {
+        StartCoroutine(SuccessFlow());
+    }
+
+    private IEnumerator SuccessFlow()
+    {
+        // 1) 성공 시 "happy" 애니메이션 트리거 발동
+        if (anim != null)
+            anim.SetTrigger("happy");
+
+        // 2) TALK 시퀀스: foxtalk_success1 → foxtalk_success2
+        if (talkCanvas != null)
+        {
+            talkCanvas.SetActive(true);
+
+            if (successTalk1) successTalk1.SetActive(true);
+            if (successTalk2) successTalk2.SetActive(false);
+            yield return new WaitForSeconds(successTalk1Duration);
+
+            if (successTalk1) successTalk1.SetActive(false);
+            if (successTalk2) successTalk2.SetActive(true);
+            yield return new WaitForSeconds(successTalk2Duration);
+
+            if (successTalk2) successTalk2.SetActive(false);
+            talkCanvas.SetActive(false);
+        }
+    }
+
+    // 기존 외부 재실행용 (일반 대사)
+    public void PlayTalkSequenceAgain()
+    {
+        StartCoroutine(Flow());
+    }
+
     private GameObject FindInSceneByName(string targetName)
     {
         var roots = gameObject.scene.GetRootGameObjects();
@@ -84,7 +123,6 @@ public class FoxAnicontroller : MonoBehaviour
         return null;
     }
 
-    // 특정 부모 아래에서 이름으로 자식 찾기(비활성 포함)
     private GameObject FindChildByName(Transform parent, string childName)
     {
         var all = parent.GetComponentsInChildren<Transform>(true);
