@@ -1,116 +1,77 @@
-ï»¿using System.Collections;
+using System.Collections;
 using UnityEngine;
 
 public class FoxAnicontroller : MonoBehaviour
 {
     [Header("Animation")]
-    [SerializeField] private Animator anim;
-    [SerializeField] private string triggerName = "Clapping";
-    [SerializeField] private float delayToShow = 5f;
+    [SerializeField] private Animator anim;                     // ºñ¿öµÎ¸é ÀÚµ¿ GetComponent
+    [SerializeField] private string triggerName = "Clapping";   // delay ÈÄ ½ÇÇàÇÒ Æ®¸®°Å
+    [SerializeField] private float delayToShow = 5f;            // ³ªÅ¸³ª±â±îÁö ´ë±â(ÃÊ)
 
     [Header("UI Root")]
     [SerializeField] private string talkCanvasName = "TALK";
-    [SerializeField] private GameObject talkCanvas;
+    [SerializeField] private GameObject talkCanvas;             // ºñ¿öµÎ¸é ÀÌ¸§À¸·Î ÀÚµ¿ Å½»ö(ºñÈ°¼º Æ÷ÇÔ)
 
-    [Header("Normal Sequence (Children of TALK)")]
+    [Header("Sequence (Children of TALK)")]
     [SerializeField] private string talk1Name = "foxtalk";
     [SerializeField] private string talk2Name = "foxtalk2";
-    [SerializeField] private float talk1Duration = 3f;
-    [SerializeField] private float talk2Duration = 2f;
-    [SerializeField] private GameObject talk1;
-    [SerializeField] private GameObject talk2;
-
-    [Header("Success Sequence (Children of TALK)")]
-    [SerializeField] private string successTalk1Name = "foxtalk_success1";
-    [SerializeField] private string successTalk2Name = "foxtalk_success2";
-    [SerializeField] private float successTalk1Duration = 3f;
-    [SerializeField] private float successTalk2Duration = 2f;
-    [SerializeField] private GameObject successTalk1;
-    [SerializeField] private GameObject successTalk2;
+    [SerializeField] private float talk1Duration = 3f;          // foxtalk Ç¥½Ã ½Ã°£
+    [SerializeField] private float talk2Duration = 2f;          // foxtalk2 Ç¥½Ã ½Ã°£
+    [SerializeField] private GameObject talk1;                  // ºñ¿öµÎ¸é ÀÚµ¿ Ã£±â
+    [SerializeField] private GameObject talk2;                  // ºñ¿öµÎ¸é ÀÚµ¿ Ã£±â
 
     void Start()
     {
         if (anim == null) anim = GetComponent<Animator>();
+
+        // TALK Äµ¹ö½º ÀÚµ¿ Å½»ö(ºñÈ°¼º Æ÷ÇÔ)
         if (talkCanvas == null)
             talkCanvas = FindInSceneByName(talkCanvasName);
 
+        // ÀÚ½Ä ¿ä¼Ò ÀÚµ¿ Å½»ö(ºñÈ°¼º Æ÷ÇÔ)
         if (talkCanvas != null)
         {
             if (talk1 == null) talk1 = FindChildByName(talkCanvas.transform, talk1Name);
             if (talk2 == null) talk2 = FindChildByName(talkCanvas.transform, talk2Name);
-            if (successTalk1 == null) successTalk1 = FindChildByName(talkCanvas.transform, successTalk1Name);
-            if (successTalk2 == null) successTalk2 = FindChildByName(talkCanvas.transform, successTalk2Name);
 
+            // ½ÃÀÛ ½Ã ¸ğµÎ ²ô±â
             talkCanvas.SetActive(false);
-            if (talk1) talk1.SetActive(false);
-            if (talk2) talk2.SetActive(false);
-            if (successTalk1) successTalk1.SetActive(false);
-            if (successTalk2) successTalk2.SetActive(false);
+            if (talk1 != null) talk1.SetActive(false);
+            if (talk2 != null) talk2.SetActive(false);
         }
 
         StartCoroutine(Flow());
     }
 
-    // ê¸°ì¡´ ì¼ë°˜ ëŒ€ì‚¬ ì‹œí€€ìŠ¤
     private IEnumerator Flow()
     {
+        // 1) ´ë±â
         yield return new WaitForSeconds(delayToShow);
+
+        // 2) ¾Ö´Ï¸ŞÀÌ¼Ç Æ®¸®°Å
         if (anim != null && !string.IsNullOrEmpty(triggerName))
             anim.SetTrigger(triggerName);
 
+        // 3) TALK ½ÃÄö½º: foxtalk(3s) ¡æ foxtalk2(2s)
         if (talkCanvas != null)
         {
             talkCanvas.SetActive(true);
 
-            if (talk1) talk1.SetActive(true);
-            if (talk2) talk2.SetActive(false);
+            if (talk1 != null) talk1.SetActive(true);
+            if (talk2 != null) talk2.SetActive(false);
             yield return new WaitForSeconds(talk1Duration);
 
-            if (talk1) talk1.SetActive(false);
-            if (talk2) talk2.SetActive(true);
+            if (talk1 != null) talk1.SetActive(false);
+            if (talk2 != null) talk2.SetActive(true);
             yield return new WaitForSeconds(talk2Duration);
 
-            if (talk2) talk2.SetActive(false);
+            // 4) Á¾·á: ÀüºÎ ²ô±â
+            if (talk2 != null) talk2.SetActive(false);
             talkCanvas.SetActive(false);
         }
     }
 
-    // ì„±ê³µìš© ëŒ€ì‚¬ ì‹œí€€ìŠ¤ ì¶”ê°€
-    public void PlaySuccessTalkSequence()
-    {
-        StartCoroutine(SuccessFlow());
-    }
-
-    private IEnumerator SuccessFlow()
-    {
-        // 1) ì„±ê³µ ì‹œ "happy" ì• ë‹ˆë©”ì´ì…˜ íŠ¸ë¦¬ê±° ë°œë™
-        if (anim != null)
-            anim.SetTrigger("happy");
-
-        // 2) TALK ì‹œí€€ìŠ¤: foxtalk_success1 â†’ foxtalk_success2
-        if (talkCanvas != null)
-        {
-            talkCanvas.SetActive(true);
-
-            if (successTalk1) successTalk1.SetActive(true);
-            if (successTalk2) successTalk2.SetActive(false);
-            yield return new WaitForSeconds(successTalk1Duration);
-
-            if (successTalk1) successTalk1.SetActive(false);
-            if (successTalk2) successTalk2.SetActive(true);
-            yield return new WaitForSeconds(successTalk2Duration);
-
-            if (successTalk2) successTalk2.SetActive(false);
-            talkCanvas.SetActive(false);
-        }
-    }
-
-    // ê¸°ì¡´ ì™¸ë¶€ ì¬ì‹¤í–‰ìš© (ì¼ë°˜ ëŒ€ì‚¬)
-    public void PlayTalkSequenceAgain()
-    {
-        StartCoroutine(Flow());
-    }
-
+    // ¾À ÀüÃ¼¿¡¼­ ÀÌ¸§À¸·Î GameObject Ã£±â(ºñÈ°¼º Æ÷ÇÔ)
     private GameObject FindInSceneByName(string targetName)
     {
         var roots = gameObject.scene.GetRootGameObjects();
@@ -123,6 +84,7 @@ public class FoxAnicontroller : MonoBehaviour
         return null;
     }
 
+    // Æ¯Á¤ ºÎ¸ğ ¾Æ·¡¿¡¼­ ÀÌ¸§À¸·Î ÀÚ½Ä Ã£±â(ºñÈ°¼º Æ÷ÇÔ)
     private GameObject FindChildByName(Transform parent, string childName)
     {
         var all = parent.GetComponentsInChildren<Transform>(true);
