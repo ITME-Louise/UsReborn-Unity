@@ -22,50 +22,21 @@ public class QuizUIController : MonoBehaviour
     private string correctAnswer;
     private string currentClassName;
     private Vector3 spawnPosition;
-    private bool isQuizActive = false;
 
-    private Dictionary<string, Sprite> classImageSprites;
+    private Dictionary<string, Sprite> classImageSprites = new Dictionary<string, Sprite>();
 
     public void Initialize(QuizManager manager)
     {
         quizManager = manager;
+        panel.SetActive(false);
 
-        if (panel != null)
-        {
-            panel.SetActive(false);
-        }
-        else
-        {
-            Debug.LogError("QuizUIController: Panel이 할당되지 않았습니다");
-        }
-
-        // Dictionary 초기화
-        classImageSprites = new Dictionary<string, Sprite>
-        {
-            { "paper", paperSprite },
-            { "pack", packSprite },
-            { "can", canSprite },
-            { "glass", glassSprite },
-            { "pet", petSprite },
-            { "plastic", plasticSprite },
-            { "vinyl", vinylSprite }
-        };
-    }
-
-    void Update()
-    {
-        // 퀴즈가 활성화되어 있지 않으면 입력 무시
-        if (!isQuizActive) return;
-
-        // 오른쪽 컨트롤러만 사용함
-        if (OVRInput.GetDown(OVRInput.Button.Two, OVRInput.Controller.RTouch)) // B버튼 -> O
-        {
-            OnOButtonPressed();
-        }    
-        else if (OVRInput.GetDown(OVRInput.Button.One, OVRInput.Controller.RTouch)) // A버튼 -> X
-        {
-            OnXButtonPressed();
-        }
+        classImageSprites["paper"] = paperSprite;
+        classImageSprites["pack"] = packSprite;
+        classImageSprites["can"] = canSprite;
+        classImageSprites["glass"] = glassSprite;
+        classImageSprites["pet"] = petSprite;
+        classImageSprites["plastic"] = plasticSprite;
+        classImageSprites["vinyl"] = vinylSprite;
     }
 
     public void ShowQuiz(string className, string question, string answer, Vector3 worldPos)
@@ -74,43 +45,19 @@ public class QuizUIController : MonoBehaviour
         correctAnswer = answer;
         spawnPosition = worldPos;
 
-        // 질문 텍스트 설정
-        if (questionText != null)
+        questionText.text = question;
+        
+        if (trashImage != null && classImageSprites.ContainsKey(className))
         {
-            questionText.text = question;
+            trashImage.sprite = classImageSprites[className];
+            trashImage.gameObject.SetActive(true);
+        }
+        else if (trashImage != null)
+        {
+            trashImage.gameObject.SetActive(false);
         }
 
-        // 쓰레기 이미지 설정
-        if (trashImage != null)
-        {
-            if (classImageSprites.ContainsKey(className) && classImageSprites[className] != null)
-            {
-                trashImage.sprite = classImageSprites[className];
-                trashImage.gameObject.SetActive(true);
-            }
-            else
-            {
-                trashImage.gameObject.SetActive(false);
-                Debug.LogWarning($"QuizUIController: '{className}'에 대한 이미지가 없습니다.");
-            }
-        }
-
-        // 패널 활성화
-        if (panel != null)
-        {
-            panel.SetActive(true);
-            isQuizActive = true;
-        }
-    }
-
-    public void HideQuiz()
-    {
-        isQuizActive = false;
-
-        if (panel != null)
-        {
-            panel.SetActive(false); // 실제 퀴즈 패널을 꺼야 함
-        }
+        panel.SetActive(true);
     }
 
     public void OnOButtonPressed() { Submit("O"); }
@@ -118,13 +65,7 @@ public class QuizUIController : MonoBehaviour
 
     private void Submit(string userAnswer)
     {
-        isQuizActive = false;
-
-        if (panel != null)
-        {
-            panel.SetActive(false);
-        }
-
+        panel.SetActive(false);
         quizManager?.OnAnswerSubmitted(userAnswer, correctAnswer, currentClassName, spawnPosition);
     }
 }

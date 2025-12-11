@@ -66,10 +66,8 @@ public class EnemyHP : MonoBehaviourPun
     void Die()
     {
         Debug.Log("Enemy died!");
-        FindObjectOfType<MultiplayUIManager>()?.OnMonsterDead();
-        Destroy(gameObject); // 네 화면에서만 사라짐
+        Destroy(gameObject);
     }
-
 
     [PunRPC]
     void AttackAllPlayers()
