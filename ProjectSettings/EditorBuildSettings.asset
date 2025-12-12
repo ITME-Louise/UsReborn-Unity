@@ -32,7 +32,7 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/Mini_Oasis.unity
     guid: 32561d17e444dd541a7acb504330fd32
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/Multiplay_Scene.unity
     guid: 637f65a71cdfb204da9effaaf47c9f85
   - enabled: 0
@@ -44,7 +44,7 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/ani_Scene.unity
     guid: 7d63cd4d915eb44479e1726392e93e04
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/MiniGame_Bear_Scene 1.unity
     guid: dbb253ba2af223a4990302132bd84da5
   m_configObjects:

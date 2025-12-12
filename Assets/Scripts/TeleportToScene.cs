@@ -9,7 +9,7 @@ public class TeleportToScene : MonoBehaviour
     {
         if (hasTriggered) return;
 
-        Debug.Log($"[Teleport Trigger] 충돌 감지됨: {other.name}");
+        //Debug.Log($"[Teleport Trigger] 충돌 감지됨: {other.name}");
 
         if (other.name.Contains("Index") || other.name.Contains("Hand") || other.CompareTag("PlayerHand"))
         {
@@ -40,11 +40,11 @@ public class TeleportToScene : MonoBehaviour
                     targetScene = "Main_Scene";
                     break;
                 default:
-                    Debug.LogWarning($"[Teleport] 태그 '{tag}'에 해당하는 씬 없음 (ToMulti 제외됨)");
+                    //Debug.LogWarning($"[Teleport] 태그 '{tag}'에 해당하는 씬 없음 (ToMulti 제외됨)");
                     return;
             }
 
-            Debug.Log($"씬 전환 시도 → {targetScene}");
+            //Debug.Log($"씬 전환 시도 → {targetScene}");
             hasTriggered = true; // 중복 호출 방지
             SceneManager.LoadScene(targetScene);
         }

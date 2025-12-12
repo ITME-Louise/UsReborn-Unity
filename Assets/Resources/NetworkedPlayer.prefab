@@ -1,53 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &673616300108571364
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4595148861598951567}
-  - component: {fileID: 7021090126402111438}
-  m_Layer: 0
-  m_Name: PlayerHP
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &4595148861598951567
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 673616300108571364}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.2000008, z: -10.405001}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 8969924962220332316}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7021090126402111438
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 673616300108571364}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9fe6ac389aaee174bbc6803386220091, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hpCanvas: {fileID: 8568837969617157444}
-  hpSlider: {fileID: 1564619430295912052}
-  maxHp: 100
-  currentHp: 100
 --- !u!1 &1001021750019713184
 GameObject:
   m_ObjectHideFlags: 0
@@ -589,7 +541,7 @@ RectTransform:
   m_Children:
   - {fileID: 6951567883293946467}
   m_Father: {fileID: 8969924962220332316}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -749,6 +701,7 @@ GameObject:
   - component: {fileID: 6436923640403600235}
   - component: {fileID: 8834169851570807066}
   - component: {fileID: 7594090866254917543}
+  - component: {fileID: 3015029949813771890}
   m_Layer: 0
   m_Name: NetworkedPlayer
   m_TagString: Player
@@ -769,7 +722,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4878803677262348398}
-  - {fileID: 4595148861598951567}
   - {fileID: 2878448887985035476}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -873,6 +825,7 @@ MonoBehaviour:
   observableSearch: 2
   ObservedComponents:
   - {fileID: 7594090866254917543}
+  - {fileID: 3015029949813771890}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -892,6 +845,22 @@ MonoBehaviour:
   m_SynchronizeRotation: 1
   m_SynchronizeScale: 0
   m_UseLocal: 1
+--- !u!114 &3015029949813771890
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8969924962220332304}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9fe6ac389aaee174bbc6803386220091, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hpCanvas: {fileID: 8568837969617157444}
+  hpSlider: {fileID: 1564619430295912052}
+  maxHp: 100
+  currentHp: 100
 --- !u!1 &9018193800772225587
 GameObject:
   m_ObjectHideFlags: 0
