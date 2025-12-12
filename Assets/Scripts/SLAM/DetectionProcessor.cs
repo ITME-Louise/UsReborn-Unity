@@ -3,15 +3,6 @@ using System.Linq;
 using UnityEngine;
 using Unity.Barracuda;
 
-[System.Serializable]
-public class Detection
-{
-    public Rect BoundingBox;
-    public float Confidence;
-    public int ClassIndex;
-    public string ClassName;
-}
-
 public class DetectionProcessor : MonoBehaviour
 {
     [SerializeField] private float confidenceThreshold = 0.7f;
@@ -20,28 +11,11 @@ public class DetectionProcessor : MonoBehaviour
     private string[] classNames = {
         "paper", "pack", "can", "glass", "pet", "plastic", "vinyl"
     };
-    private const int INPUT_WIDTH = 640;
-    private const int INPUT_HEIGHT = 640;
-    private const float OBJECTNESS_THRESHOLD = 0.6f;
-    private const float NMS_IOU_THRESHOLD = 0.45f;
-    private const float MIN_BOX_SIZE = 10f;
-    private const float MAX_BOX_SIZE_RATIO = 0.8f;
-
-    private float[] classScoresBuffer;
-
-    private void Awake()
-    {
-        classScoresBuffer = new float[classNames.Length];
-    }
+    private int inputWidth = 640;
+    private int inputHeight = 640;
 
     public List<Detection> ProcessDetectionResults(Tensor outputTensor)
     {
-        if (outputTensor == null)
-        {
-            Debug.LogError("DetectionProcessor: outputTensor is null");
-            return new List<Detection>();
-        }
-
         int valuesPerBox = outputTensor.width;
         int numBBoxes = outputTensor.channels;
 
@@ -50,92 +24,78 @@ public class DetectionProcessor : MonoBehaviour
 
         int expectedValuesPerBox = 5 + classNames.Length;
         if (valuesPerBox != expectedValuesPerBox)
-        {
-            Debug.LogWarning($"DetectionProcessor: valuesPerBox ({valuesPerBox})와 기대값({expectedValuesPerBox}) 불일치");
-        }
+            Debug.LogWarning($"DetectionProcessor: valuesPerBox ({valuesPerBox}) 와 기대값({expectedValuesPerBox}) 불일치");
 
-        List<Detection> detections = new List<Detection>(numBBoxes / 10);
+        List<Detection> detections = new List<Detection>();
 
         for (int i = 0; i < numBBoxes; i++)
         {
-            float objectness = outputTensor[0, 0, 4, i];
-
-            if (objectness <= OBJECTNESS_THRESHOLD) continue;
-
             float x = outputTensor[0, 0, 0, i];
             float y = outputTensor[0, 0, 1, i];
             float w = outputTensor[0, 0, 2, i];
             float h = outputTensor[0, 0, 3, i];
+            float objectness = outputTensor[0, 0, 4, i];
 
-            // 박스 크기 검증
-            if (w < MIN_BOX_SIZE || h < MIN_BOX_SIZE ||
-                w > INPUT_WIDTH * MAX_BOX_SIZE_RATIO || h > INPUT_HEIGHT * MAX_BOX_SIZE_RATIO ||
-                x <= 0 || y <= 0 || x >= INPUT_WIDTH || y >= INPUT_HEIGHT)
+            if (objectness > 0.6f)
             {
-                continue;
-            }
-
-            // 클래스 스코어 계산
-            float bestScore = 0f;
-            int bestClassIdx = 0;
-
-            for (int c = 0; c < classNames.Length; c++)
-            {
-                float score = outputTensor[0, 0, 5 + c, i];
-                classScoresBuffer[c] = score;
-                if (score > bestScore)
+                float bestScore = 0f;
+                int bestClassIdx = 0;
+                float[] classScores = new float[classNames.Length];
+                for (int c = 0; c < classNames.Length; c++)
                 {
-                    bestScore = score;
-                    bestClassIdx = c;
+                    float score = outputTensor[0, 0, 5 + c, i];
+                    classScores[c] = score;
+                    if (score > bestScore)
+                    {
+                        bestScore = score;
+                        bestClassIdx = c;
+                    }
                 }
-            }
 
-            float confidence = objectness * bestScore;
+                float confidence = objectness * bestScore;
 
-            if (debugMode)
-                Debug.Log($"Box[{i}] confidence={confidence:F3}");
+                if (debugMode)
+                    Debug.Log($"Box[{i}] confidence={confidence:F3}");
 
-            if (confidence > confidenceThreshold)
-            {
-                // Bounding Box 정규화
-                float normalizedX = Mathf.Clamp01((x - w * 0.5f) / INPUT_WIDTH);
-                float normalizedY = Mathf.Clamp01((y - h * 0.5f) / INPUT_HEIGHT);
-                float normalizedW = Mathf.Clamp01(w / INPUT_WIDTH);
-                float normalizedH = Mathf.Clamp01(h / INPUT_HEIGHT);
-
-                detections.Add(new Detection
+                if (confidence > confidenceThreshold &&
+                    w > 10 && h > 10 &&
+                    w < inputWidth * 0.8f && h < inputHeight * 0.8f &&
+                    x > 0 && y > 0 && x < inputWidth && y < inputHeight)
                 {
-                    BoundingBox = new Rect(normalizedX, normalizedY, normalizedW, normalizedH),
-                    Confidence = confidence,
-                    ClassIndex = bestClassIdx,
-                    ClassName = classNames[bestClassIdx]
-                });
+                    var detection = new Detection()
+                    {
+                        BoundingBox = new Rect(
+                            Mathf.Clamp01((x - w / 2) / inputWidth),
+                            Mathf.Clamp01((y - h / 2) / inputHeight),
+                            Mathf.Clamp01(w / inputWidth),
+                            Mathf.Clamp01(h / inputHeight)),
+
+                        Confidence = confidence,
+                        ClassIndex = bestClassIdx,
+                        ClassName = classNames[bestClassIdx]
+                    };
+                    detections.Add(detection);
+                }
             }
         }
 
         if (debugMode)
             Debug.Log($"DetectionProcessor: 총 {detections.Count}개 감지됨");
 
-        return ApplyNMS(detections, NMS_IOU_THRESHOLD);
+        return ApplyNMS(detections, 0.45f);
     }
 
     private List<Detection> ApplyNMS(List<Detection> detections, float iouThreshold)
     {
-        if (detections.Count == 0) return detections;
-
-        // 신뢰도 내림차순 정렬
-        detections.Sort((a, b) => b.Confidence.CompareTo(a.Confidence));
-
+        var sortedDetections = detections.OrderByDescending(d => d.Confidence).ToList();
         List<Detection> selectedDetections = new List<Detection>();
 
-        while (detections.Count > 0)
+        while (sortedDetections.Count > 0)
         {
-            Detection current = detections[0];
+            var current = sortedDetections[0];
             selectedDetections.Add(current);
-            detections.RemoveAt(0);
-
-            // IoU가 임계값 이상인 박스 제거
-            detections.RemoveAll(d => CalculateIoU(current.BoundingBox, d.BoundingBox) > iouThreshold);
+            sortedDetections.RemoveAt(0);
+            sortedDetections.RemoveAll(d => IoU(current.BoundingBox, d.BoundingBox) > iouThreshold);
         }
 
         if (debugMode)
@@ -144,15 +104,12 @@ public class DetectionProcessor : MonoBehaviour
         return selectedDetections;
     }
 
-    private float CalculateIoU(Rect a, Rect b)
+    private float IoU(Rect a, Rect b)
     {
         float xOverlap = Mathf.Max(0, Mathf.Min(a.xMax, b.xMax) - Mathf.Max(a.xMin, b.xMin));
         float yOverlap = Mathf.Max(0, Mathf.Min(a.yMax, b.yMax) - Mathf.Max(a.yMin, b.yMin));
         float intersection = xOverlap * yOverlap;
-
-        if (intersection == 0) return 0f;
-
         float union = a.width * a.height + b.width * b.height - intersection;
-        return union > 0 ? intersection / union : 0f;
+        return union > 0 ? intersection / union : 0;
     }
 }

@@ -1,4 +1,4 @@
-ï»¿using System.Collections;
+using System.Collections;
 using UnityEngine;
 
 public class FoxAnicontroller : MonoBehaviour
@@ -51,7 +51,7 @@ public class FoxAnicontroller : MonoBehaviour
         StartCoroutine(Flow());
     }
 
-    // ê¸°ì¡´ ì¼ë°˜ ëŒ€ì‚¬ ì‹œí€€ìŠ¤
+    // ±âÁ¸ ÀÏ¹İ ´ë»ç ½ÃÄö½º
     private IEnumerator Flow()
     {
         yield return new WaitForSeconds(delayToShow);
@@ -75,7 +75,7 @@ public class FoxAnicontroller : MonoBehaviour
         }
     }
 
-    // ì„±ê³µìš© ëŒ€ì‚¬ ì‹œí€€ìŠ¤ ì¶”ê°€
+    // ¼º°ø¿ë ´ë»ç ½ÃÄö½º Ãß°¡
     public void PlaySuccessTalkSequence()
     {
         StartCoroutine(SuccessFlow());
@@ -83,11 +83,11 @@ public class FoxAnicontroller : MonoBehaviour
 
     private IEnumerator SuccessFlow()
     {
-        // 1) ì„±ê³µ ì‹œ "happy" ì• ë‹ˆë©”ì´ì…˜ íŠ¸ë¦¬ê±° ë°œë™
+        // 1) ¼º°ø ½Ã "happy" ¾Ö´Ï¸ŞÀÌ¼Ç Æ®¸®°Å ¹ßµ¿
         if (anim != null)
             anim.SetTrigger("happy");
 
-        // 2) TALK ì‹œí€€ìŠ¤: foxtalk_success1 â†’ foxtalk_success2
+        // 2) TALK ½ÃÄö½º: foxtalk_success1 ¡æ foxtalk_success2
         if (talkCanvas != null)
         {
             talkCanvas.SetActive(true);
@@ -105,7 +105,7 @@ public class FoxAnicontroller : MonoBehaviour
         }
     }
 
-    // ê¸°ì¡´ ì™¸ë¶€ ì¬ì‹¤í–‰ìš© (ì¼ë°˜ ëŒ€ì‚¬)
+    // ±âÁ¸ ¿ÜºÎ Àç½ÇÇà¿ë (ÀÏ¹İ ´ë»ç)
     public void PlayTalkSequenceAgain()
     {
         StartCoroutine(Flow());
