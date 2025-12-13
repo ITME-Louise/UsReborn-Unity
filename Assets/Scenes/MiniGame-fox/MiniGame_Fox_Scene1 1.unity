@@ -24809,34 +24809,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2218926454604301228, guid: ce6537d701cfc834b9d0322229283c43, type: 3}
-      propertyPath: anim
-      value: 
-      objectReference: {fileID: 2041352592}
-    - target: {fileID: 2218926454604301228, guid: ce6537d701cfc834b9d0322229283c43, type: 3}
-      propertyPath: talk1
-      value: 
-      objectReference: {fileID: 2052236995}
-    - target: {fileID: 2218926454604301228, guid: ce6537d701cfc834b9d0322229283c43, type: 3}
-      propertyPath: talk2
-      value: 
-      objectReference: {fileID: 649577077}
-    - target: {fileID: 2218926454604301228, guid: ce6537d701cfc834b9d0322229283c43, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2218926454604301228, guid: ce6537d701cfc834b9d0322229283c43, type: 3}
-      propertyPath: talkCanvas
-      value: 
-      objectReference: {fileID: 1454733292}
-    - target: {fileID: 2218926454604301228, guid: ce6537d701cfc834b9d0322229283c43, type: 3}
-      propertyPath: successTalk1
-      value: 
-      objectReference: {fileID: 1781380459}
-    - target: {fileID: 2218926454604301228, guid: ce6537d701cfc834b9d0322229283c43, type: 3}
-      propertyPath: successTalk2
-      value: 
-      objectReference: {fileID: 1747852333}
     - target: {fileID: 5738043817932949267, guid: ce6537d701cfc834b9d0322229283c43, type: 3}
       propertyPath: m_ApplyRootMotion
       value: 0
@@ -24848,32 +24820,6 @@ Animator:
   m_CorrespondingSourceObject: {fileID: 5738043817932949267, guid: ce6537d701cfc834b9d0322229283c43, type: 3}
   m_PrefabInstance: {fileID: 2041352591}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2041352595
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1963237215}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7bfd72f2f5cc58449a19d52e119a251d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  target: {fileID: 978470523}
-  teleportDelay: 10
-  target2: {fileID: 0}
-  teleport2At: 36
-  stopBeforeTarget: 1
-  stopDistance: 0.2
-  keepCurrentY: 1
-  yOffset: 0
-  snapToGround: 0
-  groundMask:
-    serializedVersion: 2
-    m_Bits: 0
-  rayStartHeight: 1
-  footClearance: 0.02
 --- !u!54 &2041352596
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -24890,6 +24836,61 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 80
   m_CollisionDetection: 1
+--- !u!114 &2041352597
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1963237215}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7bfd72f2f5cc58449a19d52e119a251d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 0}
+  teleportDelay: 10
+  target2: {fileID: 0}
+  teleport2At: 36
+  stopBeforeTarget: 1
+  stopDistance: 0.2
+  keepCurrentY: 1
+  yOffset: 0
+  snapToGround: 0
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 0
+  rayStartHeight: 1
+  footClearance: 0.02
+--- !u!114 &2041352598
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1963237215}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c5fe538dd84e4c4695a10693bc09637, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  anim: {fileID: 2041352592}
+  triggerName: Clapping
+  delayToShow: 5
+  talkCanvasName: TALK
+  talkCanvas: {fileID: 1454733292}
+  talk1Name: foxtalk
+  talk2Name: foxtalk2
+  talk1Duration: 3
+  talk2Duration: 2
+  talk1: {fileID: 2052236995}
+  talk2: {fileID: 649577077}
+  successTalk1Name: foxtalk_success1
+  successTalk2Name: foxtalk_success2
+  successTalk1Duration: 3
+  successTalk2Duration: 2
+  successTalk1: {fileID: 1781380459}
+  successTalk2: {fileID: 1747852333}
 --- !u!1001 &2043508547
 PrefabInstance:
   m_ObjectHideFlags: 0
