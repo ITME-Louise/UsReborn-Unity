@@ -6,7 +6,6 @@ using UnityEngine.UI;
 
 public class DialogueManager : MonoBehaviour
 {
-    [SerializeField] private SceneManager_Slam sceneManagerSlam;
 
     public GameObject dialoguePanel;
     public TextMeshProUGUI dialogueText;
@@ -31,10 +30,10 @@ public class DialogueManager : MonoBehaviour
     private string[] secondDialogues = new string[5]
     {
         "좋아, 이제부터 넌 정식 US-Reborn의 인턴이야, {0}!",
-        "하지만 아직 멀었어.",
-        "일단 기초부터 배우자고!",
-        "여긴 네 개인 우주선 방이야. 개인 기지라고 생각하면 돼.",
-        "우선, EARTH에 가서 쓰레기를 주워볼까?"
+        "하지만 아직 배울 게 많지.",
+        "여긴 네 개인 우주선 방이야.",
+        "앞으로 임무를 선택하고 출발하는 거점이 될 거야.",
+        "준비되면, 가고 싶은 임무를 직접 골라봐."
     };
 
     private int currentIndex = 0;
@@ -100,7 +99,7 @@ public class DialogueManager : MonoBehaviour
                 Debug.Log("두 번째 대사까지 모두 완료!");
                 characterAnimator.SetTrigger("Walk");
 
-                StartCoroutine(LoadSlamSceneAfterDelay());
+                StartCoroutine(LoadHubSceneAfterDelay());
             }
         }
     }
@@ -125,17 +124,17 @@ public class DialogueManager : MonoBehaviour
         StartCoroutine(AutoAdvanceDialogue());
     }
 
-    IEnumerator LoadSlamSceneAfterDelay()
+    IEnumerator LoadHubSceneAfterDelay()
     {
         yield return new WaitForSeconds(1f);
 
-        if (sceneManagerSlam != null)
+        if (GameSceneManager.Instance != null)
         {
-            sceneManagerSlam.loadSlamScene();
+            GameSceneManager.Instance.LoadHubSceneFromMain();
         }
         else
         {
-            Debug.LogError("SceneManager_Slam이 할당되지 않았습니다.");
+            Debug.LogError("GameSceneManager를 찾을 수 없습니다.");
         }
     }
 }
