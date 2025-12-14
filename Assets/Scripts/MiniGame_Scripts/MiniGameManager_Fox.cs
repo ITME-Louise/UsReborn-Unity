@@ -1,8 +1,11 @@
 ﻿using System.Collections;
+using System.Diagnostics;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using UnityEngine.InputSystem;
+using static System.Net.Mime.MediaTypeNames;
 
 public class MiniGameManager_Fox : MonoBehaviour
 {
@@ -13,8 +16,8 @@ public class MiniGameManager_Fox : MonoBehaviour
     public GameObject failUI;
     public Button retryButton;
     public Text timerText;
-    public GameObject giftPanel;      
-    public GameObject tipbookPanel;  
+    public GameObject giftPanel;
+    public GameObject tipbookPanel;
 
     [Header("Tutorial / Start UI (자동 타이머)")]
     public GameObject tutorialPanel;
@@ -47,6 +50,9 @@ public class MiniGameManager_Fox : MonoBehaviour
     bool gameEnded = false;
     int currentStage = 0;
     bool gameStarted = false;
+
+    // ✅ 추가: 실패 시 "3초 뒤 게임 종료" 코루틴 핸들
+    private Coroutine failTimeoutCo;
 
     void Awake()
     {
@@ -167,7 +173,6 @@ public class MiniGameManager_Fox : MonoBehaviour
     {
         currentStage = stage;
 
-     
         if (stoneCanvas) stoneCanvas.SetActive(false);
         if (stoneCanvas2) stoneCanvas2.SetActive(false);
         if (stoneCanvas3) stoneCanvas3.SetActive(false);
@@ -222,10 +227,51 @@ public class MiniGameManager_Fox : MonoBehaviour
         if (extraPanel) extraPanel.SetActive(false);
         if (failUI) failUI.SetActive(true);
 
-        // 실패 패널 3초 뒤 사라지고 게임 자동 재시작
-        if (failUI) StartCoroutine(RestartAfterDelay(3f));
+        // 추가: Fail UI 뜨면 Retry 버튼을 선택(포커스)해서 컨트롤러 Submit(A)로 눌리게 함
+        FocusRetryButton();
+
+        // 변경: 3초 뒤 자동 "재시작" 제거 → 3초 뒤 "게임 종료"로 변경
+        if (failTimeoutCo != null) StopCoroutine(failTimeoutCo);
+        failTimeoutCo = StartCoroutine(EndAfterDelay(3f));
     }
 
+    // 추가: Retry 버튼 선택(포커스) 함수
+    private void FocusRetryButton()
+    {
+        if (!retryButton) return;
+
+        if (EventSystem.current == null)
+        {
+            Debug.LogWarning("[MiniGameManager_Fox] EventSystem.current is null. UI Submit won't work.");
+            return;
+        }
+
+        // Fail UI가 막 켜지는 타이밍이어서 한 프레임 뒤 선택이 안정적
+        StartCoroutine(SelectRetryNextFrame());
+    }
+
+    //  한 프레임 뒤 선택(활성화 타이밍 안정화)
+    private IEnumerator SelectRetryNextFrame()
+    {
+        yield return null;
+
+        if (!retryButton) yield break;
+        if (!retryButton.gameObject.activeInHierarchy) yield break;
+
+        EventSystem.current.SetSelectedGameObject(null);
+        EventSystem.current.SetSelectedGameObject(retryButton.gameObject);
+    }
+
+    // Retry 안 누르면 delay 후 게임 종료
+    private IEnumerator EndAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        if (failUI) failUI.SetActive(false);
+        EndGame();
+    }
+
+    // (기존) 실패 패널 3초 뒤 사라지고 게임 자동 재시작
     private IEnumerator RestartAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
@@ -242,6 +288,13 @@ public class MiniGameManager_Fox : MonoBehaviour
 
     public void RestartGame()
     {
+        // 3초 뒤 게임 종료 예약이 걸려있으면 취소하고 즉시 재시작
+        if (failTimeoutCo != null)
+        {
+            StopCoroutine(failTimeoutCo);
+            failTimeoutCo = null;
+        }
+
         var scene = SceneManager.GetActiveScene();
         SceneManager.LoadScene(scene.name);
     }
@@ -295,7 +348,7 @@ public class MiniGameManager_Fox : MonoBehaviour
             if (!gr) root.AddComponent<UnityEngine.UI.GraphicRaycaster>();
 
             var cg = root.GetComponent<CanvasGroup>();
-            if (!cg) cg = root.AddComponent<CanvasGroup>();
+            if (!cg) root.AddComponent<CanvasGroup>();
             cg.alpha = 1f; cg.interactable = true; cg.blocksRaycasts = true;
         }
 
@@ -342,4 +395,3 @@ public class MiniGameManager_Fox : MonoBehaviour
         // 필요 시 후속 동작 추가
     }
 }
-
