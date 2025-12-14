@@ -1373,7 +1373,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6854084662927752293, guid: c8829fa2ecdc9fb44ad80d79ee74afc9, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 21.66
+      value: 27.65
       objectReference: {fileID: 0}
     - target: {fileID: 6854084662927752293, guid: c8829fa2ecdc9fb44ad80d79ee74afc9, type: 3}
       propertyPath: m_LocalPosition.y
@@ -24456,7 +24456,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1483018823}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f60819776ee367042b6ab93bcb9d6088, type: 3}
+  m_Script: {fileID: 11500000, guid: 296e3ca50f4e72343ac77d2f8544d5c5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!95 &1483018825
@@ -26461,6 +26461,7 @@ GameObject:
   - component: {fileID: 1701768788}
   - component: {fileID: 1701768790}
   - component: {fileID: 1701768789}
+  - component: {fileID: 1701768791}
   m_Layer: 12
   m_Name: Monster
   m_TagString: Enemy
@@ -26717,6 +26718,20 @@ MonoBehaviour:
   _selectSurface: {fileID: 0}
   _movementProvider: {fileID: 0}
   _tiebreakerScore: 0
+--- !u!114 &1701768791
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1701768779}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 601673d5a9b02fe4fbcce17388f245af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveInterval: 2
+  moveRange: 1.5
 --- !u!1001 &1704565133
 PrefabInstance:
   m_ObjectHideFlags: 0
