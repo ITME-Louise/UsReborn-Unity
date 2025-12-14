@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-//using static System.Net.Mime.MediaTypeNames;
+using Photon.Pun;  // ← 추가
 
 public class MultiplayUIManager : MonoBehaviour
 {
@@ -12,21 +12,24 @@ public class MultiplayUIManager : MonoBehaviour
     [SerializeField] private GameObject successUI;
     [SerializeField] private GameObject failUI;
     [SerializeField] private Button retryButton;
-
+    
     [Header("Timer UI")]
     [SerializeField] private Text timerText; // CanvasOverlay/TimeText
-
+    
+    [Header("Debug UI")]  // ← 추가
+    [SerializeField] private Text debugText; // ← 추가 (Inspector에서 연결)
+    
     [Header("Config")]
     [SerializeField] private int timeLimitSeconds = 180;
     [SerializeField] private float missionCardDuration = 2f;
     [SerializeField] private float tuto1Duration = 2f;
     [SerializeField] private float successHoldSeconds = 2f;
-
+    
     float remain;
     bool running;
     bool finished;
     Coroutine flowCo;
-
+    
     void Start()
     {
         if (retryButton)
@@ -38,6 +41,22 @@ public class MultiplayUIManager : MonoBehaviour
         flowCo = StartCoroutine(RunFlow());
     }
 
+    // ← 추가
+    void Update()
+    {
+        if (debugText)
+        {
+            if (PhotonNetwork.InRoom)
+            {
+                debugText.text = $"★ Room: {PhotonNetwork.CurrentRoom.Name}\n★ Players: {PhotonNetwork.CurrentRoom.PlayerCount}";
+            }
+            else
+            {
+                debugText.text = "Not connected to room";
+            }
+        }
+    }
+    
     void SetupInitialState()
     {
         SetActive(successUI, false);
@@ -45,7 +64,6 @@ public class MultiplayUIManager : MonoBehaviour
         SetActive(tuto1, false);
         SetActive(tuto2, false);
         SetActive(missionCard, true);
-
         finished = false;
         running = false;
         remain = timeLimitSeconds;
