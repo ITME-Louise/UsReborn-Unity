@@ -9,7 +9,7 @@ public class QuizManager : MonoBehaviour
 
     [SerializeField] private QuizUIController quizUI;
     [SerializeField] private PotSpawner potSpawner;
-    [SerializeField] private DetectionVisualizer detectionVisualizer;
+    // [SerializeField] private DetectionVisualizer detectionVisualizer;
 
     [Header("타이머 설정")]
     [SerializeField] private string sceneToLoadAfterTimeout;
@@ -113,6 +113,9 @@ public class QuizManager : MonoBehaviour
         };
     }
 
+    /* 
+    // ===== ML 인식 기능 비활성화 (전시용) =====
+
     // 손 충돌 시 ML 인식 트리거
     public void TriggerMLRecognition(GameObject trashObj)
     {
@@ -137,8 +140,9 @@ public class QuizManager : MonoBehaviour
             Debug.LogWarning("QuizManager: TrashDetectorController를 찾을 수 없습니다.");
         }
     }
+    */
 
-    public void StartQuiz(string className, Vector3 worldPos)
+    public void StartQuiz(string className, GameObject trashObject)
     {
         if (isQuizEnded) return;
 
@@ -155,18 +159,30 @@ public class QuizManager : MonoBehaviour
 
         if (quizUI != null)
         {
-            quizUI.ShowQuiz(className, selected.question, selected.answer, worldPos);
+            quizUI.ShowQuiz(className, selected.question, selected.answer, trashObject);
         }
     }
 
-    public void OnAnswerSubmitted(string userAnswer, string correctAnswer, string className, Vector3 worldPos)
+    public void OnAnswerSubmitted(string userAnswer, string correctAnswer, string className, GameObject trashObject)
     {
-        detectionVisualizer?.OnQuizCompleted();
+        // detectionVisualizer?.OnQuizCompleted();
 
         if (userAnswer == correctAnswer)
         {
             Debug.Log("정답입니다!");
-            potSpawner?.SpawnPot(worldPos, className);
+
+            // 화분 생성 위치 가져오기
+            TrashType trashType = trashObject?.GetComponent<TrashType>();
+            Vector3 potPosition = trashType != null ? trashType.potSpawnPosition : trashObject.transform.position;
+
+            potSpawner?.SpawnPot(potPosition, className);
+
+            // 쓰레기 삭제
+            if (trashObject != null)
+            {
+                Debug.Log($"QuizManager: 쓰레기 제거 - {trashObject.name}");
+                Destroy(trashObject);
+            }
         }
         else
         {
