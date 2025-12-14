@@ -1,11 +1,9 @@
 ﻿using System.Collections;
-using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using static System.Net.Mime.MediaTypeNames;
 
 public class MiniGameManager_Fox : MonoBehaviour
 {
@@ -15,7 +13,7 @@ public class MiniGameManager_Fox : MonoBehaviour
     public GameObject successUI;
     public GameObject failUI;
     public Button retryButton;
-    public Text timerText;
+    public UnityEngine.UI.Text timerText;
     public GameObject giftPanel;
     public GameObject tipbookPanel;
 
