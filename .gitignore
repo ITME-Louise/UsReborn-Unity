@@ -75,6 +75,15 @@ crashlytics-build.properties
 
 # 용량 큰 에셋 폴더 제외
 Assets/POLYART_Ancient Village/
+Assets/POLYART_Ancient Village.meta
+Assets/Free Pack/
+Assets/Free Pack.meta
+Assets/Free_Fireworks_4.1k_16bit/
+Assets/Free_Fireworks_4.1k_16bit.meta
+Assets/Casual Game Sounds U6/
+Assets/Casual Game Sounds 
+Assets/Nature Sound FX/
+Assets/Nature Sound FX.meta
 
 # 로그 및 배치 파일
 *.bat

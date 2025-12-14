@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
-using System.Collections.Generic;   // 협동 정화를 위한 컬렉션 사용
+using System.Collections.Generic;
 
 public class EnemyHP : MonoBehaviourPun
 {
@@ -19,11 +19,15 @@ public class EnemyHP : MonoBehaviourPun
     private MonsterAni monsterAni;
     // ------------------------------------------------
 
+    // ---------------- 사운드 관련 ----------------
+    public AudioSource idleSound;
+    public AudioSource attackSound;
+    public AudioSource deathSound;
+    // --------------------------------------------
+
     // ---------------- 협동 정화 관련 추가 필드 ----------------
-    // 현재 이 몬스터를 정화하고 있는 플레이어들의 photonViewID 목록
     private HashSet<int> purifyingPlayers = new HashSet<int>();
 
-    // 동시에 여러 명이 정화할 때 적용할 가속 배율 (예: 2명 이상이면 데미지 1.5배)
     [Tooltip("동시에 둘 이상이 정화할 때 적용할 추가 배율")]
     public float coopMultiplier = 1.5f;
     // -------------------------------------------------------
@@ -34,6 +38,13 @@ public class EnemyHP : MonoBehaviourPun
 
         // MonsterAni 찾기
         monsterAni = GetComponentInChildren<MonsterAni>();
+
+        // ---------------- Idle 사운드 재생 ----------------
+        if (idleSound != null) 
+        {
+            idleSound.Play();
+        }
+        // --------------------------------------------------
 
         if (hpSlider != null)
         {
@@ -57,8 +68,7 @@ public class EnemyHP : MonoBehaviourPun
         }
     }
 
-    // ---------------- 협동 정화 등록/해제용 메서드 추가 ----------------
-    // 정화 광선을 맞추기 시작한 플레이어 등록
+    // ---------------- 협동 정화 등록/해제용 메서드 ----------------
     public void StartPurify(int playerViewId)
     {
         if (!purifyingPlayers.Contains(playerViewId))
@@ -67,7 +77,6 @@ public class EnemyHP : MonoBehaviourPun
         }
     }
 
-    // 정화 광선을 멈춘 플레이어 해제
     public void StopPurify(int playerViewId)
     {
         if (purifyingPlayers.Contains(playerViewId))
@@ -86,33 +95,32 @@ public class EnemyHP : MonoBehaviourPun
 
     // HP 처리 전체 로직 (Master만 실행)
     void ApplyDamage(float amount)
-{
-    int activeCount = purifyingPlayers.Count;
-
-    if (activeCount >= 2)
     {
-        amount *= coopMultiplier;
+        int activeCount = purifyingPlayers.Count;
+
+        if (activeCount >= 2)
+        {
+            amount *= coopMultiplier;
+        }
+
+        currentHp -= amount;
+        currentHp = Mathf.Max(currentHp, 0);
+
+        // ---------------- 디버그 추가 ----------------
+        Debug.Log("[EnemyHP] ApplyDamage 호출! monsterAni: " + (monsterAni != null));
+        // ---------------------------------------------
+
+        photonView.RPC("RPC_PlayHit", RpcTarget.All);
+        photonView.RPC("RPC_UpdateUI", RpcTarget.All, currentHp);
+
+        CheckAttackPhase();
+
+        if (currentHp <= 0)
+        {
+            Die();
+        }
     }
 
-    currentHp -= amount;
-    currentHp = Mathf.Max(currentHp, 0);
-
-    // ---------------- 디버그 추가 ----------------
-    Debug.Log("[EnemyHP] ApplyDamage 호출! monsterAni: " + (monsterAni != null));
-    // ---------------------------------------------
-
-    photonView.RPC("RPC_PlayHit", RpcTarget.All);
-    photonView.RPC("RPC_UpdateUI", RpcTarget.All, currentHp);
-
-    CheckAttackPhase();
-
-    if (currentHp <= 0)
-    {
-        Die();
-    }
-}
-
-    // ---------------- 피격 애니메이션 RPC ----------------
     [PunRPC]
     void RPC_PlayHit()
     {
@@ -121,7 +129,6 @@ public class EnemyHP : MonoBehaviourPun
             monsterAni.Hit();
         }
     }
-    // ----------------------------------------------------
 
     // HP 구간 (70 / 50 / 30) 진입 시 공격
     void CheckAttackPhase()
@@ -129,25 +136,25 @@ public class EnemyHP : MonoBehaviourPun
         if (currentHp <= 70f && !triggered70)
         {
             triggered70 = true;
-            photonView.RPC("RPC_AttackAllPlayers", RpcTarget.All);
+            photonView.RPC("RPC_AttackAllPlayers", RpcTarget.All, 20); // 70% → 20 데미지
         }
 
         if (currentHp <= 50f && !triggered50)
         {
             triggered50 = true;
-            photonView.RPC("RPC_AttackAllPlayers", RpcTarget.All);
+            photonView.RPC("RPC_AttackAllPlayers", RpcTarget.All, 30); // 50% → 30 데미지
         }
 
         if (currentHp <= 30f && !triggered30)
         {
             triggered30 = true;
-            photonView.RPC("RPC_AttackAllPlayers", RpcTarget.All);
+            photonView.RPC("RPC_AttackAllPlayers", RpcTarget.All, 40); // 30% → 40 데미지
         }
     }
 
     //  실제 플레이어들에게 데미지 주는 RPC
     [PunRPC]
-    void RPC_AttackAllPlayers()
+    void RPC_AttackAllPlayers(int damage)
     {
         // ---------------- 공격 애니메이션 재생 ----------------
         if (monsterAni != null)
@@ -156,6 +163,14 @@ public class EnemyHP : MonoBehaviourPun
         }
         // -----------------------------------------------------
 
+        // ---------------- 공격 사운드 재생 ----------------
+        if (attackSound != null)
+        {
+            if (idleSound != null) idleSound.Pause();
+            attackSound.PlayOneShot(attackSound.clip);
+        }
+        // --------------------------------------------------
+
         PlayerHP[] players = FindObjectsOfType<PlayerHP>();
 
         foreach (var player in players)
@@ -163,8 +178,24 @@ public class EnemyHP : MonoBehaviourPun
             // 본인 체력만 깎기 (로컬 전용)
             if (player.photonView != null && player.photonView.IsMine)
             {
-                player.TakeDamage(10);
+                player.TakeDamage(damage); // 구간별 다른 데미지 적용
             }
+        }
+
+        // ---------------- 공격 끝나면 Idle 다시 재생 ----------------
+        if (idleSound != null && currentHp > 0)
+        {
+            Invoke("ResumeIdleSound", 1f);
+        }
+        // -----------------------------------------------------------
+    }
+
+    // Idle 사운드 다시 재생
+    void ResumeIdleSound()
+    {
+        if (idleSound != null && currentHp > 0)
+        {
+            idleSound.UnPause();
         }
     }
 
@@ -182,6 +213,11 @@ public class EnemyHP : MonoBehaviourPun
     void Die()
     {
         Debug.Log("Enemy died!");
+
+        // ---------------- 사망 사운드 재생 ----------------
+        if (idleSound != null) idleSound.Stop();
+        if (deathSound != null) deathSound.PlayOneShot(deathSound.clip);
+        // --------------------------------------------------
 
         // ---------------- 사망 애니메이션 재생 ----------------
         if (monsterAni != null)
