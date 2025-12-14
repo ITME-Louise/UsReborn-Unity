@@ -14,6 +14,7 @@ public class MiniGameManager_Bear : MonoBehaviour
     public GameObject tutorialPanel;
     public Button retryButton;
     public Text timerText;
+    public GameObject tipbookPanel;
 
     public float timeLimit = 180f;
     private float timer;
@@ -37,6 +38,8 @@ public class MiniGameManager_Bear : MonoBehaviour
         successUI.SetActive(false);
         failUI.SetActive(false);
         tutorialPanel.SetActive(true);
+        if (tipbookPanel) tipbookPanel.SetActive(false);
+
 
         timer = timeLimit;
         retryButton.onClick.AddListener(RestartGame);
@@ -55,7 +58,9 @@ public class MiniGameManager_Bear : MonoBehaviour
         if (!gameEnded && isTimerRunning)
         {
             timer -= Time.deltaTime;
-            timerText.text = "Time: " + Mathf.Ceil(timer).ToString();
+            timerText.text = Mathf.Ceil(timer).ToString();
+
+
 
             if (timer <= 0f)
             {
@@ -102,8 +107,13 @@ public class MiniGameManager_Bear : MonoBehaviour
         successUI.SetActive(true);
         isTimerRunning = false;
         Debug.Log("[GameManager] 게임 성공!");
+        StartCoroutine(ShowTipbookAfterDelay(3f));
     }
-
+    IEnumerator ShowTipbookAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (tipbookPanel) tipbookPanel.SetActive(true);
+    }
     public void OnFail()
     {
         if (gameEnded) return;
