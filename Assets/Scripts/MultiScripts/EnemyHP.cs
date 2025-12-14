@@ -15,6 +15,10 @@ public class EnemyHP : MonoBehaviourPun
     private bool triggered50 = false;
     private bool triggered30 = false;
 
+    // ---------------- 애니메이션 연결 ----------------
+    private MonsterAni monsterAni;
+    // ------------------------------------------------
+
     // ---------------- 협동 정화 관련 추가 필드 ----------------
     // 현재 이 몬스터를 정화하고 있는 플레이어들의 photonViewID 목록
     private HashSet<int> purifyingPlayers = new HashSet<int>();
@@ -27,6 +31,9 @@ public class EnemyHP : MonoBehaviourPun
     void Start()
     {
         currentHp = maxHp;
+
+        // MonsterAni 찾기
+        monsterAni = GetComponentInChildren<MonsterAni>();
 
         if (hpSlider != null)
         {
@@ -79,33 +86,42 @@ public class EnemyHP : MonoBehaviourPun
 
     // HP 처리 전체 로직 (Master만 실행)
     void ApplyDamage(float amount)
+{
+    int activeCount = purifyingPlayers.Count;
+
+    if (activeCount >= 2)
     {
-        // ---------------- 협동 정화 가속 로직 추가 ----------------
-        // 현재 동시에 정화 중인 플레이어 수에 따라 데미지 배율 적용
-        int activeCount = purifyingPlayers.Count;
+        amount *= coopMultiplier;
+    }
 
-        // 예시: 2명 이상이 동시에 정화 중이면 배율 적용
-        if (activeCount >= 2)
+    currentHp -= amount;
+    currentHp = Mathf.Max(currentHp, 0);
+
+    // ---------------- 디버그 추가 ----------------
+    Debug.Log("[EnemyHP] ApplyDamage 호출! monsterAni: " + (monsterAni != null));
+    // ---------------------------------------------
+
+    photonView.RPC("RPC_PlayHit", RpcTarget.All);
+    photonView.RPC("RPC_UpdateUI", RpcTarget.All, currentHp);
+
+    CheckAttackPhase();
+
+    if (currentHp <= 0)
+    {
+        Die();
+    }
+}
+
+    // ---------------- 피격 애니메이션 RPC ----------------
+    [PunRPC]
+    void RPC_PlayHit()
+    {
+        if (monsterAni != null)
         {
-            amount *= coopMultiplier;
-        }
-        // ---------------------------------------------------------
-
-        currentHp -= amount;
-        currentHp = Mathf.Max(currentHp, 0);
-
-        // UI 전체 동기화
-        photonView.RPC("RPC_UpdateUI", RpcTarget.All, currentHp);
-
-        // HP 구간 공격 체크
-        CheckAttackPhase();
-
-        // 사망 처리
-        if (currentHp <= 0)
-        {
-            Die();
+            monsterAni.Hit();
         }
     }
+    // ----------------------------------------------------
 
     // HP 구간 (70 / 50 / 30) 진입 시 공격
     void CheckAttackPhase()
@@ -133,6 +149,13 @@ public class EnemyHP : MonoBehaviourPun
     [PunRPC]
     void RPC_AttackAllPlayers()
     {
+        // ---------------- 공격 애니메이션 재생 ----------------
+        if (monsterAni != null)
+        {
+            monsterAni.Attack();
+        }
+        // -----------------------------------------------------
+
         PlayerHP[] players = FindObjectsOfType<PlayerHP>();
 
         foreach (var player in players)
@@ -160,10 +183,22 @@ public class EnemyHP : MonoBehaviourPun
     {
         Debug.Log("Enemy died!");
 
+        // ---------------- 사망 애니메이션 재생 ----------------
+        if (monsterAni != null)
+        {
+            monsterAni.Die();
+        }
+        // -----------------------------------------------------
+
         // UI 흐름 처리
         FindObjectOfType<MultiplayUIManager>()?.OnMonsterDead();
 
-        // 몬스터 제거 (전체 동기화)
+        // 몬스터 제거 (전체 동기화) - 애니메이션 보여주려고 2초 딜레이
+        Invoke("DestroyMonster", 2f);
+    }
+
+    void DestroyMonster()
+    {
         photonView.RPC("RPC_DestroyEnemy", RpcTarget.AllBuffered);
     }
 

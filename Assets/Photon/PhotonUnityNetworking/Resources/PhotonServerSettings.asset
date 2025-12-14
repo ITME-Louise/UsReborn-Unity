@@ -44,6 +44,10 @@ MonoBehaviour:
   - RPC_DestroyEnemy
   - RPC_TakeDamage
   - RPC_UpdateUI
+  - RPC_Attack
+  - RPC_Die
+  - RPC_Hit
+  - RPC_PlayHit
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
