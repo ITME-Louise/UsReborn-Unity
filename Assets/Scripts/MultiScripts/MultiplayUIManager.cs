@@ -11,8 +11,13 @@ public class MultiplayUIManager : MonoBehaviour
     [SerializeField] private GameObject tuto2;
     [SerializeField] private GameObject successUI;
     [SerializeField] private GameObject failUI;
-    [SerializeField] private GameObject tipBook;  // ← 추가
+    [SerializeField] private GameObject tipBook;
     [SerializeField] private Button retryButton;
+    
+    [Header("Sound")]
+    [SerializeField] private AudioSource clearSound;
+    [SerializeField] private AudioSource glowSound;
+    [SerializeField] private AudioSource failSound;
     
     [Header("Timer UI")]
     [SerializeField] private Text timerText;
@@ -25,7 +30,10 @@ public class MultiplayUIManager : MonoBehaviour
     [SerializeField] private float missionCardDuration = 2f;
     [SerializeField] private float tuto1Duration = 2f;
     [SerializeField] private float successHoldSeconds = 2f;
-    [SerializeField] private float tipBookDuration = 5f;  // ← 추가
+    [SerializeField] private float tipBookDuration = 5f;
+    
+    [Header("Fade Settings")]
+    [SerializeField] private float fadeDuration = 0.5f;
     
     float remain;
     bool running;
@@ -62,11 +70,11 @@ public class MultiplayUIManager : MonoBehaviour
     {
         SetActive(successUI, false);
         SetActive(failUI, false);
-        SetActive(tipBook, false);  // ← 추가
+        SetActive(tipBook, false);
         SetActive(tuto1, false);
         SetActive(tuto2, false);
         SetActive(missionCard, true);
-        SetActive(retryButton?.gameObject, false);  // ← 수정: 처음엔 숨김
+        SetActive(retryButton?.gameObject, false);
         finished = false;
         running = false;
         remain = timeLimitSeconds;
@@ -75,12 +83,23 @@ public class MultiplayUIManager : MonoBehaviour
     
     IEnumerator RunFlow()
     {
+        // 미션카드 페이드 인
+        yield return StartCoroutine(FadeIn(missionCard, fadeDuration));
         yield return new WaitForSeconds(missionCardDuration);
+        
+        // 미션카드 페이드 아웃 → 튜토리얼 페이드 인
+        yield return StartCoroutine(FadeOut(missionCard, fadeDuration));
         SetActive(missionCard, false);
+        
         SetActive(tuto1, true);
         SetActive(tuto2, true);
+        StartCoroutine(FadeIn(tuto1, fadeDuration));
+        yield return StartCoroutine(FadeIn(tuto2, fadeDuration));
         
         yield return new WaitForSeconds(tuto1Duration);
+        
+        // tuto1만 페이드 아웃
+        yield return StartCoroutine(FadeOut(tuto1, fadeDuration));
         SetActive(tuto1, false);
         
         running = true;
@@ -113,20 +132,38 @@ public class MultiplayUIManager : MonoBehaviour
         if (finished) return;
         finished = true;
         running = false;
-        SetActive(tuto2, false);
-        SetActive(successUI, true);
-        StartCoroutine(SuccessFlow());  // ← 수정
+        StartCoroutine(SuccessFlow());
     }
     
-    IEnumerator SuccessFlow()  // ← 수정: TipBook 플로우 추가
+    IEnumerator SuccessFlow()
     {
-        // Success UI 표시
+        // tuto2 페이드 아웃
+        yield return StartCoroutine(FadeOut(tuto2, fadeDuration));
+        SetActive(tuto2, false);
+        
+        // Clear 사운드 재생
+        if (clearSound != null) clearSound.Play();
+        
+        // Success UI 페이드 인
+        SetActive(successUI, true);
+        yield return StartCoroutine(FadeIn(successUI, fadeDuration));
         yield return new WaitForSeconds(successHoldSeconds);
+        
+        // Success UI 페이드 아웃
+        yield return StartCoroutine(FadeOut(successUI, fadeDuration));
         SetActive(successUI, false);
         
-        // TipBook 표시
+        // TipBook 사운드 재생
+        if (glowSound != null) glowSound.Play();
+        
+        // TipBook 페이드 인
         SetActive(tipBook, true);
+        yield return StartCoroutine(FadeIn(tipBook, fadeDuration));
+        
         yield return new WaitForSeconds(tipBookDuration);
+        
+        // TipBook 페이드 아웃
+        yield return StartCoroutine(FadeOut(tipBook, fadeDuration));
         SetActive(tipBook, false);
     }
     
@@ -135,8 +172,23 @@ public class MultiplayUIManager : MonoBehaviour
         if (finished) return;
         finished = true;
         running = false;
+        
+        // Fail 사운드 재생
+        if (failSound != null) failSound.Play();
+        
+        StartCoroutine(FailFlow());
+    }
+    
+    IEnumerator FailFlow()
+    {
         SetActive(failUI, true);
-        SetActive(retryButton?.gameObject, true);  // ← 수정: 실패 시에만 표시
+        yield return StartCoroutine(FadeIn(failUI, fadeDuration));
+        
+        SetActive(retryButton?.gameObject, true);
+        if (retryButton != null)
+        {
+            yield return StartCoroutine(FadeIn(retryButton.gameObject, fadeDuration));
+        }
     }
     
     public void Restart()
@@ -144,6 +196,46 @@ public class MultiplayUIManager : MonoBehaviour
         if (flowCo != null) StopCoroutine(flowCo);
         SetupInitialState();
         flowCo = StartCoroutine(RunFlow());
+    }
+    
+    // ==================== 페이드 효과 ====================
+    
+    IEnumerator FadeIn(GameObject obj, float duration)
+    {
+        CanvasGroup cg = GetOrAddCanvasGroup(obj);
+        cg.alpha = 0f;
+        
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            cg.alpha = Mathf.Clamp01(elapsed / duration);
+            yield return null;
+        }
+        cg.alpha = 1f;
+    }
+    
+    IEnumerator FadeOut(GameObject obj, float duration)
+    {
+        CanvasGroup cg = GetOrAddCanvasGroup(obj);
+        cg.alpha = 1f;
+        
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            cg.alpha = 1f - Mathf.Clamp01(elapsed / duration);
+            yield return null;
+        }
+        cg.alpha = 0f;
+    }
+    
+    CanvasGroup GetOrAddCanvasGroup(GameObject obj)
+    {
+        if (obj == null) return null;
+        CanvasGroup cg = obj.GetComponent<CanvasGroup>();
+        if (cg == null) cg = obj.AddComponent<CanvasGroup>();
+        return cg;
     }
     
     static void SetActive(GameObject go, bool v)
