@@ -76,3 +76,9 @@ crashlytics-build.properties
 # 용량 큰 에셋 폴더 제외
 Assets/POLYART_Ancient Village/
 
+# 로그 및 배치 파일
+*.bat
+quest3_log.txt
+quest3s_log.txt
+*_log.txt
+
