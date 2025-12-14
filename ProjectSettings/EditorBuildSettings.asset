@@ -17,7 +17,7 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/Hub_Scene.unity
     guid: db1efdd6978d738458f5f97b4763ab47
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/MiniGame-fox/MiniGame_Fox_Scene1 1.unity
     guid: ec08e913c30a2ee4b851f3e2033c22c8
   - enabled: 0
@@ -44,7 +44,7 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/Mini_Oasis.unity
     guid: 32561d17e444dd541a7acb504330fd32
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Multi_Scene.unity
     guid: 1d00dc4e7bae7484f80d3b6d29165ed8
   m_configObjects:
