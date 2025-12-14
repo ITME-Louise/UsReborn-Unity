@@ -766,6 +766,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3351887280093960692, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
+      propertyPath: _trackingOriginType
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3351887280100535312, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
       propertyPath: m_Name
       value: OVRCameraRig
@@ -2285,7 +2289,6 @@ GameObject:
   - component: {fileID: 267486067}
   - component: {fileID: 267486066}
   - component: {fileID: 267486074}
-  - component: {fileID: 267486073}
   - component: {fileID: 267486072}
   - component: {fileID: 267486071}
   - component: {fileID: 267486070}
@@ -2303,7 +2306,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 267486064}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -2409,24 +2412,10 @@ MonoBehaviour:
   _allowTeleport: 1
   _equalDistanceToBlockerOverride: 0
   _tieBreakerScore: 0
-  _surface: {fileID: 267486070}
+  _surface: {fileID: 528974425}
   _targetPoint: {fileID: 0}
   _faceTargetDirection: 0
   _eyeLevel: 0
---- !u!64 &267486073
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 267486064}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!54 &267486074
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -10009,6 +9998,7 @@ GameObject:
   - component: {fileID: 528974422}
   - component: {fileID: 528974424}
   - component: {fileID: 528974423}
+  - component: {fileID: 528974425}
   m_Layer: 0
   m_Name: TerrainMesh
   m_TagString: Untagged
@@ -10076,6 +10066,19 @@ Terrain:
   m_GroupingID: 0
   m_RenderingLayerMask: 1
   m_AllowAutoConnect: 1
+--- !u!114 &528974425
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 528974421}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2140d2b457bea84881488302059889b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _collider: {fileID: 528974423}
 --- !u!1001 &529025674
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -26617,7 +26620,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1701768779}
   m_LocalRotation: {x: 0, y: -0.7256146, z: 0, w: 0.6881013}
-  m_LocalPosition: {x: 16.21, y: 47.2, z: 0.88}
+  m_LocalPosition: {x: 14.9, y: 47.2, z: 1.09}
   m_LocalScale: {x: 3.57, y: 3.57, z: 3.57}
   m_ConstrainProportionsScale: 0
   m_Children:
