@@ -104,10 +104,17 @@ public class QuizUIController : MonoBehaviour
     {
         isQuizActive = false;
 
+        // 상태 초기화 추가
+        currentTrashObject = null;
+        correctAnswer = "";
+        currentClassName = "";
+
         if (panel != null)
         {
-            panel.SetActive(false); // 실제 퀴즈 패널을 꺼야 함
+            panel.SetActive(false);
         }
+
+        Debug.Log("QuizUIController: 퀴즈 패널 숨김 및 상태 초기화 완료");
     }
 
     public void OnOButtonPressed() { Submit("O"); }
@@ -115,12 +122,20 @@ public class QuizUIController : MonoBehaviour
 
     private void Submit(string userAnswer)
     {
+        Debug.Log($"QuizUIController: 답안 제출 - {userAnswer}");
+
         isQuizActive = false;
+
         if (panel != null)
         {
             panel.SetActive(false);
         }
 
         quizManager?.OnAnswerSubmitted(userAnswer, correctAnswer, currentClassName, currentTrashObject);
+
+        // 상태 초기화
+        currentTrashObject = null;
+        correctAnswer = "";
+        currentClassName = "";
     }
 }

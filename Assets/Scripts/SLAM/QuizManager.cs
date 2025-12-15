@@ -165,19 +165,15 @@ public class QuizManager : MonoBehaviour
 
     public void OnAnswerSubmitted(string userAnswer, string correctAnswer, string className, GameObject trashObject)
     {
-        // detectionVisualizer?.OnQuizCompleted();
-
         if (userAnswer == correctAnswer)
         {
             Debug.Log("정답입니다!");
 
-            // 화분 생성 위치 가져오기
             TrashType trashType = trashObject?.GetComponent<TrashType>();
             Vector3 potPosition = trashType != null ? trashType.potSpawnPosition : trashObject.transform.position;
 
             potSpawner?.SpawnPot(potPosition, className);
 
-            // 쓰레기 삭제
             if (trashObject != null)
             {
                 Debug.Log($"QuizManager: 쓰레기 제거 - {trashObject.name}");
@@ -188,6 +184,15 @@ public class QuizManager : MonoBehaviour
         {
             Debug.Log("오답입니다!");
         }
+
+        // HandCollisionDetector 상태 초기화
+        HandCollisionDetector[] detectors = FindObjectsOfType<HandCollisionDetector>();
+        foreach (var detector in detectors)
+        {
+            detector.OnQuizCompleted();
+        }
+
+        Debug.Log("QuizManager: 퀴즈 종료, 다음 쓰레기 인식 가능");
     }
 
     private void StartTimer()
