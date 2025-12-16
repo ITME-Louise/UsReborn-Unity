@@ -1,9 +1,10 @@
 ﻿using System.Collections;
+
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+
 
 public class MiniGameManager_Fox : MonoBehaviour
 {
@@ -12,8 +13,8 @@ public class MiniGameManager_Fox : MonoBehaviour
     [Header("UI")]
     public GameObject successUI;
     public GameObject failUI;
-    public Button retryButton;
     public UnityEngine.UI.Text timerText;
+
     public GameObject giftPanel;
     public GameObject tipbookPanel;
 
@@ -49,9 +50,6 @@ public class MiniGameManager_Fox : MonoBehaviour
     int currentStage = 0;
     bool gameStarted = false;
 
-    // 실패 시 3초 뒤 게임 종료 코루틴 핸들
-    private Coroutine failTimeoutCo;
-
     void Awake()
     {
         if (Instance == null) Instance = this;
@@ -71,8 +69,6 @@ public class MiniGameManager_Fox : MonoBehaviour
 
     void Start()
     {
-        if (retryButton) retryButton.onClick.AddListener(RestartGame);
-
         timer = timeLimit;
         if (useTimer) UpdateTimerUI();
 
@@ -156,12 +152,14 @@ public class MiniGameManager_Fox : MonoBehaviour
     public void OnTargetZoneHit(int stageToForce)
     {
         if (!gameStarted || gameEnded) return;
+        // 한 프레임 뒤에 전환(UI/카메라 갱신 보장)
         StartCoroutine(SwitchStageWithDelay(stageToForce));
     }
 
+    // 추가: 전환 지연 코루틴(한 프레임)
     private IEnumerator SwitchStageWithDelay(int nextStage)
     {
-        yield return null;
+        yield return null; // 1 frame
         SetStage(nextStage);
     }
 
@@ -169,10 +167,12 @@ public class MiniGameManager_Fox : MonoBehaviour
     {
         currentStage = stage;
 
+
         if (stoneCanvas) stoneCanvas.SetActive(false);
         if (stoneCanvas2) stoneCanvas2.SetActive(false);
         if (stoneCanvas3) stoneCanvas3.SetActive(false);
 
+        // 해당 스테이지만 켜기
         if (stage == 1 && stoneCanvas) stoneCanvas.SetActive(true);
         else if (stage == 2 && stoneCanvas2) stoneCanvas2.SetActive(true);
         else if (stage == 3 && stoneCanvas3) stoneCanvas3.SetActive(true);
@@ -197,17 +197,20 @@ public class MiniGameManager_Fox : MonoBehaviour
 
         ShowSuccessUI();
 
+        // 여우 원위치 복귀
         var fox = FindObjectOfType<FoxTeleporter>();
         if (fox != null)
             fox.TeleportBackToOrigin();
 
+        // 성공 패널 3초 뒤 자동 닫기
         if (successUI) StartCoroutine(HideAfterDelay(successUI, 3f));
 
+        // 3초 뒤 여우 애니메이션 + 대화창 실행
         StartCoroutine(PlaySuccessAfterDelay(3f));
 
+        // 8초 뒤 선물 → 팁북 순서 → 게임 종료
         StartCoroutine(ShowGiftAndTipbookSequence());
     }
-
     public void OnFail()
     {
         if (gameEnded) return;
@@ -218,28 +221,17 @@ public class MiniGameManager_Fox : MonoBehaviour
         if (extraPanel) extraPanel.SetActive(false);
         if (failUI) failUI.SetActive(true);
 
-        // 실패 패널 뜨면 3초 뒤 게임 종료
-        if (failTimeoutCo != null) StopCoroutine(failTimeoutCo);
-        failTimeoutCo = StartCoroutine(EndAfterDelay(3f));
+        StartCoroutine(EndAfterFailDelay(3f));
     }
-
-    // 3초 뒤 게임 종료
-    private IEnumerator EndAfterDelay(float delay)
+    private IEnumerator EndAfterFailDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
-
         if (failUI) failUI.SetActive(false);
         EndGame();
     }
 
-    // (기존) 실패 패널 3초 뒤 사라지고 게임 자동 재시작 (현재는 사용 안 함)
-    private IEnumerator RestartAfterDelay(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        if (failUI) failUI.SetActive(false);
-        var scene = SceneManager.GetActiveScene();
-        SceneManager.LoadScene(scene.name);
-    }
+
+
 
     private IEnumerator HideAfterDelay(GameObject panel, float delay)
     {
@@ -249,13 +241,6 @@ public class MiniGameManager_Fox : MonoBehaviour
 
     public void RestartGame()
     {
-        // 혹시 버튼을 쓸 경우를 대비해 종료 예약이 있으면 취소하고 즉시 재시작
-        if (failTimeoutCo != null)
-        {
-            StopCoroutine(failTimeoutCo);
-            failTimeoutCo = null;
-        }
-
         var scene = SceneManager.GetActiveScene();
         SceneManager.LoadScene(scene.name);
     }
@@ -264,9 +249,7 @@ public class MiniGameManager_Fox : MonoBehaviour
     {
         if (!timerText) return;
         int t = Mathf.CeilToInt(Mathf.Max(0f, timer));
-        timerText.text = t.ToString("00");
-
-
+        timerText.text = t.ToString();
     }
 
     bool CheckWinCondition()
@@ -311,7 +294,7 @@ public class MiniGameManager_Fox : MonoBehaviour
             if (!gr) root.AddComponent<UnityEngine.UI.GraphicRaycaster>();
 
             var cg = root.GetComponent<CanvasGroup>();
-            if (!cg) root.AddComponent<CanvasGroup>();
+            if (!cg) cg = root.AddComponent<CanvasGroup>();
             cg.alpha = 1f; cg.interactable = true; cg.blocksRaycasts = true;
         }
 
@@ -319,6 +302,7 @@ public class MiniGameManager_Fox : MonoBehaviour
         Debug.Log("[MiniGameManager_Fox] Success UI shown (WorldSpace in front of camera).");
     }
 
+    // 성공 시 3초 기다린 뒤 여우 애니/대사 실행
     private IEnumerator PlaySuccessAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
@@ -328,6 +312,7 @@ public class MiniGameManager_Fox : MonoBehaviour
             foxAni.PlaySuccessTalkSequence();
     }
 
+    // 8초 뒤 선물 → 2초 후 팁북 → 5초 후 게임 종료
     private IEnumerator ShowGiftAndTipbookSequence()
     {
         yield return new WaitForSeconds(8f);
@@ -349,9 +334,11 @@ public class MiniGameManager_Fox : MonoBehaviour
         EndGame();
     }
 
+    // 게임 종료 처리
     private void EndGame()
     {
         Debug.Log("[MiniGameManager_Fox] 게임 종료됨!");
         // 필요 시 후속 동작 추가
     }
 }
+

@@ -23,6 +23,7 @@ TagManager:
   - ToSlam
   - Stone
   - Target
+  - Ground
   layers:
   - Default
   - TransparentFX
