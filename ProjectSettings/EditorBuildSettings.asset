@@ -17,13 +17,13 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/Hub_Scene.unity
     guid: db1efdd6978d738458f5f97b4763ab47
-  - enabled: 1
-    path: Assets/Scenes/MiniGame-fox/MiniGame_Fox_Scene1 1.unity
+  - enabled: 0
+    path: Assets/Scenes/MiniGames/MiniGame_Fox_Scene.unity
     guid: ec08e913c30a2ee4b851f3e2033c22c8
   - enabled: 0
-    path: Assets/Scenes/MiniGame_Bear_Scene 1.unity
+    path: Assets/Scenes/MiniGames/MiniGame_Rabbit_Scene.unity
     guid: dbb253ba2af223a4990302132bd84da5
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/Slam_Scene.unity
     guid: 82789e9aa3866d44d92584943fae7a56
   - enabled: 0

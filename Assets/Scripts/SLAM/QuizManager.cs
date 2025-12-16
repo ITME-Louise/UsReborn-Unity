@@ -9,7 +9,7 @@ public class QuizManager : MonoBehaviour
 
     [SerializeField] private QuizUIController quizUI;
     [SerializeField] private PotSpawner potSpawner;
-    [SerializeField] private DetectionVisualizer detectionVisualizer;
+    // [SerializeField] private DetectionVisualizer detectionVisualizer;
 
     [Header("타이머 설정")]
     [SerializeField] private string sceneToLoadAfterTimeout;
@@ -113,6 +113,9 @@ public class QuizManager : MonoBehaviour
         };
     }
 
+    /* 
+    // ===== ML 인식 기능 비활성화 (전시용) =====
+
     // 손 충돌 시 ML 인식 트리거
     public void TriggerMLRecognition(GameObject trashObj)
     {
@@ -137,8 +140,9 @@ public class QuizManager : MonoBehaviour
             Debug.LogWarning("QuizManager: TrashDetectorController를 찾을 수 없습니다.");
         }
     }
+    */
 
-    public void StartQuiz(string className, Vector3 worldPos)
+    public void StartQuiz(string className, GameObject trashObject)
     {
         if (isQuizEnded) return;
 
@@ -155,23 +159,40 @@ public class QuizManager : MonoBehaviour
 
         if (quizUI != null)
         {
-            quizUI.ShowQuiz(className, selected.question, selected.answer, worldPos);
+            quizUI.ShowQuiz(className, selected.question, selected.answer, trashObject);
         }
     }
 
-    public void OnAnswerSubmitted(string userAnswer, string correctAnswer, string className, Vector3 worldPos)
+    public void OnAnswerSubmitted(string userAnswer, string correctAnswer, string className, GameObject trashObject)
     {
-        detectionVisualizer?.OnQuizCompleted();
-
         if (userAnswer == correctAnswer)
         {
             Debug.Log("정답입니다!");
-            potSpawner?.SpawnPot(worldPos, className);
+
+            TrashType trashType = trashObject?.GetComponent<TrashType>();
+            Vector3 potPosition = trashType != null ? trashType.potSpawnPosition : trashObject.transform.position;
+
+            potSpawner?.SpawnPot(potPosition, className);
+
+            if (trashObject != null)
+            {
+                Debug.Log($"QuizManager: 쓰레기 제거 - {trashObject.name}");
+                Destroy(trashObject);
+            }
         }
         else
         {
             Debug.Log("오답입니다!");
         }
+
+        // HandCollisionDetector 상태 초기화
+        HandCollisionDetector[] detectors = FindObjectsOfType<HandCollisionDetector>();
+        foreach (var detector in detectors)
+        {
+            detector.OnQuizCompleted();
+        }
+
+        Debug.Log("QuizManager: 퀴즈 종료, 다음 쓰레기 인식 가능");
     }
 
     private void StartTimer()

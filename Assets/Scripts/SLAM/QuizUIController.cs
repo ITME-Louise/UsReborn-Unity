@@ -21,7 +21,7 @@ public class QuizUIController : MonoBehaviour
     private QuizManager quizManager;
     private string correctAnswer;
     private string currentClassName;
-    private Vector3 spawnPosition;
+    private GameObject currentTrashObject;
     private bool isQuizActive = false;
 
     private Dictionary<string, Sprite> classImageSprites;
@@ -68,19 +68,17 @@ public class QuizUIController : MonoBehaviour
         }
     }
 
-    public void ShowQuiz(string className, string question, string answer, Vector3 worldPos)
+    public void ShowQuiz(string className, string question, string answer, GameObject trashObject)
     {
         currentClassName = className;
         correctAnswer = answer;
-        spawnPosition = worldPos;
+        currentTrashObject = trashObject;
 
-        // 질문 텍스트 설정
         if (questionText != null)
         {
             questionText.text = question;
         }
 
-        // 쓰레기 이미지 설정
         if (trashImage != null)
         {
             if (classImageSprites.ContainsKey(className) && classImageSprites[className] != null)
@@ -95,7 +93,6 @@ public class QuizUIController : MonoBehaviour
             }
         }
 
-        // 패널 활성화
         if (panel != null)
         {
             panel.SetActive(true);
@@ -107,10 +104,17 @@ public class QuizUIController : MonoBehaviour
     {
         isQuizActive = false;
 
+        // 상태 초기화 추가
+        currentTrashObject = null;
+        correctAnswer = "";
+        currentClassName = "";
+
         if (panel != null)
         {
-            panel.SetActive(false); // 실제 퀴즈 패널을 꺼야 함
+            panel.SetActive(false);
         }
+
+        Debug.Log("QuizUIController: 퀴즈 패널 숨김 및 상태 초기화 완료");
     }
 
     public void OnOButtonPressed() { Submit("O"); }
@@ -118,6 +122,8 @@ public class QuizUIController : MonoBehaviour
 
     private void Submit(string userAnswer)
     {
+        Debug.Log($"QuizUIController: 답안 제출 - {userAnswer}");
+
         isQuizActive = false;
 
         if (panel != null)
@@ -125,6 +131,11 @@ public class QuizUIController : MonoBehaviour
             panel.SetActive(false);
         }
 
-        quizManager?.OnAnswerSubmitted(userAnswer, correctAnswer, currentClassName, spawnPosition);
+        quizManager?.OnAnswerSubmitted(userAnswer, correctAnswer, currentClassName, currentTrashObject);
+
+        // 상태 초기화
+        currentTrashObject = null;
+        correctAnswer = "";
+        currentClassName = "";
     }
 }

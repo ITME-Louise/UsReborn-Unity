@@ -56,7 +56,7 @@ public class DetectionVisualizer : MonoBehaviour
 
             if (quizManager != null)
             {
-                quizManager.StartQuiz(bestDetection.ClassName, spawnPos);
+                quizManager.StartQuiz(bestDetection.ClassName, waitingTrashObject);
                 isQuizActive = true;
                 waitingTrashObject = null;
             }
