@@ -891,7 +891,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   className: paper
-  potSpawnPosition: {x: 0.784, y: 0.018, z: -0.59}
+  potSpawnPosition: {x: 0.2293, y: 0.019, z: -0.466}
 --- !u!1 &454624134
 GameObject:
   m_ObjectHideFlags: 0
@@ -1586,10 +1586,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   quizUI: {fileID: 1833759406}
   potSpawner: {fileID: 1119661632}
-  sceneToLoadAfterTimeout: MiniGame_Bear_Scene
-  timeLimitInSeconds: 180
-  timerText: {fileID: 254199694}
-  dialogueManager: {fileID: 1635961990}
 --- !u!4 &754948217
 Transform:
   m_ObjectHideFlags: 0
@@ -2080,7 +2076,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   className: paper
-  potSpawnPosition: {x: 0.6330001, y: 0.018, z: 0.699}
+  potSpawnPosition: {x: 0.707, y: 0.018, z: 1.17}
 --- !u!114 &1105374041 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3351887280093960702, guid: b4756ccd433775e4c8e5b65bd8a8f638, type: 3}
@@ -2142,7 +2138,7 @@ MonoBehaviour:
       stage1: {fileID: 4735194703025569332, guid: 07cab2717e2f6de4ea57950741d1829e, type: 3}
       stage2: {fileID: 9169834740442585456, guid: 2c44e5fee9664c04f9748e1cbd7c8669, type: 3}
       stage3: {fileID: 2018203606461287635, guid: d8342ce5717eed7428ee2cc0df1c19f9, type: 3}
-      stage4: {fileID: 4242100428300728783, guid: f84d9c6caec39fb439aecce632b38c45, type: 3}
+      stage4: {fileID: 2018203606461287635, guid: d8342ce5717eed7428ee2cc0df1c19f9, type: 3}
   - className: pack
     vaseStages:
       stage1: {fileID: 4735194703025569332, guid: 07cab2717e2f6de4ea57950741d1829e, type: 3}
