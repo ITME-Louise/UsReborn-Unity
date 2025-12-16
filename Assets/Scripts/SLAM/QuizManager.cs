@@ -11,18 +11,7 @@ public class QuizManager : MonoBehaviour
     [SerializeField] private PotSpawner potSpawner;
     // [SerializeField] private DetectionVisualizer detectionVisualizer;
 
-    [Header("타이머 설정")]
-    [SerializeField] private string sceneToLoadAfterTimeout;
-    [SerializeField] private float timeLimitInSeconds = 300f;
-    [SerializeField] private Text timerText;
-
-    [SerializeField] private DialogueManager_Slam dialogueManager;
-
-    private float timer = 0f;
-    private bool isTimerRunning = false;
     private bool isQuizEnded = false;
-
-    private int lastDisplayedSeconds = -1;
 
     private Dictionary<string, List<(string, string)>> quizData;
 
@@ -49,8 +38,6 @@ public class QuizManager : MonoBehaviour
         {
             Debug.LogError("QuizManager: QuizUIController가 할당되지 않았습니다");
         }
-
-        StartTimer();
     }
 
     private void InitializeQuizData()
@@ -82,7 +69,7 @@ public class QuizManager : MonoBehaviour
                 ("금속캔에 플라스틱 뚜껑이 붙어 있어도 그대로 배출해도 된다.", "O"),
                 ("금속캔은 이물질이 섞이지 않도록 깨끗이 분리해서 배출해야 한다.", "X"),
                 ("부탄가스 용기는 내용물을 완전히 제거하지 않아도 배출할 수 있다.", "X"),
-                ("가스용기는 통풍이 잘 되는 곳에서 노즐을 눌러 내용물을 완전히 제거한 후 배출해야 한다.", "O")
+                ("가스용기는 통풍이 잘 되는 곳에서\n 노즐을 눌러 내용물을 완전히 제거한 후 배출해야 한다.", "O")
             }},
             { "glass", new List<(string, string)>{
                 ("유리병은 내용물을 비우고 물로 헹군 후 배출해야 한다.", "O"),
@@ -193,69 +180,6 @@ public class QuizManager : MonoBehaviour
         }
 
         Debug.Log("QuizManager: 퀴즈 종료, 다음 쓰레기 인식 가능");
-    }
-
-    private void StartTimer()
-    {
-        timer = 0f;
-        isTimerRunning = true;
-        lastDisplayedSeconds = -1;
-    }
-
-    private void Update()
-    {
-        if (!isTimerRunning) return;
-
-        timer += Time.deltaTime;
-        float timeRemaining = Mathf.Max(0f, timeLimitInSeconds - timer);
-
-        // 1초마다만 UI 업데이트
-        int currentSeconds = Mathf.FloorToInt(timeRemaining);
-        if (currentSeconds != lastDisplayedSeconds)
-        {
-            UpdateTimerUI(timeRemaining);
-            lastDisplayedSeconds = currentSeconds;
-        }
-
-        // 시간 초과 체크
-        if (timer >= timeLimitInSeconds)
-        {
-            OnTimeOut();
-        }
-    }
-
-    private void OnTimeOut()
-    {
-        isTimerRunning = false;
-        isQuizEnded = true;
-
-        // 퀴즈 UI 숨기기
-        if (quizUI != null)
-        {
-            quizUI.HideQuiz();
-        }
-
-        if (dialogueManager != null)
-        {
-            dialogueManager.ShowTimeoutNoticeAndChangeScene(
-                "시간이 초과되었습니다.\n이제 다음 단계로 이동합니다.",
-                5f,
-                sceneToLoadAfterTimeout
-            );
-        }
-        else
-        {
-            Debug.LogWarning("dialogueManager가 설정되지 않았습니다.");
-        }
-    }
-
-    private void UpdateTimerUI(float timeRemaining)
-    {
-        if (timerText == null) return;
-
-        int minutes = Mathf.FloorToInt(timeRemaining / 60f);
-        int seconds = Mathf.FloorToInt(timeRemaining % 60f);
-        timerText.text = $"{minutes:00}:{seconds:00}";
     }
 
     private void OnDestroy()
