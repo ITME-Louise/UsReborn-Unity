@@ -2140,9 +2140,9 @@ MonoBehaviour:
   - className: paper
     vaseStages:
       stage1: {fileID: 4735194703025569332, guid: 07cab2717e2f6de4ea57950741d1829e, type: 3}
-      stage2: {fileID: 4564511147252979892, guid: 2e59080bc6eadbd419e5854ef922d5c7, type: 3}
-      stage3: {fileID: 3345593231086430326, guid: 342a603b8d9418744b8d94626169f3d3, type: 3}
-      stage4: {fileID: 3803120659243060098, guid: 2a18ef08868d1914abf61fb52f7a71ec, type: 3}
+      stage2: {fileID: 9169834740442585456, guid: 2c44e5fee9664c04f9748e1cbd7c8669, type: 3}
+      stage3: {fileID: 2018203606461287635, guid: d8342ce5717eed7428ee2cc0df1c19f9, type: 3}
+      stage4: {fileID: 4242100428300728783, guid: f84d9c6caec39fb439aecce632b38c45, type: 3}
   - className: pack
     vaseStages:
       stage1: {fileID: 4735194703025569332, guid: 07cab2717e2f6de4ea57950741d1829e, type: 3}
@@ -2158,9 +2158,9 @@ MonoBehaviour:
   - className: glass
     vaseStages:
       stage1: {fileID: 4735194703025569332, guid: 07cab2717e2f6de4ea57950741d1829e, type: 3}
-      stage2: {fileID: 2944755795031362030, guid: 37edc1dd5dfda8545a3d0a010baef987, type: 3}
-      stage3: {fileID: 5384869879819095123, guid: 47e375f85c88a1b42b7d4be56b520c5a, type: 3}
-      stage4: {fileID: 2820623141383616444, guid: a761fb9c2e000e341a224f8fcb37ddbf, type: 3}
+      stage2: {fileID: 1735989272527601913, guid: 98596809f83c92a48ac8ef8571dd52dc, type: 3}
+      stage3: {fileID: 3366876551293111289, guid: 3eb596bdef8c0e946b3b1d880fc30386, type: 3}
+      stage4: {fileID: 3548348544725614966, guid: 9f135bbca27c5934ebd460732aee29cd, type: 3}
   - className: pet
     vaseStages:
       stage1: {fileID: 4735194703025569332, guid: 07cab2717e2f6de4ea57950741d1829e, type: 3}
